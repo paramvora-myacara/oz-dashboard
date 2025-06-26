@@ -1,0 +1,144 @@
+// src/components/SuccessStories.js
+
+export default function SuccessStories() {
+    const stories = [
+      {
+        title: "Birmingham Tech Hub",
+        location: "Birmingham, AL",
+        investment: "$45M",
+        impact: "1,200 jobs created",
+        roi: "28% IRR",
+        description: "Transformed abandoned warehouse district into thriving innovation center",
+        image: "🏭→🏢",
+        tags: ["Tech", "Urban Renewal"]
+      },
+      {
+        title: "Verde Affordable Housing",
+        location: "Phoenix, AZ", 
+        investment: "$32M",
+        impact: "450 units built",
+        roi: "22% IRR",
+        description: "Created sustainable affordable housing with solar power and community gardens",
+        image: "🏘️",
+        tags: ["Housing", "Sustainable"]
+      },
+      {
+        title: "Coastal Manufacturing Revival",
+        location: "Charleston, SC",
+        investment: "$78M",
+        impact: "2,100 jobs",
+        roi: "31% IRR",
+        description: "Revitalized former naval yard into advanced manufacturing facility",
+        image: "⚓→🏭",
+        tags: ["Manufacturing", "Jobs"]
+      }
+    ];
+  
+    const testimonials = [
+      {
+        quote: "The OZ program allowed us to create meaningful impact while delivering strong returns to our investors.",
+        author: "Sarah Chen",
+        role: "CEO, Impact Capital Partners",
+        rating: 5
+      },
+      {
+        quote: "We've seen entire communities transform through strategic OZ investments. It's been truly rewarding.",
+        author: "Michael Rodriguez",
+        role: "Managing Director, Urban Renewal Fund",
+        rating: 5
+      }
+    ];
+  
+    return (
+      <section className="space-y-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">Success Stories</h2>
+          <p className="text-gray-600">Real impact, real returns, real communities transformed</p>
+        </div>
+  
+        {/* Success Stories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {stories.map((story, idx) => (
+            <div key={idx} className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all overflow-hidden">
+              <div className="h-32 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-5xl">
+                {story.image}
+              </div>
+              
+              <div className="p-6">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {story.tags.map(tag => (
+                    <span key={tag} className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{story.title}</h3>
+                <p className="text-sm text-gray-600 mb-4">{story.location}</p>
+                <p className="text-gray-700 mb-4">{story.description}</p>
+                
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="bg-gray-50 rounded-lg p-2">
+                    <p className="text-xs text-gray-600">Investment</p>
+                    <p className="font-semibold text-gray-900">{story.investment}</p>
+                  </div>
+                  <div className="bg-green-50 rounded-lg p-2">
+                    <p className="text-xs text-gray-600">Impact</p>
+                    <p className="font-semibold text-green-700">{story.impact}</p>
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-2">
+                    <p className="text-xs text-gray-600">Return</p>
+                    <p className="font-semibold text-blue-700">{story.roi}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+  
+        {/* Testimonials */}
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-3xl p-8">
+          <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">What Investors Say</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {testimonials.map((testimonial, idx) => (
+              <div key={idx} className="bg-white rounded-xl p-6 shadow-md">
+                <div className="flex mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-xl">★</span>
+                  ))}
+                </div>
+                <p className="text-gray-700 italic mb-4">&ldquo;{testimonial.quote}&rdquo;</p>
+                <div>
+                  <p className="font-semibold text-gray-900">{testimonial.author}</p>
+                  <p className="text-sm text-gray-600">{testimonial.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+  
+        {/* Impact Metrics */}
+        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white text-center">
+          <h3 className="text-2xl font-bold mb-8">Cumulative Impact Since 2018</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div>
+              <p className="text-4xl font-bold">$105B+</p>
+              <p className="text-blue-100">Total Investment</p>
+            </div>
+            <div>
+              <p className="text-4xl font-bold">2.1M</p>
+              <p className="text-blue-100">Jobs Created</p>
+            </div>
+            <div>
+              <p className="text-4xl font-bold">313K</p>
+              <p className="text-blue-100">Housing Units</p>
+            </div>
+            <div>
+              <p className="text-4xl font-bold">8,764</p>
+              <p className="text-blue-100">Active Zones</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }

@@ -31,7 +31,6 @@ Thumbs.db
 
 # Misc
 coverage/
-public/maps/us-states-10m.json
 
 # Tailwind JIT cache
 .tailwind-cache/
@@ -42,4 +41,4 @@ public/maps/us-states-10m.json
 # Optional: lock files (uncomment if you want to ignore them)
 package-lock.json
 yarn.lock
-pnpm-lock.yaml 
+pnpm-lock.yaml

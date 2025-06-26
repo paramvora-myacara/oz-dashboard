@@ -1,28 +1,22 @@
-import ClientMapLoader from '@/components/ClientMapLoader';
-import NationalKpiDashboard from '@/components/NationalKpiDashboard';
-import InvestmentTimelineChart from '@/components/Charts/InvestmentTimelineChart';
-import SectorAllocationChart from '@/components/Charts/SectorAllocationChart';
-import { HousingProductionChart, PerformanceComparisonChart } from '@/components/Charts/HousingProductionChart';
+// src/app/page.js
+
+import ModernKpiDashboard from '@/components/ModernKpiDashboard';
+import ClientOZMapLoader from '@/components/ClientOZMapLoader';
 
 export default function HomePage() {
   return (
-    <div className="space-y-8">
-      <ClientMapLoader/>
-      <NationalKpiDashboard/>
+    <div className="min-h-screen bg-gray-900">
+      {/* Map Visualization - Full Screen */}
+      <section className="relative h-screen">
+        <ClientOZMapLoader />
+      </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {[
-          { title: "Cumulative Investment Timeline", Component: InvestmentTimelineChart },
-          { title: "Sector Allocation", Component: SectorAllocationChart },
-          { title: "Housing Production", Component: HousingProductionChart },
-          { title: "OZ vs Non-OZ Performance", Component: PerformanceComparisonChart }
-        ].map(({ title, Component }) => (
-          <div key={title} className="bg-white p-4 rounded-lg shadow">
-            <h3 className="text-lg font-medium text-brand-primary text-center mb-2">{title}</h3>
-            <div className="h-64"><Component/></div>
-          </div>
-        ))}
+      {/* Stats Section */}
+      <section className="relative z-10 -mt-32 pb-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <ModernKpiDashboard />
+        </div>
       </section>
     </div>
   );
-} 
+}
