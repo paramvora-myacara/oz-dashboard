@@ -58,27 +58,14 @@ a {
   }
 }
 
-@keyframes glow {
-  0%, 100% {
-    filter: brightness(1) drop-shadow(0 0 20px rgba(16, 185, 129, 0.5));
-  }
-  50% {
-    filter: brightness(1.2) drop-shadow(0 0 30px rgba(16, 185, 129, 0.8));
-  }
-}
-
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-out;
 }
 
-.animate-glow {
-  animation: glow 3s ease-in-out infinite;
-}
-
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -100,30 +87,13 @@ html {
 
 /* D3 Map Styles */
 .state {
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
   cursor: pointer;
-}
-
-.state:hover {
-  filter: brightness(1.5);
-}
-
-.oz-zone {
-  pointer-events: none;
-  animation: glow 3s ease-in-out infinite;
-}
-
-/* Glassmorphism */
-.glass {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Ensure proper layout for fixed chatbot */
 .main-content {
-  margin-right: 320px; /* Width of chatbot panel */
+  margin-right: 320px;
 }
 
 @media (max-width: 1024px) {

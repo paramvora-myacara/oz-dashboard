@@ -5,18 +5,16 @@ import ClientOZMapLoader from '@/components/ClientOZMapLoader';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Map Visualization - Full Screen */}
-      <section className="relative h-screen">
+    <>
+      {/* Map Visualization */}
+      <section className="h-screen">
         <ClientOZMapLoader />
       </section>
 
       {/* Stats Section */}
-      <section className="relative z-10 -mt-32 pb-12">
-        <div className="max-w-7xl mx-auto px-6">
-          <ModernKpiDashboard />
-        </div>
+      <section className="bg-gray-900">
+        <ModernKpiDashboard />
       </section>
-    </div>
+    </>
   );
 }

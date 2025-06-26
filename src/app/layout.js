@@ -17,20 +17,24 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
       </head>
-      <body className="bg-gray-900 overflow-x-hidden">
+      <body className="bg-gray-900">
         <div className="flex min-h-screen">
           {/* Main Content */}
-          <div className="flex-1 mr-80 lg:mr-96">
-            <header className="fixed top-0 left-0 right-80 lg:right-96 z-50 bg-black/20 backdrop-blur-md border-b border-gray-800">
-              <div className="px-6 py-4">
-                <div className="flex items-center space-x-3">
-                  <Image src="/ozlistings-logo.png" alt="OZ Listings" width={32} height={32} className="h-8 w-auto"/>
-                  <div className="h-6 w-px bg-gray-700"></div>
-                  <span className="text-sm text-gray-400">Market Analytics Dashboard</span>
-                </div>
+          <div className="flex-1 mr-80 lg:mr-96 overflow-hidden">
+            <header className="absolute top-0 left-0 z-50">
+              <div className="p-4">
+                <Image 
+                  src="/ozlistings-logo.png" 
+                  alt="OZ Listings" 
+                  width={60} 
+                  height={20} 
+                  className="h-5 w-auto object-contain opacity-90"
+                  priority
+                  quality={100}
+                />
               </div>
             </header>
-            <main className="pt-16">{children}</main>
+            <main className="pt-8">{children}</main>
           </div>
           
           {/* Fixed Chatbot */}
