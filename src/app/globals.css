@@ -3,8 +3,31 @@
 @import 'leaflet/dist/leaflet.css';
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #ffffff;
+  /* Primary palette - inspired by Apple's subtle gradients */
+  --primary-bg: #000000;
+  --secondary-bg: #0a0a0a;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-hover-bg: rgba(255, 255, 255, 0.05);
+  
+  /* Glass effects */
+  --glass-bg: rgba(255, 255, 255, 0.02);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  
+  /* Text colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  
+  /* Accent colors - minimal and purposeful */
+  --accent-blue: #0071e3;
+  --accent-green: #30d158;
+  --accent-red: #ff375f;
+  --accent-purple: #bf5af2;
+  
+  /* Subtle accent usage */
+  --accent-blue-subtle: rgba(0, 113, 227, 0.15);
+  --accent-green-subtle: rgba(48, 209, 88, 0.15);
 }
 
 html,
@@ -15,9 +38,9 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-primary);
+  background: var(--primary-bg);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -39,18 +62,37 @@ a {
 
 @layer base {
   body {
-    @apply bg-gray-900 text-white font-sans antialiased;
+    @apply bg-black text-white font-sans antialiased;
   }
   h1,h2,h3,h4,h5,h6 {
     @apply font-semibold tracking-tight;
   }
 }
 
+/* Glass Card Component */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Subtle Glow Effect */
+.glow-subtle {
+  filter: drop-shadow(0 0 20px rgba(48, 209, 88, 0.3));
+}
+
+/* Smooth Transitions */
+* {
+  transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+
 /* Custom Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -58,26 +100,54 @@ a {
   }
 }
 
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 12px rgba(48, 209, 88, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(48, 209, 88, 0.6));
+  }
+}
+
 .animate-fadeIn {
-  animation: fadeIn 0.5s ease-out;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-900;
+  @apply bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-700 rounded-full;
+  @apply bg-white/10 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-600;
+  @apply bg-white/20;
 }
 
 /* Smooth Scroll */
@@ -85,19 +155,19 @@ html {
   scroll-behavior: smooth;
 }
 
-/* D3 Map Styles */
-.state {
-  transition: all 0.15s ease;
-  cursor: pointer;
+/* Map Enhancements */
+.oz-zone {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Ensure proper layout for fixed chatbot */
-.main-content {
-  margin-right: 320px;
+.oz-zone:hover {
+  filter: brightness(1.5) drop-shadow(0 0 8px rgba(48, 209, 88, 0.8));
 }
 
-@media (max-width: 1024px) {
-  .main-content {
-    margin-right: 0;
-  }
+.state-path {
+  transition: all 0.2s ease;
+}
+
+.state-path:hover {
+  filter: brightness(1.2);
 }

@@ -1,3 +1,7 @@
+// src/components/ClientOZMapLoader.js
+
+// Enhanced ClientOZMapLoader.js with subtle animations
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -5,10 +9,10 @@ import dynamic from 'next/dynamic';
 const OZMapVisualization = dynamic(() => import('./OZMapVisualization'), {
   ssr: false,
   loading: () => (
-    <div className="h-screen w-full flex items-center justify-center">
+    <div className="h-screen w-full bg-black flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-400 border-t-transparent mx-auto mb-4"></div>
-        <p className="text-gray-400">Loading opportunity zones...</p>
+        <div className="w-12 h-12 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
+        <p className="text-white/60 font-light">Loading opportunity zones...</p>
       </div>
     </div>
   )
@@ -16,4 +20,4 @@ const OZMapVisualization = dynamic(() => import('./OZMapVisualization'), {
 
 export default function ClientOZMapLoader() {
   return <OZMapVisualization />;
-} 
+}

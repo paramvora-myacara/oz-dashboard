@@ -17,24 +17,22 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
       </head>
-      <body className="bg-gray-900">
+      <body className="bg-black antialiased">
         <div className="flex min-h-screen">
           {/* Main Content */}
           <div className="flex-1 mr-80 lg:mr-96 overflow-hidden">
-            <header className="absolute top-0 left-0 z-50">
-              <div className="p-4">
-                <Image 
-                  src="/ozlistings-logo.png" 
-                  alt="OZ Listings" 
-                  width={60} 
-                  height={20} 
-                  className="h-5 w-auto object-contain opacity-90"
-                  priority
-                  quality={100}
-                />
-              </div>
+            <header className="absolute top-0 left-0 z-50 p-8">
+              <Image 
+                src="/ozlistings-logo.png" 
+                alt="OZ Listings" 
+                width={120} 
+                height={40} 
+                className="h-6 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
+                priority
+                quality={100}
+              />
             </header>
-            <main className="pt-8">{children}</main>
+            <main>{children}</main>
           </div>
           
           {/* Fixed Chatbot */}

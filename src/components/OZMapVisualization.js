@@ -1,6 +1,7 @@
 // src/components/OZMapVisualization.js
 
-'use client';
+// Enhanced OZMapVisualization.js with subtle animations
+
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
 import { feature } from 'topojson-client';
@@ -74,50 +75,119 @@ export default function OZMapVisualization() {
 
     const path = d3.geoPath().projection(projection);
 
-    // Simplified background
+    // Beautiful gradient background
+    const defs = svg.append('defs');
+    
+    // Radial gradient for background
+    const bgGradient = defs.append('radialGradient')
+      .attr('id', 'bg-gradient')
+      .attr('cx', '50%')
+      .attr('cy', '50%')
+      .attr('r', '50%');
+    
+    bgGradient.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', '#0a0a0a');
+    
+    bgGradient.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', '#000000');
+
+    // Glow filter for OZ zones
+    const glowFilter = defs.append('filter')
+      .attr('id', 'glow')
+      .attr('x', '-50%')
+      .attr('y', '-50%')
+      .attr('width', '200%')
+      .attr('height', '200%');
+    
+    glowFilter.append('feGaussianBlur')
+      .attr('stdDeviation', '3')
+      .attr('result', 'coloredBlur');
+    
+    const feMerge = glowFilter.append('feMerge');
+    feMerge.append('feMergeNode').attr('in', 'coloredBlur');
+    feMerge.append('feMergeNode').attr('in', 'SourceGraphic');
+
+    // Background
     svg.append('rect')
       .attr('width', dimensions.width)
       .attr('height', dimensions.height)
-      .attr('fill', '#0f0f1e');
+      .attr('fill', 'url(#bg-gradient)');
 
-    // Draw states
-    svg.append('g')
-      .selectAll('path')
+    // Draw states with subtle styling
+    const statesGroup = svg.append('g').attr('class', 'states-layer');
+    
+    statesGroup.selectAll('path')
       .data(mapData.states.features)
       .enter()
       .append('path')
       .attr('d', path)
-      .attr('fill', '#1e293b')
-      .attr('stroke', '#334155')
+      .attr('fill', 'rgba(255, 255, 255, 0.02)')
+      .attr('stroke', 'rgba(255, 255, 255, 0.08)')
       .attr('stroke-width', 0.5)
       .style('cursor', 'pointer')
       .on('mouseover', function(event, d) {
         d3.select(this)
           .transition()
-          .duration(150)
-          .attr('fill', '#334155');
+          .duration(200)
+          .attr('fill', 'rgba(255, 255, 255, 0.05)')
+          .attr('stroke', 'rgba(255, 255, 255, 0.15)');
         setHoveredState(d.properties.name);
       })
       .on('mouseout', function() {
         d3.select(this)
           .transition()
-          .duration(150)
-          .attr('fill', '#1e293b');
+          .duration(200)
+          .attr('fill', 'rgba(255, 255, 255, 0.02)')
+          .attr('stroke', 'rgba(255, 255, 255, 0.08)');
         setHoveredState(null);
       });
 
-    // Draw ALL OZ zones efficiently
+    // Draw OZ zones with animations
     if (mapData.ozs?.features) {
-      svg.append('g')
-        .selectAll('path')
+      const ozGroup = svg.append('g').attr('class', 'oz-layer');
+      
+      const ozPaths = ozGroup.selectAll('path')
         .data(mapData.ozs.features)
         .enter()
         .append('path')
         .attr('d', path)
-        .attr('fill', '#10b981')
-        .attr('fill-opacity', 0.4)
+        .attr('fill', '#30d158')
+        .attr('fill-opacity', 0)
         .attr('stroke', 'none')
-        .style('pointer-events', 'none');
+        .style('pointer-events', 'none')
+        .attr('filter', 'url(#glow)');
+      
+      // Staggered fade-in animation
+      ozPaths.transition()
+        .duration(1000)
+        .delay((d, i) => Math.random() * 500)
+        .attr('fill-opacity', 0.4);
+      
+      // Add subtle pulsing to random zones
+      ozPaths.each(function(d, i) {
+        if (Math.random() > 0.95) { // Only 5% of zones pulse
+          d3.select(this)
+            .transition()
+            .duration(2000 + Math.random() * 2000)
+            .delay(Math.random() * 2000)
+            .attr('fill-opacity', 0.6)
+            .transition()
+            .duration(2000 + Math.random() * 2000)
+            .attr('fill-opacity', 0.4)
+            .on('end', function repeat() {
+              d3.select(this)
+                .transition()
+                .duration(2000 + Math.random() * 2000)
+                .attr('fill-opacity', 0.6)
+                .transition()
+                .duration(2000 + Math.random() * 2000)
+                .attr('fill-opacity', 0.4)
+                .on('end', repeat);
+            });
+        }
+      });
     }
   }, [dimensions, mapData, projection]);
 
@@ -146,7 +216,7 @@ export default function OZMapVisualization() {
   return (
     <div 
       ref={containerRef} 
-      className="relative w-full h-full bg-gray-900"
+      className="relative w-full h-full bg-black"
       onMouseMove={handleMouseMove}
     >
       <svg
@@ -156,58 +226,61 @@ export default function OZMapVisualization() {
         className="absolute inset-0"
       />
 
-      {/* Header */}
-      <div className="absolute top-0 left-0 right-0 p-8 pointer-events-none text-center">
-        <h1 className="text-5xl font-bold text-white">State of the OZ</h1>
-        <p className="text-xl text-gray-400 mt-2">
+      {/* Header with Apple-style typography */}
+      <div className="absolute top-0 left-0 right-0 p-12 pointer-events-none text-center animate-fadeIn">
+        <h1 className="text-6xl font-semibold text-white tracking-tight">State of the OZ</h1>
+        <p className="text-xl text-white/70 mt-3 font-light">
           8,764 zones • $105B+ invested • 2.1M jobs created
         </p>
       </div>
 
-      {/* State Tooltip */}
+      {/* State Tooltip - Glassmorphism style */}
       {hoveredState && stateData && (
         <div 
-          className="absolute bg-black/90 backdrop-blur border border-gray-700 rounded-lg p-4 pointer-events-none z-50"
+          className="absolute glass-card rounded-2xl p-6 pointer-events-none z-50 animate-fadeIn"
           style={{
-            left: `${Math.min(mousePosition.x + 10, dimensions.width - 250)}px`,
-            top: `${Math.min(mousePosition.y + 10, dimensions.height - 150)}px`
+            left: `${Math.min(mousePosition.x + 20, dimensions.width - 280)}px`,
+            top: `${Math.min(mousePosition.y + 20, dimensions.height - 180)}px`
           }}
         >
-          <h3 className="text-xl font-bold text-white mb-2">{hoveredState}</h3>
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between gap-8">
-              <span className="text-gray-400">OZ Count</span>
+          <h3 className="text-2xl font-semibold text-white mb-3">{hoveredState}</h3>
+          <div className="space-y-2">
+            <div className="flex justify-between gap-12">
+              <span className="text-white/60">OZ Count</span>
               <span className="text-white font-medium">{stateData.zones}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">Investment</span>
-              <span className="text-green-400 font-medium">{stateData.investment}</span>
+              <span className="text-white/60">Investment</span>
+              <span className="text-[#30d158] font-medium">{stateData.investment}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-400">YoY Growth</span>
-              <span className="text-blue-400 font-medium">{stateData.growth}</span>
+              <span className="text-white/60">YoY Growth</span>
+              <span className="text-[#0071e3] font-medium">{stateData.growth}</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* Legend */}
-      <div className="absolute bottom-8 left-8 bg-black/70 backdrop-blur rounded-lg p-3">
-        <div className="flex items-center gap-4 text-sm">
+      {/* Legend - Minimalist style */}
+      <div className="absolute bottom-8 left-8 glass-card rounded-xl px-4 py-3 animate-fadeIn">
+        <div className="flex items-center gap-6 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-gray-700 rounded"></div>
-            <span className="text-gray-300">States</span>
+            <div className="w-3 h-3 bg-white/10 rounded-full"></div>
+            <span className="text-white/60 font-light">States</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-500 rounded"></div>
-            <span className="text-gray-300">Opportunity Zones</span>
+            <div className="w-3 h-3 bg-[#30d158] rounded-full animate-pulse-subtle"></div>
+            <span className="text-white/60 font-light">Opportunity Zones</span>
           </div>
         </div>
       </div>
 
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-          <div className="animate-spin rounded-full h-12 w-12 border-3 border-blue-400 border-t-transparent"></div>
+        <div className="absolute inset-0 flex items-center justify-center bg-black">
+          <div className="text-center">
+            <div className="w-12 h-12 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
+            <p className="text-white/60 font-light">Loading opportunity zones...</p>
+          </div>
         </div>
       )}
     </div>
