@@ -3,7 +3,7 @@
 import './globals.css';
 import ChatbotPanel from '@/components/ChatbotPanel';
 import ThemeToggle from '@/components/ThemeToggle';
-import Image from 'next/image';
+import ThemeLogo from '@/components/ThemeLogo';
 
 export const metadata = {
   title: 'OZ Market Intelligence - Real-time Analytics',
@@ -23,15 +23,7 @@ export default function RootLayout({ children }) {
           {/* Main Content */}
           <div className="flex-1 mr-80 lg:mr-96 overflow-hidden">
             <header className="absolute top-0 left-0 z-50 p-8">
-              <Image 
-                src="/ozlistings-logo.png" 
-                alt="OZ Listings" 
-                width={120} 
-                height={40} 
-                className="h-6 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
-                priority
-                quality={100}
-              />
+              <ThemeLogo />
             </header>
             <main>{children}</main>
           </div>
