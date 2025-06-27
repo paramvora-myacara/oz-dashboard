@@ -131,8 +131,7 @@ export default function USMapOZ() {
           center={[39.5, -98.5]} 
           zoom={4} 
           scrollWheelZoom={false} 
-          className="h-[500px] rounded-xl shadow-inner"
-          style={{ background: '#F3F4F6' }}
+          className="h-[500px] rounded-xl shadow-inner bg-white dark:bg-gray-800"
         >
           <TileLayer
             url="https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw"
