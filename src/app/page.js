@@ -13,7 +13,7 @@ export default function HomePage() {
       </section>
 
       {/* Action Buttons - Centered below the map */}
-      <section className="bg-white dark:bg-black py-16 flex items-center justify-center">
+      <section className="bg-white dark:bg-black py-8 flex items-center justify-center">
         <ActionButtons />
       </section>
 
