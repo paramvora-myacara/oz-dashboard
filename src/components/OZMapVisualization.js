@@ -154,17 +154,17 @@ export default function OZMapVisualization() {
       .enter()
       .append('path')
       .attr('d', path)
-      .attr('fill', 'rgba(255, 255, 255, 0.02)')
-      .attr('stroke', 'rgba(255, 255, 255, 0.08)')
-      .attr('stroke-width', 0.5)
+      .attr('fill', 'rgba(255, 255, 255, 0.04)')
+      .attr('stroke', 'rgba(255, 255, 255, 0.3)')
+      .attr('stroke-width', 1)
       .style('cursor', 'pointer')
       .on('mouseover', function(event, d) {
         const name = d.properties.name;
         d3.select(this)
           .transition()
           .duration(200)
-          .attr('fill', 'rgba(255, 255, 255, 0.05)')
-          .attr('stroke', 'rgba(255, 255, 255, 0.15)');
+          .attr('fill', 'rgba(255, 255, 255, 0.06)')
+          .attr('stroke', 'rgba(255, 255, 255, 0.5)');
         ozGroup.selectAll('path').attr('fill-opacity', 0.4);
         ozGroup.select(`path[data-state-name="${name}"]`) // names align via STATE_NAME
           .attr('fill-opacity', 0.7);
@@ -174,8 +174,8 @@ export default function OZMapVisualization() {
         d3.select(this)
           .transition()
           .duration(200)
-          .attr('fill', 'rgba(255, 255, 255, 0.02)')
-          .attr('stroke', 'rgba(255, 255, 255, 0.08)');
+          .attr('fill', 'rgba(255, 255, 255, 0.04)')
+          .attr('stroke', 'rgba(255, 255, 255, 0.3)');
         ozGroup.selectAll('path').attr('fill-opacity', 0.4);
         setHoveredState(null);
       });
