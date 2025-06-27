@@ -174,7 +174,9 @@ export default function OZMapVisualization() {
         .attr('fill-opacity', 0.4)
         .attr('stroke', 'none')
         .attr('filter', 'url(#glow)')
-        .attr('data-state-name', stateName);
+        .attr('data-state-name', stateName)
+        .style('pointer-events', 'none');
+      ozGroup.selectAll('path').attr('fill-opacity', 0.4);
     });
   }, [dimensions, mapData, projection, stateOZPaths]);
 
