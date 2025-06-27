@@ -66,9 +66,24 @@ export default function OZMapVisualization() {
       .translate([dimensions.width / 2, dimensions.height / 2]);
   }, [dimensions.width, dimensions.height]);
 
+  // After projection declaration, add memo to merge OZ path data per state
+  const stateOZPaths = useMemo(() => {
+    if (!mapData.ozs || !projection) return null;
+    const pathGen = d3.geoPath().projection(projection);
+    const acc = {};
+    mapData.ozs.features.forEach(f => {
+      const stateName = f.properties.STATE_NAME || f.properties.state || f.properties.name;
+      if (!stateName) return;
+      const dStr = pathGen(f);
+      if (!dStr) return;
+      acc[stateName] = (acc[stateName] || '') + dStr;
+    });
+    return acc;
+  }, [mapData.ozs, projection]);
+
   // Render map
   useEffect(() => {
-    if (!dimensions.width || !dimensions.height || !mapData.states || !projection) return;
+    if (!dimensions.width || !dimensions.height || !mapData.states || !projection || !stateOZPaths) return;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
@@ -128,12 +143,16 @@ export default function OZMapVisualization() {
       .attr('stroke-width', 0.5)
       .style('cursor', 'pointer')
       .on('mouseover', function(event, d) {
+        const name = d.properties.name;
         d3.select(this)
           .transition()
           .duration(200)
           .attr('fill', 'rgba(255, 255, 255, 0.05)')
           .attr('stroke', 'rgba(255, 255, 255, 0.15)');
-        setHoveredState(d.properties.name);
+        ozGroup.selectAll('path').attr('fill-opacity', 0.4);
+        ozGroup.select(`path[data-state-name="${name}"]`) // names align via STATE_NAME
+          .attr('fill-opacity', 0.7);
+        setHoveredState(name);
       })
       .on('mouseout', function() {
         d3.select(this)
@@ -141,55 +160,23 @@ export default function OZMapVisualization() {
           .duration(200)
           .attr('fill', 'rgba(255, 255, 255, 0.02)')
           .attr('stroke', 'rgba(255, 255, 255, 0.08)');
+        ozGroup.selectAll('path').attr('fill-opacity', 0.4);
         setHoveredState(null);
       });
 
-    // Draw OZ zones with animations
-    if (mapData.ozs?.features) {
-      const ozGroup = svg.append('g').attr('class', 'oz-layer');
-      
-      const ozPaths = ozGroup.selectAll('path')
-        .data(mapData.ozs.features)
-        .enter()
-        .append('path')
-        .attr('d', path)
+    // Draw OZ zones grouped by state (one path per state)
+    const ozGroup = svg.append('g').attr('class', 'oz-layer');
+
+    Object.entries(stateOZPaths).forEach(([stateName, dStr]) => {
+      ozGroup.append('path')
+        .attr('d', dStr)
         .attr('fill', '#30d158')
-        .attr('fill-opacity', 0)
+        .attr('fill-opacity', 0.4)
         .attr('stroke', 'none')
-        .style('pointer-events', 'none')
-        .attr('filter', 'url(#glow)');
-      
-      // Staggered fade-in animation
-      ozPaths.transition()
-        .duration(1000)
-        .delay((d, i) => Math.random() * 500)
-        .attr('fill-opacity', 0.4);
-      
-      // Add subtle pulsing to random zones
-      ozPaths.each(function(d, i) {
-        if (Math.random() > 0.95) { // Only 5% of zones pulse
-          d3.select(this)
-            .transition()
-            .duration(2000 + Math.random() * 2000)
-            .delay(Math.random() * 2000)
-            .attr('fill-opacity', 0.6)
-            .transition()
-            .duration(2000 + Math.random() * 2000)
-            .attr('fill-opacity', 0.4)
-            .on('end', function repeat() {
-              d3.select(this)
-                .transition()
-                .duration(2000 + Math.random() * 2000)
-                .attr('fill-opacity', 0.6)
-                .transition()
-                .duration(2000 + Math.random() * 2000)
-                .attr('fill-opacity', 0.4)
-                .on('end', repeat);
-            });
-        }
-      });
-    }
-  }, [dimensions, mapData, projection]);
+        .attr('filter', 'url(#glow)')
+        .attr('data-state-name', stateName);
+    });
+  }, [dimensions, mapData, projection, stateOZPaths]);
 
   const getStateData = useCallback((stateName) => {
     const data = {
