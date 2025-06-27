@@ -2,6 +2,7 @@
 
 import ModernKpiDashboard from '@/components/ModernKpiDashboard';
 import ClientOZMapLoader from '@/components/ClientOZMapLoader';
+import ActionButtons from '@/components/ActionButtons';
 
 export default function HomePage() {
   return (
@@ -11,8 +12,13 @@ export default function HomePage() {
         <ClientOZMapLoader />
       </section>
 
+      {/* Action Buttons - Centered below the map */}
+      <section className="bg-white dark:bg-black py-16 flex items-center justify-center">
+        <ActionButtons />
+      </section>
+
       {/* Stats Section - Seamless Transition */}
-      <section className="bg-black">
+      <section className="bg-white dark:bg-black">
         <ModernKpiDashboard />
       </section>
     </>
