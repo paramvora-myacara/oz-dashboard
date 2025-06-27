@@ -15,6 +15,7 @@ export default function OZMapVisualization() {
   const [loading, setLoading] = useState(true);
   const [mapData, setMapData] = useState({ states: null, ozs: null });
 
+  // Resize handling (debounced to avoid rapid re-renders)
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
@@ -25,9 +26,19 @@ export default function OZMapVisualization() {
       }
     };
 
+    // Debounce resize events to 150 ms
+    let timeoutId;
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(updateDimensions, 150);
+    };
+
     updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   // Load data once
@@ -47,8 +58,13 @@ export default function OZMapVisualization() {
     });
   }, []);
 
-  // Mouse tracking
+  // Throttled mouse tracking (max ~60 fps)
+  const lastMoveRef = useRef(0);
   const handleMouseMove = useCallback((event) => {
+    const now = performance.now();
+    if (now - lastMoveRef.current < 16) return; // throttle to ~60 fps
+    lastMoveRef.current = now;
+
     const rect = containerRef.current?.getBoundingClientRect();
     if (rect) {
       setMousePosition({
