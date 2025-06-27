@@ -97,6 +97,9 @@ export default function OZMapVisualization() {
     return acc;
   }, [mapData.ozs, projection]);
 
+  // Check if dark mode is active
+  const isDarkMode = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+
   // Render map
   useEffect(() => {
     if (!dimensions.width || !dimensions.height || !mapData.states || !projection || !stateOZPaths) return;
@@ -109,20 +112,30 @@ export default function OZMapVisualization() {
     // Beautiful gradient background
     const defs = svg.append('defs');
     
-    // Radial gradient for background
+    // Radial gradient for background (different for light/dark mode)
     const bgGradient = defs.append('radialGradient')
       .attr('id', 'bg-gradient')
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
     
-    bgGradient.append('stop')
-      .attr('offset', '0%')
-      .attr('stop-color', '#0a0a0a');
-    
-    bgGradient.append('stop')
-      .attr('offset', '100%')
-      .attr('stop-color', '#000000');
+    if (isDarkMode) {
+      bgGradient.append('stop')
+        .attr('offset', '0%')
+        .attr('stop-color', '#0a0a0a');
+      
+      bgGradient.append('stop')
+        .attr('offset', '100%')
+        .attr('stop-color', '#000000');
+    } else {
+      bgGradient.append('stop')
+        .attr('offset', '0%')
+        .attr('stop-color', '#f8f9fa');
+      
+      bgGradient.append('stop')
+        .attr('offset', '100%')
+        .attr('stop-color', '#ffffff');
+    }
 
     // Glow filter for OZ zones
     const glowFilter = defs.append('filter')
@@ -146,7 +159,7 @@ export default function OZMapVisualization() {
       .attr('height', dimensions.height)
       .attr('fill', 'url(#bg-gradient)');
 
-    // Draw states with subtle styling
+    // Draw states with subtle styling (different for light/dark mode)
     const statesGroup = svg.append('g').attr('class', 'states-layer');
     
     statesGroup.selectAll('path')
@@ -154,8 +167,8 @@ export default function OZMapVisualization() {
       .enter()
       .append('path')
       .attr('d', path)
-      .attr('fill', 'rgba(255, 255, 255, 0.04)')
-      .attr('stroke', 'rgba(255, 255, 255, 0.3)')
+      .attr('fill', isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)')
+      .attr('stroke', isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)')
       .attr('stroke-width', 1)
       .style('cursor', 'pointer')
       .on('mouseover', function(event, d) {
@@ -163,8 +176,8 @@ export default function OZMapVisualization() {
         d3.select(this)
           .transition()
           .duration(200)
-          .attr('fill', 'rgba(255, 255, 255, 0.06)')
-          .attr('stroke', 'rgba(255, 255, 255, 0.5)');
+          .attr('fill', isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)')
+          .attr('stroke', isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)');
         ozGroup.selectAll('path').attr('fill-opacity', 0.4);
         ozGroup.select(`path[data-state-name="${name}"]`) // names align via STATE_NAME
           .attr('fill-opacity', 0.7);
@@ -174,8 +187,8 @@ export default function OZMapVisualization() {
         d3.select(this)
           .transition()
           .duration(200)
-          .attr('fill', 'rgba(255, 255, 255, 0.04)')
-          .attr('stroke', 'rgba(255, 255, 255, 0.3)');
+          .attr('fill', isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)')
+          .attr('stroke', isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)');
         ozGroup.selectAll('path').attr('fill-opacity', 0.4);
         setHoveredState(null);
       });
@@ -194,7 +207,7 @@ export default function OZMapVisualization() {
         .style('pointer-events', 'none');
       ozGroup.selectAll('path').attr('fill-opacity', 0.4);
     });
-  }, [dimensions, mapData, projection, stateOZPaths]);
+  }, [dimensions, mapData, projection, stateOZPaths, isDarkMode]);
 
   const getStateData = useCallback((stateName) => {
     const data = {
@@ -221,7 +234,7 @@ export default function OZMapVisualization() {
   return (
     <div 
       ref={containerRef} 
-      className="relative w-full h-full bg-black"
+      className="relative w-full h-full bg-white dark:bg-black"
       onMouseMove={handleMouseMove}
     >
       <svg
@@ -233,8 +246,8 @@ export default function OZMapVisualization() {
 
       {/* Header with Apple-style typography */}
       <div className="absolute top-0 left-0 right-0 p-12 pointer-events-none text-center animate-fadeIn">
-        <h1 className="text-6xl font-semibold text-white tracking-tight">State of the OZ</h1>
-        <p className="text-xl text-white/70 mt-3 font-light">
+        <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
+        <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
           8,764 zones • $105B+ invested • 2.1M jobs created
         </p>
       </div>
@@ -242,24 +255,24 @@ export default function OZMapVisualization() {
       {/* State Tooltip - Glassmorphism style */}
       {hoveredState && stateData && (
         <div 
-          className="absolute glass-card rounded-2xl p-6 pointer-events-none z-50 animate-fadeIn"
+          className="absolute glass-card rounded-2xl p-6 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
           style={{
             left: `${Math.min(mousePosition.x + 20, dimensions.width - 280)}px`,
             top: `${Math.min(mousePosition.y + 20, dimensions.height - 180)}px`
           }}
         >
-          <h3 className="text-2xl font-semibold text-white mb-3">{hoveredState}</h3>
+          <h3 className="text-2xl font-semibold text-black dark:text-white mb-3">{hoveredState}</h3>
           <div className="space-y-2">
             <div className="flex justify-between gap-12">
-              <span className="text-white/60">OZ Count</span>
-              <span className="text-white font-medium">{stateData.zones}</span>
+              <span className="text-black/60 dark:text-white/60">OZ Count</span>
+              <span className="text-black dark:text-white font-medium">{stateData.zones}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-white/60">Investment</span>
+              <span className="text-black/60 dark:text-white/60">Investment</span>
               <span className="text-[#30d158] font-medium">{stateData.investment}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-white/60">YoY Growth</span>
+              <span className="text-black/60 dark:text-white/60">YoY Growth</span>
               <span className="text-[#0071e3] font-medium">{stateData.growth}</span>
             </div>
           </div>
@@ -267,24 +280,24 @@ export default function OZMapVisualization() {
       )}
 
       {/* Legend - Minimalist style */}
-      <div className="absolute bottom-8 left-8 glass-card rounded-xl px-4 py-3 animate-fadeIn">
+      <div className="absolute bottom-8 left-8 glass-card rounded-xl px-4 py-3 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10">
         <div className="flex items-center gap-6 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-white/10 rounded-full"></div>
-            <span className="text-white/60 font-light">States</span>
+            <div className="w-3 h-3 bg-black/10 dark:bg-white/10 rounded-full"></div>
+            <span className="text-black/60 dark:text-white/60 font-light">States</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-[#30d158] rounded-full animate-pulse-subtle"></div>
-            <span className="text-white/60 font-light">Opportunity Zones</span>
+            <span className="text-black/60 dark:text-white/60 font-light">Opportunity Zones</span>
           </div>
         </div>
       </div>
 
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
+        <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black">
           <div className="text-center">
-            <div className="w-12 h-12 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
-            <p className="text-white/60 font-light">Loading opportunity zones...</p>
+            <div className="w-12 h-12 border-2 border-black/20 dark:border-white/20 border-t-black/60 dark:border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
+            <p className="text-black/60 dark:text-white/60 font-light">Loading opportunity zones...</p>
           </div>
         </div>
       )}

@@ -2,7 +2,7 @@
 
 export default function KpiCard({ title, value, description, icon, gradient, change, trend }) {
   return (
-    <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+    <div className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
       <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity`}></div>
       
       <div className="p-6">
@@ -24,11 +24,11 @@ export default function KpiCard({ title, value, description, icon, gradient, cha
           )}
         </div>
         
-        <h3 className="text-sm font-medium text-gray-600 mb-1">{title}</h3>
-        <p className="text-3xl font-bold text-gray-900 mb-2">{value}</p>
-        <p className="text-sm text-gray-500">{description}</p>
+        <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">{title}</h3>
+        <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{value}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
         
-        <div className="mt-4 h-1 bg-gray-100 rounded-full overflow-hidden">
+        <div className="mt-4 h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
           <div className={`h-full bg-gradient-to-r ${gradient} transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700`}></div>
         </div>
       </div>

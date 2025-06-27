@@ -88,45 +88,36 @@ export default function ChatbotPanel() {
   }
 
   return (
-    <aside className="h-full glass-card flex flex-col" style={{
-      background: 'rgba(0, 0, 0, 0.8)',
-      backdropFilter: 'blur(40px)',
-      WebkitBackdropFilter: 'blur(40px)',
-      borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
-    }}>
-      <header className="p-6 border-b border-white/5">
+    <aside className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10">
+      <header className="p-6 border-b border-black/10 dark:border-white/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-[#0071e3] rounded-2xl">
               <SparklesIcon className="h-5 w-5 text-white"/>
             </div>
             <div>
-              <h3 className="font-semibold text-white text-lg">Ozzie</h3>
-              <p className="text-xs text-white/50 font-light">Your OZ Investment Expert</p>
+              <h3 className="font-semibold text-black dark:text-white text-lg">Ozzie</h3>
+              <p className="text-xs text-black/50 dark:text-white/50 font-light">Your OZ Investment Expert</p>
             </div>
           </div>
           <button
             onClick={() => setIsExpanded(false)}
-            className="p-2 hover:bg-white/5 rounded-xl transition-all"
+            className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all"
           >
-            <XMarkIcon className="h-5 w-5 text-white/40 hover:text-white/60"/>
+            <XMarkIcon className="h-5 w-5 text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60"/>
           </button>
         </div>
       </header>
       
       {/* Preset Questions */}
-      <div className="p-4 border-b border-white/5">
-        <p className="text-xs text-white/40 mb-3 font-light">Quick questions:</p>
+      <div className="p-4 border-b border-black/10 dark:border-white/5">
+        <p className="text-xs text-black/40 dark:text-white/40 mb-3 font-light">Quick questions:</p>
         <div className="flex flex-wrap gap-2">
           {presetQuestions.map((question, idx) => (
             <button
               key={idx}
               onClick={() => handlePresetClick(question)}
-              className="text-xs px-3 py-1.5 glass-card text-white/70 hover:text-white rounded-full transition-all hover:bg-white/10"
-              style={{
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(10px)'
-              }}
+              className="text-xs px-3 py-1.5 glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white rounded-full transition-all hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10"
             >
               {question}
             </button>
@@ -144,11 +135,8 @@ export default function ChatbotPanel() {
             <div className={`max-w-[85%] ${
               m.sender === 'user'
                 ? 'bg-[#0071e3] text-white rounded-3xl rounded-tr-lg px-5 py-3'
-                : 'glass-card text-white/90 rounded-3xl rounded-tl-lg px-5 py-3'
-            }`} style={m.sender === 'bot' ? {
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.08)'
-            } : {}}>
+                : 'glass-card text-black/90 dark:text-white/90 rounded-3xl rounded-tl-lg px-5 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10'
+            }`}>
               <p className="text-sm leading-relaxed font-light">{m.text}</p>
             </div>
           </div>
@@ -157,14 +145,10 @@ export default function ChatbotPanel() {
       </div>
       
       {/* Input Form */}
-      <div className="p-6 border-t border-white/5">
+      <div className="p-6 border-t border-black/10 dark:border-white/5">
         <div className="flex gap-3">
           <input
-            className="flex-1 px-5 py-3 glass-card rounded-full text-white placeholder-white/30 focus:outline-none focus:border-white/20 text-sm font-light transition-all"
-            style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.08)'
-            }}
+            className="flex-1 px-5 py-3 glass-card rounded-full text-black dark:text-white placeholder-black/30 dark:placeholder-white/30 focus:outline-none focus:border-black/20 dark:focus:border-white/20 text-sm font-light transition-all bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10"
             value={input} 
             onChange={e => setInput(e.target.value)} 
             placeholder="Ask Ozzie anything about OZs..."
@@ -177,7 +161,7 @@ export default function ChatbotPanel() {
           <button 
             onClick={(e) => handleSend(e)}
             disabled={!input.trim()} 
-            className="p-3 bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-white/10 rounded-full transition-all disabled:cursor-not-allowed hover:scale-105"
+            className="p-3 bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-black/10 dark:disabled:bg-white/10 rounded-full transition-all disabled:cursor-not-allowed hover:scale-105"
           >
             <PaperAirplaneIcon className="h-5 w-5 text-white"/>
           </button>

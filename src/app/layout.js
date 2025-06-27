@@ -2,6 +2,7 @@
 
 import './globals.css';
 import ChatbotPanel from '@/components/ChatbotPanel';
+import ThemeToggle from '@/components/ThemeToggle';
 import Image from 'next/image';
 
 export const metadata = {
@@ -17,7 +18,7 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
       </head>
-      <body className="bg-black antialiased">
+      <body className="bg-white dark:bg-black antialiased">
         <div className="flex min-h-screen">
           {/* Main Content */}
           <div className="flex-1 mr-80 lg:mr-96 overflow-hidden">
@@ -33,6 +34,11 @@ export default function RootLayout({ children }) {
               />
             </header>
             <main>{children}</main>
+          </div>
+          
+          {/* Theme Toggle - Positioned to the left of chatbot, aligned with Ozzie icon */}
+          <div className="fixed right-80 lg:right-96 top-6 z-50 pr-6">
+            <ThemeToggle />
           </div>
           
           {/* Fixed Chatbot */}

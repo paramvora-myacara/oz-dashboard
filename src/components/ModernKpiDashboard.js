@@ -134,7 +134,59 @@ export default function ModernKpiDashboard() {
       }]
     };
 
-    const chartOptions = {
+    const getChartOptions = () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            color: 'rgb(107, 114, 128)', // gray-500 for light mode
+            font: { 
+              size: 12,
+              family: '-apple-system, BlinkMacSystemFont, sans-serif'
+            }
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          titleColor: 'white',
+          bodyColor: 'white',
+          borderColor: 'rgba(255, 255, 255, 0.1)',
+          borderWidth: 1,
+          borderRadius: 12,
+          padding: 12
+        }
+      },
+      scales: {
+        x: {
+          grid: { 
+            color: 'rgba(0, 0, 0, 0.05)', // light mode grid
+            drawBorder: false
+          },
+          ticks: { 
+            color: 'rgb(107, 114, 128)', // gray-500 for light mode
+            font: {
+              family: '-apple-system, BlinkMacSystemFont, sans-serif'
+            }
+          }
+        },
+        y: {
+          grid: { 
+            color: 'rgba(0, 0, 0, 0.05)', // light mode grid
+            drawBorder: false
+          },
+          ticks: { 
+            color: 'rgb(107, 114, 128)', // gray-500 for light mode
+            font: {
+              family: '-apple-system, BlinkMacSystemFont, sans-serif'
+            }
+          }
+        }
+      }
+    });
+
+    const getDarkChartOptions = () => ({
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -184,15 +236,20 @@ export default function ModernKpiDashboard() {
           }
         }
       }
-    };
+    });
+
+    // Get appropriate chart options based on theme
+    const chartOptions = typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+      ? getDarkChartOptions() 
+      : getChartOptions();
   
     return (
-      <div className="min-h-screen bg-black px-8 py-16">
+      <div className="min-h-screen bg-white dark:bg-black px-8 py-16">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-12 animate-fadeIn">
-            <h2 className="text-5xl font-semibold text-white tracking-tight mb-3">Market Overview</h2>
-            <p className="text-xl text-white/60 font-light">Real-time analytics and investment insights</p>
+            <h2 className="text-5xl font-semibold text-black dark:text-white tracking-tight mb-3">Market Overview</h2>
+            <p className="text-xl text-black/60 dark:text-white/60 font-light">Real-time analytics and investment insights</p>
           </div>
           
           {/* KPI Cards */}
@@ -200,7 +257,7 @@ export default function ModernKpiDashboard() {
             {kpis.map((kpi, idx) => (
               <div
                 key={idx}
-                className="glass-card rounded-2xl p-8 hover:scale-[1.02] transition-all duration-300 animate-fadeIn"
+                className="glass-card rounded-2xl p-8 hover:scale-[1.02] transition-all duration-300 animate-fadeIn bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -219,30 +276,30 @@ export default function ModernKpiDashboard() {
                   </div>
                 </div>
                 
-                <h3 className="text-sm font-medium text-white/60 mb-2">{kpi.title}</h3>
-                <p className="text-4xl font-semibold text-white mb-2">{kpi.value}</p>
-                <p className="text-sm text-white/40 font-light">{kpi.description}</p>
+                <h3 className="text-sm font-medium text-black/60 dark:text-white/60 mb-2">{kpi.title}</h3>
+                <p className="text-4xl font-semibold text-black dark:text-white mb-2">{kpi.value}</p>
+                <p className="text-sm text-black/40 dark:text-white/40 font-light">{kpi.description}</p>
               </div>
             ))}
           </div>
     
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            <div className="glass-card rounded-xl p-6 text-center">
+            <div className="glass-card rounded-xl p-6 text-center bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10">
               <p className="text-3xl font-semibold text-[#0071e3]">54%</p>
-              <p className="text-sm text-white/50 mt-1 font-light">National Funds</p>
+              <p className="text-sm text-black/50 dark:text-white/50 mt-1 font-light">National Funds</p>
             </div>
-            <div className="glass-card rounded-xl p-6 text-center">
+            <div className="glass-card rounded-xl p-6 text-center bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10">
               <p className="text-3xl font-semibold text-[#30d158]">87%</p>
-              <p className="text-sm text-white/50 mt-1 font-light">Zone Activity</p>
+              <p className="text-sm text-black/50 dark:text-white/50 mt-1 font-light">Zone Activity</p>
             </div>
-            <div className="glass-card rounded-xl p-6 text-center">
+            <div className="glass-card rounded-xl p-6 text-center bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10">
               <p className="text-3xl font-semibold text-[#bf5af2]">$24.5M</p>
-              <p className="text-sm text-white/50 mt-1 font-light">Avg Deal Size</p>
+              <p className="text-sm text-black/50 dark:text-white/50 mt-1 font-light">Avg Deal Size</p>
             </div>
-            <div className="glass-card rounded-xl p-6 text-center">
+            <div className="glass-card rounded-xl p-6 text-center bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10">
               <p className="text-3xl font-semibold text-[#ff9f0a]">313K</p>
-              <p className="text-sm text-white/50 mt-1 font-light">Housing Units</p>
+              <p className="text-sm text-black/50 dark:text-white/50 mt-1 font-light">Housing Units</p>
             </div>
           </div>
 
@@ -260,8 +317,8 @@ export default function ModernKpiDashboard() {
                   onClick={() => setActiveChart(tab.id)}
                   className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
                     activeChart === tab.id
-                      ? 'bg-white text-black'
-                      : 'glass-card text-white/70 hover:text-white'
+                      ? 'bg-black dark:bg-white text-white dark:text-black'
+                      : 'glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10'
                   }`}
                 >
                   {tab.label}
@@ -269,24 +326,24 @@ export default function ModernKpiDashboard() {
               ))}
             </div>
 
-            <div className="glass-card rounded-3xl p-8" style={{ height: '480px' }}>
+            <div className="glass-card rounded-3xl p-8 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10" style={{ height: '480px' }}>
               {activeChart === 'investment' && (
                 <div className="h-full">
-                  <h3 className="text-2xl font-semibold text-white mb-6">Investment Growth Trajectory</h3>
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Investment Growth Trajectory</h3>
                   <Line data={investmentTrendData} options={chartOptions} />
                 </div>
               )}
               
               {activeChart === 'state' && (
                 <div className="h-full">
-                  <h3 className="text-2xl font-semibold text-white mb-6">Top 10 States by Performance</h3>
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Top 10 States by Performance</h3>
                   <Bar data={statePerformanceData} options={chartOptions} />
                 </div>
               )}
               
               {activeChart === 'sector' && (
                 <div className="h-full">
-                  <h3 className="text-2xl font-semibold text-white mb-6">Sector Investment Growth</h3>
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Sector Investment Growth</h3>
                   <Line data={sectorGrowthData} options={chartOptions} />
                 </div>
               )}
@@ -294,7 +351,7 @@ export default function ModernKpiDashboard() {
               {activeChart === 'fund' && (
                 <div className="h-full flex items-center justify-around">
                   <div className="w-72 h-72">
-                    <h3 className="text-2xl font-semibold text-white mb-6 text-center">Fund Type Distribution</h3>
+                    <h3 className="text-2xl font-semibold text-black dark:text-white mb-6 text-center">Fund Type Distribution</h3>
                     <Doughnut 
                       data={fundTypeData} 
                       options={{
@@ -312,9 +369,9 @@ export default function ModernKpiDashboard() {
                       }} 
                     />
                   </div>
-                  <div className="space-y-4 text-white/70">
+                  <div className="space-y-4 text-black/70 dark:text-white/70">
                     <div>
-                      <p className="text-lg font-medium text-white mb-3">Key Insights</p>
+                      <p className="text-lg font-medium text-black dark:text-white mb-3">Key Insights</p>
                       <ul className="space-y-2 text-sm font-light">
                         <li className="flex items-center gap-2">
                           <span className="text-[#30d158]">•</span>

@@ -65,22 +65,22 @@ export default function InvestmentInsights() {
   ];
 
   return (
-    <section className="bg-white rounded-3xl shadow-xl overflow-hidden">
+    <section className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
       <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-8">
         <h2 className="text-3xl font-bold mb-2">Investment Analytics</h2>
         <p className="text-indigo-100">Deep dive into Opportunity Zone investment patterns and returns</p>
       </div>
       
       <div className="p-8">
-        <div className="flex space-x-1 mb-8 bg-gray-100 rounded-xl p-1">
+        <div className="flex space-x-1 mb-8 bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition-all ${
                 activeTab === tab.id
-                  ? 'bg-white text-indigo-600 shadow-md'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white dark:bg-gray-600 text-indigo-600 dark:text-white shadow-md'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <span className="text-xl">{tab.icon}</span>
@@ -92,20 +92,55 @@ export default function InvestmentInsights() {
         <div className="h-96">
           {activeTab === 'performance' && (
             <div>
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">OZ vs Traditional RE Performance</h3>
+              <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">OZ vs Traditional RE Performance</h3>
               <Line 
                 data={performanceData} 
                 options={{
                   responsive: true,
                   maintainAspectRatio: false,
                   plugins: {
-                    legend: { position: 'top' },
+                    legend: { 
+                      position: 'top',
+                      labels: {
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgb(229, 231, 235)' 
+                          : 'rgb(75, 85, 99)'
+                      }
+                    },
                     title: { display: false }
                   },
                   scales: {
+                    x: {
+                      grid: {
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgba(255, 255, 255, 0.1)' 
+                          : 'rgba(0, 0, 0, 0.1)'
+                      },
+                      ticks: {
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgb(156, 163, 175)' 
+                          : 'rgb(75, 85, 99)'
+                      }
+                    },
                     y: {
                       beginAtZero: true,
-                      title: { display: true, text: 'Index Value' }
+                      title: { 
+                        display: true, 
+                        text: 'Index Value',
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgb(156, 163, 175)' 
+                          : 'rgb(75, 85, 99)'
+                      },
+                      grid: {
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgba(255, 255, 255, 0.1)' 
+                          : 'rgba(0, 0, 0, 0.1)'
+                      },
+                      ticks: {
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgb(156, 163, 175)' 
+                          : 'rgb(75, 85, 99)'
+                      }
                     }
                   }
                 }}
@@ -122,14 +157,21 @@ export default function InvestmentInsights() {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                      legend: { position: 'right' }
+                      legend: { 
+                        position: 'right',
+                        labels: {
+                          color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                            ? 'rgb(229, 231, 235)' 
+                            : 'rgb(75, 85, 99)'
+                        }
+                      }
                     }
                   }}
                 />
               </div>
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-800">Key Insights</h3>
-                <ul className="space-y-2 text-gray-600">
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-white">Key Insights</h3>
+                <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                   <li className="flex items-start">
                     <span className="text-green-500 mr-2">•</span>
                     Commercial RE dominates with 38% allocation
@@ -149,7 +191,7 @@ export default function InvestmentInsights() {
           
           {activeTab === 'regions' && (
             <div>
-              <h3 className="text-xl font-semibold mb-4 text-gray-800">Regional Investment Distribution</h3>
+              <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Regional Investment Distribution</h3>
               <Bar 
                 data={regionData}
                 options={{
@@ -159,9 +201,37 @@ export default function InvestmentInsights() {
                     legend: { display: false }
                   },
                   scales: {
+                    x: {
+                      grid: {
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgba(255, 255, 255, 0.1)' 
+                          : 'rgba(0, 0, 0, 0.1)'
+                      },
+                      ticks: {
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgb(156, 163, 175)' 
+                          : 'rgb(75, 85, 99)'
+                      }
+                    },
                     y: {
                       beginAtZero: true,
-                      title: { display: true, text: 'Investment Volume ($B)' }
+                      title: { 
+                        display: true, 
+                        text: 'Investment Volume ($B)',
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgb(156, 163, 175)' 
+                          : 'rgb(75, 85, 99)'
+                      },
+                      grid: {
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgba(255, 255, 255, 0.1)' 
+                          : 'rgba(0, 0, 0, 0.1)'
+                      },
+                      ticks: {
+                        color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                          ? 'rgb(156, 163, 175)' 
+                          : 'rgb(75, 85, 99)'
+                      }
                     }
                   }
                 }}
@@ -171,20 +241,20 @@ export default function InvestmentInsights() {
         </div>
 
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-6 rounded-2xl">
-            <h4 className="font-semibold text-indigo-900 mb-2">Average Deal Size</h4>
-            <p className="text-3xl font-bold text-indigo-900">$24.5M</p>
-            <p className="text-sm text-indigo-700 mt-1">+15% from last year</p>
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl">
+            <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">Average Deal Size</h4>
+            <p className="text-3xl font-bold text-indigo-900 dark:text-indigo-300">$24.5M</p>
+            <p className="text-sm text-indigo-700 dark:text-indigo-400 mt-1">+15% from last year</p>
           </div>
-          <div className="bg-gradient-to-br from-purple-50 to-pink-100 p-6 rounded-2xl">
-            <h4 className="font-semibold text-purple-900 mb-2">Fund Formation Rate</h4>
-            <p className="text-3xl font-bold text-purple-900">13/month</p>
-            <p className="text-sm text-purple-700 mt-1">New QOFs created</p>
+          <div className="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-2xl">
+            <h4 className="font-semibold text-purple-900 dark:text-purple-300 mb-2">Fund Formation Rate</h4>
+            <p className="text-3xl font-bold text-purple-900 dark:text-purple-300">13/month</p>
+            <p className="text-sm text-purple-700 dark:text-purple-400 mt-1">New QOFs created</p>
           </div>
-          <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-6 rounded-2xl">
-            <h4 className="font-semibold text-emerald-900 mb-2">Capital Deployed</h4>
-            <p className="text-3xl font-bold text-emerald-900">87%</p>
-            <p className="text-sm text-emerald-700 mt-1">Of raised funds</p>
+          <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-2xl">
+            <h4 className="font-semibold text-emerald-900 dark:text-emerald-300 mb-2">Capital Deployed</h4>
+            <p className="text-3xl font-bold text-emerald-900 dark:text-emerald-300">87%</p>
+            <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-1">Of raised funds</p>
           </div>
         </div>
       </div>

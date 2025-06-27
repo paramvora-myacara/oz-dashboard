@@ -13,12 +13,12 @@ export default function HomePage() {
       </section>
 
       {/* Action Buttons - Centered below the map */}
-      <section className="bg-black py-16 flex items-center justify-center">
+      <section className="bg-white dark:bg-black py-16 flex items-center justify-center">
         <ActionButtons />
       </section>
 
       {/* Stats Section - Seamless Transition */}
-      <section className="bg-black">
+      <section className="bg-white dark:bg-black">
         <ModernKpiDashboard />
       </section>
     </>
