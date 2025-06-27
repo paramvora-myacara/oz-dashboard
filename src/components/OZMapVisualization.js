@@ -279,19 +279,7 @@ export default function OZMapVisualization() {
         </div>
       )}
 
-      {/* Legend - Minimalist style */}
-      <div className="absolute bottom-8 left-8 glass-card rounded-xl px-4 py-3 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10">
-        <div className="flex items-center gap-6 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-black/10 dark:bg-white/10 rounded-full"></div>
-            <span className="text-black/60 dark:text-white/60 font-light">States</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-[#30d158] rounded-full animate-pulse-subtle"></div>
-            <span className="text-black/60 dark:text-white/60 font-light">Opportunity Zones</span>
-          </div>
-        </div>
-      </div>
+
 
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black">
