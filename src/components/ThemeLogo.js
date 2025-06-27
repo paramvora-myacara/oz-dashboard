@@ -43,7 +43,7 @@ export default function ThemeLogo() {
       alt="OZ Listings" 
       width={120} 
       height={40} 
-      className="h-6 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity duration-300"
+      className="h-6 w-auto object-contain"
       priority
       quality={100}
     />
