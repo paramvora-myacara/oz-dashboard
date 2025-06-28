@@ -153,18 +153,14 @@ export default function ModernKpiDashboard() {
         {
           label: 'OZ Median Home Value ($K)',
           data: [195, 198, 201, 205, 210, 215, 218, 220],
-          borderColor: '#0071e3',
-          backgroundColor: 'rgba(0, 113, 227, 0.1)',
-          fill: false,
-          tension: 0.4
+          backgroundColor: 'rgba(0, 113, 227, 0.6)',
+          borderRadius: 8
         },
         {
           label: 'National Median ($K)',
           data: [350, 355, 358, 360, 365, 370, 372, 375],
-          borderColor: '#bf5af2',
-          backgroundColor: 'rgba(191, 90, 242, 0.1)',
-          fill: false,
-          tension: 0.4
+          backgroundColor: 'rgba(191, 90, 242, 0.6)',
+          borderRadius: 8
         }
       ]
     };
