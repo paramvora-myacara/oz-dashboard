@@ -16,7 +16,6 @@ export default function ModernKpiDashboard() {
         value: "$110B+",
         change: "+10%",
         trend: "up",
-        description: "YoY Growth",
         icon: "📈"
       },
       {
@@ -24,7 +23,6 @@ export default function ModernKpiDashboard() {
         value: "14,000+",
         change: "+12%",
         trend: "up",
-        description: "YoY Growth",
         icon: "🏢"
       },
       {
@@ -32,7 +30,6 @@ export default function ModernKpiDashboard() {
         value: "68%",
         change: "+3%",
         trend: "up",
-        description: "YoY Growth",
         icon: "🗺️"
       },
       {
@@ -40,7 +37,6 @@ export default function ModernKpiDashboard() {
         value: "313,000+",
         change: "+8%",
         trend: "up",
-        description: "YoY Growth",
         icon: "🏠"
       }
     ];
