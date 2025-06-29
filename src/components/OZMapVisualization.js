@@ -1,6 +1,6 @@
 // src/components/OZMapVisualization.js
 
-// Enhanced OZMapVisualization.js with subtle animations
+// Enhanced OZMapVisualization.js with subtle animations and Intersection Observer optimization
 
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
@@ -15,6 +15,32 @@ export default function OZMapVisualization() {
   const [loading, setLoading] = useState(true);
   const [mapData, setMapData] = useState({ states: null, ozs: null });
   const [ozData, setOzData] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  // Intersection Observer to track visibility
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+        // Clear hover state when leaving viewport
+        if (!entry.isIntersecting) {
+          setHoveredState(null);
+        }
+      },
+      {
+        threshold: 0.1, // Trigger when 10% of the map is visible
+        rootMargin: '50px' // Start tracking 50px before entering viewport
+      }
+    );
+
+    observer.observe(containerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   // Resize handling (debounced to avoid rapid re-renders)
   useEffect(() => {
@@ -74,9 +100,12 @@ export default function OZMapVisualization() {
     });
   }, []);
 
-  // Throttled mouse tracking (max ~60 fps)
+  // Throttled mouse tracking (max ~60 fps) - only when visible
   const lastMoveRef = useRef(0);
   const handleMouseMove = useCallback((event) => {
+    // Early return if map is not visible
+    if (!isVisible) return;
+    
     const now = performance.now();
     if (now - lastMoveRef.current < 16) return; // throttle to ~60 fps
     lastMoveRef.current = now;
@@ -88,7 +117,7 @@ export default function OZMapVisualization() {
         y: event.clientY - rect.top
       });
     }
-  }, []);
+  }, [isVisible]);
 
   // Memoized projection
   const projection = useMemo(() => {
@@ -116,9 +145,9 @@ export default function OZMapVisualization() {
   // Check if dark mode is active
   const isDarkMode = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
 
-  // Render map
+  // Render map - only perform expensive operations when visible
   useEffect(() => {
-    if (!dimensions.width || !dimensions.height || !mapData.states || !projection || !stateOZPaths) return;
+    if (!dimensions.width || !dimensions.height || !mapData.states || !projection || !stateOZPaths || !isVisible) return;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
@@ -188,6 +217,9 @@ export default function OZMapVisualization() {
       .attr('stroke-width', 1)
       .style('cursor', 'pointer')
       .on('mouseover', function(event, d) {
+        // Only process hover events when visible
+        if (!isVisible) return;
+        
         const name = d.properties.name;
         d3.select(this)
           .transition()
@@ -200,6 +232,9 @@ export default function OZMapVisualization() {
         setHoveredState(name);
       })
       .on('mouseout', function() {
+        // Only process hover events when visible
+        if (!isVisible) return;
+        
         d3.select(this)
           .transition()
           .duration(200)
@@ -223,7 +258,7 @@ export default function OZMapVisualization() {
         .style('pointer-events', 'none');
       ozGroup.selectAll('path').attr('fill-opacity', 0.4);
     });
-  }, [dimensions, mapData, projection, stateOZPaths, isDarkMode]);
+  }, [dimensions, mapData, projection, stateOZPaths, isDarkMode, isVisible]);
 
   const getStateData = useCallback((stateName) => {
     if (!ozData || !ozData.data || !ozData.data[stateName]) {
@@ -272,8 +307,8 @@ export default function OZMapVisualization() {
         </p>
       </div>
 
-      {/* State Tooltip - Glassmorphism style */}
-      {hoveredState && stateData && (
+      {/* State Tooltip - Glassmorphism style - only render when visible and hovering */}
+      {isVisible && hoveredState && stateData && (
         <div 
           className="absolute glass-card rounded-2xl p-6 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
           style={{
@@ -298,8 +333,6 @@ export default function OZMapVisualization() {
           </div>
         </div>
       )}
-
-
 
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black">
