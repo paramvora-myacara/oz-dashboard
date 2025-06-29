@@ -297,7 +297,7 @@ export default function OZMapVisualization() {
                 <span className="text-black/60 dark:text-white/60">Active Projects</span>
                 <span className="text-[#0071e3] font-medium">{stateData.activeProjects}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-12">
                 <span className="text-black/60 dark:text-white/60">Investment Volume</span>
                 <span className="text-[#30d158] font-medium">${stateData.investmentBillions}B</span>
               </div>
