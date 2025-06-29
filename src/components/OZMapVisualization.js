@@ -45,7 +45,7 @@ export default function OZMapVisualization() {
   useEffect(() => {
     Promise.all([
       fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r => r.json()),
-      fetch('https://services.arcgis.com/VTyQ9soqVukalItT/arcgis/rest/services/Opportunity_Zones/FeatureServer/13/query?outFields=*&where=1%3D1&f=geojson').then(r => r.json())
+      fetch('/data/opportunity-zones-compressed.geojson').then(r => r.json())
     ]).then(([topoData, ozData]) => {
       setMapData({
         states: feature(topoData, topoData.objects.states),
@@ -82,17 +82,17 @@ export default function OZMapVisualization() {
       .translate([dimensions.width / 2, dimensions.height / 2]);
   }, [dimensions.width, dimensions.height]);
 
-  // After projection declaration, add memo to merge OZ path data per state
+  // Create paths for optimized state-grouped OZ data
   const stateOZPaths = useMemo(() => {
     if (!mapData.ozs || !projection) return null;
     const pathGen = d3.geoPath().projection(projection);
     const acc = {};
     mapData.ozs.features.forEach(f => {
-      const stateName = f.properties.STATE_NAME || f.properties.state || f.properties.name;
+      const stateName = f.properties.state; // optimized file uses 'state' property
       if (!stateName) return;
       const dStr = pathGen(f);
       if (!dStr) return;
-      acc[stateName] = (acc[stateName] || '') + dStr;
+      acc[stateName] = dStr; // no need to concatenate, already combined
     });
     return acc;
   }, [mapData.ozs, projection]);
@@ -210,24 +210,35 @@ export default function OZMapVisualization() {
   }, [dimensions, mapData, projection, stateOZPaths, isDarkMode]);
 
   const getStateData = useCallback((stateName) => {
-    const data = {
-      'California': { zones: 879, investment: '$18.2B', growth: '+32%' },
-      'Texas': { zones: 628, investment: '$14.5B', growth: '+28%' },
-      'Florida': { zones: 427, investment: '$12.3B', growth: '+35%' },
-      'New York': { zones: 514, investment: '$11.8B', growth: '+25%' },
-      'Ohio': { zones: 320, investment: '$7.8B', growth: '+22%' },
-      'Pennsylvania': { zones: 300, investment: '$6.5B', growth: '+20%' },
-      'Illinois': { zones: 327, investment: '$8.1B', growth: '+24%' },
-      'Michigan': { zones: 288, investment: '$5.9B', growth: '+19%' },
-      'Georgia': { zones: 260, investment: '$9.2B', growth: '+30%' },
-      'North Carolina': { zones: 252, investment: '$7.1B', growth: '+26%' }
+    // Get actual OZ count from optimized data
+    const stateFeature = mapData.ozs?.features?.find(f => f.properties.state === stateName);
+    const actualOZCount = stateFeature?.properties?.ozCount || 0;
+    
+    // Mock investment data (in real app, this would come from API)
+    const investmentData = {
+      'California': { investment: '$18.2B', growth: '+32%' },
+      'Texas': { investment: '$14.5B', growth: '+28%' },
+      'Florida': { investment: '$12.3B', growth: '+35%' },
+      'New York': { investment: '$11.8B', growth: '+25%' },
+      'Ohio': { investment: '$7.8B', growth: '+22%' },
+      'Pennsylvania': { investment: '$6.5B', growth: '+20%' },
+      'Illinois': { investment: '$8.1B', growth: '+24%' },
+      'Michigan': { investment: '$5.9B', growth: '+19%' },
+      'Georgia': { investment: '$9.2B', growth: '+30%' },
+      'North Carolina': { investment: '$7.1B', growth: '+26%' }
     };
-    return data[stateName] || { 
-      zones: Math.floor(Math.random() * 200 + 50), 
+    
+    const mockData = investmentData[stateName] || { 
       investment: `$${(Math.random() * 5 + 1).toFixed(1)}B`, 
       growth: `+${Math.floor(Math.random() * 20 + 10)}%` 
     };
-  }, []);
+    
+    return {
+      zones: actualOZCount,
+      investment: mockData.investment,
+      growth: mockData.growth
+    };
+  }, [mapData.ozs]);
 
   const stateData = hoveredState ? getStateData(hoveredState) : null;
 
@@ -248,7 +259,7 @@ export default function OZMapVisualization() {
       <div className="absolute top-0 left-0 right-0 p-12 pointer-events-none text-center animate-fadeIn">
         <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
         <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
-          8,764 zones • $105B+ invested • 2.1M jobs created
+          {mapData.ozs?.properties?.totalOZCount || 8765} zones • $105B+ invested • 2.1M jobs created
         </p>
       </div>
 
