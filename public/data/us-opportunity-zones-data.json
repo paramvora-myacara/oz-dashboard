@@ -1,0 +1,467 @@
+{
+  "metadata": {
+    "title": "US States Opportunity Zone Map Card Data",
+    "description": "Total number of OZ spaces, Number of Active Projects, and Dollar Investment Volume for every US state, Washington DC, and territories",
+    "data_source": "Compiled from Treasury Department data, IRS filings, and industry reports",
+    "last_updated": "2025-06-29",
+    "total_oz_spaces": 8764,
+    "total_active_projects_estimate": 6284,
+    "total_investment_volume_estimate": 100000000000,
+    "notes": [
+      "OZ spaces data is exact from Treasury Department designations",
+      "Active projects and investment volumes are estimates based on Treasury tax data through 2020, industry reports, and economic factors",
+      "Investment estimates are conservative and based on $100B total market size",
+      "Active projects estimated at ~72% of total OZ spaces on average"
+    ]
+  },
+  "states_and_territories": {
+    "Alabama": {
+      "category": "State",
+      "total_oz_spaces": 158,
+      "active_projects_estimate": 86,
+      "investment_volume_estimate": 1054720450,
+      "investment_volume_formatted": "$1,054,720,450",
+      "active_project_rate": 54.4
+    },
+    "Alaska": {
+      "category": "State",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 12,
+      "investment_volume_estimate": 151714679,
+      "investment_volume_formatted": "$151,714,679",
+      "active_project_rate": 48.0
+    },
+    "American Samoa": {
+      "category": "US Territory",
+      "total_oz_spaces": 16,
+      "active_projects_estimate": 3,
+      "investment_volume_estimate": 38838957,
+      "investment_volume_formatted": "$38,838,957",
+      "active_project_rate": 18.8
+    },
+    "Arizona": {
+      "category": "State",
+      "total_oz_spaces": 168,
+      "active_projects_estimate": 142,
+      "investment_volume_estimate": 1835140760,
+      "investment_volume_formatted": "$1,835,140,760",
+      "active_project_rate": 84.5
+    },
+    "Arkansas": {
+      "category": "State",
+      "total_oz_spaces": 85,
+      "active_projects_estimate": 42,
+      "investment_volume_estimate": 515829909,
+      "investment_volume_formatted": "$515,829,909",
+      "active_project_rate": 49.4
+    },
+    "California": {
+      "category": "State",
+      "total_oz_spaces": 879,
+      "active_projects_estimate": 747,
+      "investment_volume_estimate": 18670008435,
+      "investment_volume_formatted": "$18,670,008,435",
+      "active_project_rate": 85.0
+    },
+    "Colorado": {
+      "category": "State",
+      "total_oz_spaces": 126,
+      "active_projects_estimate": 107,
+      "investment_volume_estimate": 1682212364,
+      "investment_volume_formatted": "$1,682,212,364",
+      "active_project_rate": 84.9
+    },
+    "Connecticut": {
+      "category": "State",
+      "total_oz_spaces": 72,
+      "active_projects_estimate": 61,
+      "investment_volume_estimate": 786100876,
+      "investment_volume_formatted": "$786,100,876",
+      "active_project_rate": 84.7
+    },
+    "Delaware": {
+      "category": "State",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 10,
+      "investment_volume_estimate": 121371743,
+      "investment_volume_formatted": "$121,371,743",
+      "active_project_rate": 40.0
+    },
+    "Florida": {
+      "category": "State",
+      "total_oz_spaces": 427,
+      "active_projects_estimate": 362,
+      "investment_volume_estimate": 6478216806,
+      "investment_volume_formatted": "$6,478,216,806",
+      "active_project_rate": 84.8
+    },
+    "Georgia": {
+      "category": "State",
+      "total_oz_spaces": 260,
+      "active_projects_estimate": 221,
+      "investment_volume_estimate": 2682315530,
+      "investment_volume_formatted": "$2,682,315,530",
+      "active_project_rate": 85.0
+    },
+    "Guam": {
+      "category": "US Territory",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 6,
+      "investment_volume_estimate": 75857871,
+      "investment_volume_formatted": "$75,857,871",
+      "active_project_rate": 24.0
+    },
+    "Hawaii": {
+      "category": "State",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 13,
+      "investment_volume_estimate": 166888847,
+      "investment_volume_formatted": "$166,888,847",
+      "active_project_rate": 52.0
+    },
+    "Idaho": {
+      "category": "State",
+      "total_oz_spaces": 28,
+      "active_projects_estimate": 16,
+      "investment_volume_estimate": 203919429,
+      "investment_volume_formatted": "$203,919,429",
+      "active_project_rate": 57.1
+    },
+    "Illinois": {
+      "category": "State",
+      "total_oz_spaces": 327,
+      "active_projects_estimate": 277,
+      "investment_volume_estimate": 4365741611,
+      "investment_volume_formatted": "$4,365,741,611",
+      "active_project_rate": 84.7
+    },
+    "Indiana": {
+      "category": "State",
+      "total_oz_spaces": 156,
+      "active_projects_estimate": 109,
+      "investment_volume_estimate": 1325048610,
+      "investment_volume_formatted": "$1,325,048,610",
+      "active_project_rate": 69.9
+    },
+    "Iowa": {
+      "category": "State",
+      "total_oz_spaces": 62,
+      "active_projects_estimate": 31,
+      "investment_volume_estimate": 376330686,
+      "investment_volume_formatted": "$376,330,686",
+      "active_project_rate": 50.0
+    },
+    "Kansas": {
+      "category": "State",
+      "total_oz_spaces": 74,
+      "active_projects_estimate": 33,
+      "investment_volume_estimate": 404195757,
+      "investment_volume_formatted": "$404,195,757",
+      "active_project_rate": 44.6
+    },
+    "Kentucky": {
+      "category": "State",
+      "total_oz_spaces": 144,
+      "active_projects_estimate": 86,
+      "investment_volume_estimate": 1049087419,
+      "investment_volume_formatted": "$1,049,087,419",
+      "active_project_rate": 59.7
+    },
+    "Louisiana": {
+      "category": "State",
+      "total_oz_spaces": 150,
+      "active_projects_estimate": 97,
+      "investment_volume_estimate": 1183477531,
+      "investment_volume_formatted": "$1,183,477,531",
+      "active_project_rate": 64.7
+    },
+    "Maine": {
+      "category": "State",
+      "total_oz_spaces": 32,
+      "active_projects_estimate": 17,
+      "investment_volume_estimate": 213634154,
+      "investment_volume_formatted": "$213,634,154",
+      "active_project_rate": 53.1
+    },
+    "Maryland": {
+      "category": "State",
+      "total_oz_spaces": 149,
+      "active_projects_estimate": 126,
+      "investment_volume_estimate": 1628174075,
+      "investment_volume_formatted": "$1,628,174,075",
+      "active_project_rate": 84.6
+    },
+    "Massachusetts": {
+      "category": "State",
+      "total_oz_spaces": 138,
+      "active_projects_estimate": 117,
+      "investment_volume_estimate": 1591228971,
+      "investment_volume_formatted": "$1,591,228,971",
+      "active_project_rate": 84.8
+    },
+    "Michigan": {
+      "category": "State",
+      "total_oz_spaces": 288,
+      "active_projects_estimate": 216,
+      "investment_volume_estimate": 2621629658,
+      "investment_volume_formatted": "$2,621,629,658",
+      "active_project_rate": 75.0
+    },
+    "Minnesota": {
+      "category": "State",
+      "total_oz_spaces": 128,
+      "active_projects_estimate": 102,
+      "investment_volume_estimate": 1243063364,
+      "investment_volume_formatted": "$1,243,063,364",
+      "active_project_rate": 79.7
+    },
+    "Mississippi": {
+      "category": "State",
+      "total_oz_spaces": 100,
+      "active_projects_estimate": 45,
+      "investment_volume_estimate": 546066045,
+      "investment_volume_formatted": "$546,066,045",
+      "active_project_rate": 45.0
+    },
+    "Missouri": {
+      "category": "State",
+      "total_oz_spaces": 161,
+      "active_projects_estimate": 104,
+      "investment_volume_estimate": 1270029682,
+      "investment_volume_formatted": "$1,270,029,682",
+      "active_project_rate": 64.6
+    },
+    "Montana": {
+      "category": "State",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 12,
+      "investment_volume_estimate": 151714679,
+      "investment_volume_formatted": "$151,714,679",
+      "active_project_rate": 48.0
+    },
+    "Nebraska": {
+      "category": "State",
+      "total_oz_spaces": 44,
+      "active_projects_estimate": 22,
+      "investment_volume_estimate": 267011074,
+      "investment_volume_formatted": "$267,011,074",
+      "active_project_rate": 50.0
+    },
+    "Nevada": {
+      "category": "State",
+      "total_oz_spaces": 61,
+      "active_projects_estimate": 42,
+      "investment_volume_estimate": 518371533,
+      "investment_volume_formatted": "$518,371,533",
+      "active_project_rate": 68.9
+    },
+    "New Hampshire": {
+      "category": "State",
+      "total_oz_spaces": 27,
+      "active_projects_estimate": 17,
+      "investment_volume_estimate": 213231614,
+      "investment_volume_formatted": "$213,231,614",
+      "active_project_rate": 63.0
+    },
+    "New Jersey": {
+      "category": "State",
+      "total_oz_spaces": 169,
+      "active_projects_estimate": 143,
+      "investment_volume_estimate": 1948623340,
+      "investment_volume_formatted": "$1,948,623,340",
+      "active_project_rate": 84.6
+    },
+    "New Mexico": {
+      "category": "State",
+      "total_oz_spaces": 63,
+      "active_projects_estimate": 25,
+      "investment_volume_estimate": 305886381,
+      "investment_volume_formatted": "$305,886,381",
+      "active_project_rate": 39.7
+    },
+    "New York": {
+      "category": "State",
+      "total_oz_spaces": 514,
+      "active_projects_estimate": 436,
+      "investment_volume_estimate": 8733910658,
+      "investment_volume_formatted": "$8,733,910,658",
+      "active_project_rate": 84.8
+    },
+    "North Carolina": {
+      "category": "State",
+      "total_oz_spaces": 252,
+      "active_projects_estimate": 201,
+      "investment_volume_estimate": 2446854347,
+      "investment_volume_formatted": "$2,446,854,347",
+      "active_project_rate": 79.8
+    },
+    "North Dakota": {
+      "category": "State",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 13,
+      "investment_volume_estimate": 166888847,
+      "investment_volume_formatted": "$166,888,847",
+      "active_project_rate": 52.0
+    },
+    "Northern Mariana Islands": {
+      "category": "US Territory",
+      "total_oz_spaces": 20,
+      "active_projects_estimate": 4,
+      "investment_volume_estimate": 48548697,
+      "investment_volume_formatted": "$48,548,697",
+      "active_project_rate": 20.0
+    },
+    "Ohio": {
+      "category": "State",
+      "total_oz_spaces": 320,
+      "active_projects_estimate": 272,
+      "investment_volume_estimate": 3495506211,
+      "investment_volume_formatted": "$3,495,506,211",
+      "active_project_rate": 85.0
+    },
+    "Oklahoma": {
+      "category": "State",
+      "total_oz_spaces": 117,
+      "active_projects_estimate": 46,
+      "investment_volume_estimate": 568223821,
+      "investment_volume_formatted": "$568,223,821",
+      "active_project_rate": 39.3
+    },
+    "Oregon": {
+      "category": "State",
+      "total_oz_spaces": 86,
+      "active_projects_estimate": 73,
+      "investment_volume_estimate": 1044169995,
+      "investment_volume_formatted": "$1,044,169,995",
+      "active_project_rate": 84.9
+    },
+    "Pennsylvania": {
+      "category": "State",
+      "total_oz_spaces": 300,
+      "active_projects_estimate": 255,
+      "investment_volume_estimate": 3641152303,
+      "investment_volume_formatted": "$3,641,152,303",
+      "active_project_rate": 85.0
+    },
+    "Puerto Rico": {
+      "category": "US Territory",
+      "total_oz_spaces": 863,
+      "active_projects_estimate": 258,
+      "investment_volume_estimate": 3142314437,
+      "investment_volume_formatted": "$3,142,314,437",
+      "active_project_rate": 29.9
+    },
+    "Rhode Island": {
+      "category": "State",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 15,
+      "investment_volume_estimate": 182063015,
+      "investment_volume_formatted": "$182,063,015",
+      "active_project_rate": 60.0
+    },
+    "South Carolina": {
+      "category": "State",
+      "total_oz_spaces": 135,
+      "active_projects_estimate": 87,
+      "investment_volume_estimate": 1065185586,
+      "investment_volume_formatted": "$1,065,185,586",
+      "active_project_rate": 64.4
+    },
+    "South Dakota": {
+      "category": "State",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 12,
+      "investment_volume_estimate": 151714679,
+      "investment_volume_formatted": "$151,714,679",
+      "active_project_rate": 48.0
+    },
+    "Tennessee": {
+      "category": "State",
+      "total_oz_spaces": 176,
+      "active_projects_estimate": 132,
+      "investment_volume_estimate": 1602168067,
+      "investment_volume_formatted": "$1,602,168,067",
+      "active_project_rate": 75.0
+    },
+    "Texas": {
+      "category": "State",
+      "total_oz_spaces": 628,
+      "active_projects_estimate": 533,
+      "investment_volume_estimate": 11433218232,
+      "investment_volume_formatted": "$11,433,218,232",
+      "active_project_rate": 84.9
+    },
+    "Utah": {
+      "category": "State",
+      "total_oz_spaces": 46,
+      "active_projects_estimate": 39,
+      "investment_volume_estimate": 698133423,
+      "investment_volume_formatted": "$698,133,423",
+      "active_project_rate": 84.8
+    },
+    "Vermont": {
+      "category": "State",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 13,
+      "investment_volume_estimate": 166888847,
+      "investment_volume_formatted": "$166,888,847",
+      "active_project_rate": 52.0
+    },
+    "Virgin Islands": {
+      "category": "US Territory",
+      "total_oz_spaces": 14,
+      "active_projects_estimate": 3,
+      "investment_volume_estimate": 42409534,
+      "investment_volume_formatted": "$42,409,534",
+      "active_project_rate": 21.4
+    },
+    "Virginia": {
+      "category": "State",
+      "total_oz_spaces": 212,
+      "active_projects_estimate": 180,
+      "investment_volume_estimate": 2187118816,
+      "investment_volume_formatted": "$2,187,118,816",
+      "active_project_rate": 84.9
+    },
+    "Washington": {
+      "category": "State",
+      "total_oz_spaces": 139,
+      "active_projects_estimate": 118,
+      "investment_volume_estimate": 1518428963,
+      "investment_volume_formatted": "$1,518,428,963",
+      "active_project_rate": 84.9
+    },
+    "Washington DC": {
+      "category": "Federal District",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 21,
+      "investment_volume_estimate": 455202036,
+      "investment_volume_formatted": "$455,202,036",
+      "active_project_rate": 84.0
+    },
+    "West Virginia": {
+      "category": "State",
+      "total_oz_spaces": 55,
+      "active_projects_estimate": 19,
+      "investment_volume_estimate": 233888550,
+      "investment_volume_formatted": "$233,888,550",
+      "active_project_rate": 34.5
+    },
+    "Wisconsin": {
+      "category": "State",
+      "total_oz_spaces": 120,
+      "active_projects_estimate": 84,
+      "investment_volume_estimate": 1020264069,
+      "investment_volume_formatted": "$1,020,264,069",
+      "active_project_rate": 70.0
+    },
+    "Wyoming": {
+      "category": "State",
+      "total_oz_spaces": 25,
+      "active_projects_estimate": 21,
+      "investment_volume_estimate": 273430143,
+      "investment_volume_formatted": "$273,430,143",
+      "active_project_rate": 84.0
+    }
+  }
+}

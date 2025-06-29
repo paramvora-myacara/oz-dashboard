@@ -1,10 +1,11 @@
 // src/components/OZMapVisualization.js
 
-// Enhanced OZMapVisualization.js with subtle animations
+// Optimized OZMapVisualization.js for slide deck usage
 
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
 import { feature } from 'topojson-client';
+import ActionButtons from './ActionButtons';
 
 export default function OZMapVisualization() {
   const svgRef = useRef(null);
@@ -14,6 +15,7 @@ export default function OZMapVisualization() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [loading, setLoading] = useState(true);
   const [mapData, setMapData] = useState({ states: null, ozs: null });
+  const [ozData, setOzData] = useState(null);
 
   // Resize handling (debounced to avoid rapid re-renders)
   useEffect(() => {
@@ -45,12 +47,27 @@ export default function OZMapVisualization() {
   useEffect(() => {
     Promise.all([
       fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r => r.json()),
-      fetch('https://services.arcgis.com/VTyQ9soqVukalItT/arcgis/rest/services/Opportunity_Zones/FeatureServer/13/query?outFields=*&where=1%3D1&f=geojson').then(r => r.json())
-    ]).then(([topoData, ozData]) => {
+      fetch('/data/opportunity-zones-compressed.geojson').then(r => r.json()),
+      fetch('/data/us-opportunity-zones-data.json').then(r => r.json())
+    ]).then(([topoData, ozData, ozJsonData]) => {
+      // Convert JSON data to a lookup object keyed by state name
+      const dataLookup = {};
+      Object.entries(ozJsonData.states_and_territories).forEach(([stateName, stateData]) => {
+        dataLookup[stateName] = {
+          category: stateData.category,
+          totalOZSpaces: stateData.total_oz_spaces,
+          activeProjects: stateData.active_projects_estimate,
+          investmentVolume: stateData.investment_volume_estimate,
+          investmentBillions: (stateData.investment_volume_estimate / 1000000000).toFixed(2),
+          activeProjectRate: stateData.active_project_rate
+        };
+      });
+      
       setMapData({
         states: feature(topoData, topoData.objects.states),
         ozs: ozData
       });
+      setOzData({ data: dataLookup, metadata: ozJsonData.metadata });
       setLoading(false);
     }).catch(err => {
       console.error('Error loading map data:', err);
@@ -77,22 +94,25 @@ export default function OZMapVisualization() {
   // Memoized projection
   const projection = useMemo(() => {
     if (!dimensions.width || !dimensions.height) return null;
+    // Account for header space (roughly 160px) by adjusting the map's vertical position
+    const headerSpace = 160;
+    const availableHeight = dimensions.height - headerSpace;
     return d3.geoAlbersUsa()
-      .scale(dimensions.width * 1.3)
-      .translate([dimensions.width / 2, dimensions.height / 2]);
+      .scale(dimensions.width * 1.2) // Slightly reduced scale to fit better
+      .translate([dimensions.width / 2, (availableHeight / 2) + headerSpace]);
   }, [dimensions.width, dimensions.height]);
 
-  // After projection declaration, add memo to merge OZ path data per state
+  // Create paths for optimized state-grouped OZ data
   const stateOZPaths = useMemo(() => {
     if (!mapData.ozs || !projection) return null;
     const pathGen = d3.geoPath().projection(projection);
     const acc = {};
     mapData.ozs.features.forEach(f => {
-      const stateName = f.properties.STATE_NAME || f.properties.state || f.properties.name;
+      const stateName = f.properties.state; // optimized file uses 'state' property
       if (!stateName) return;
       const dStr = pathGen(f);
       if (!dStr) return;
-      acc[stateName] = (acc[stateName] || '') + dStr;
+      acc[stateName] = dStr; // no need to concatenate, already combined
     });
     return acc;
   }, [mapData.ozs, projection]);
@@ -205,90 +225,100 @@ export default function OZMapVisualization() {
         .attr('filter', 'url(#glow)')
         .attr('data-state-name', stateName)
         .style('pointer-events', 'none');
-      ozGroup.selectAll('path').attr('fill-opacity', 0.4);
     });
   }, [dimensions, mapData, projection, stateOZPaths, isDarkMode]);
 
   const getStateData = useCallback((stateName) => {
-    const data = {
-      'California': { zones: 879, investment: '$18.2B', growth: '+32%' },
-      'Texas': { zones: 628, investment: '$14.5B', growth: '+28%' },
-      'Florida': { zones: 427, investment: '$12.3B', growth: '+35%' },
-      'New York': { zones: 514, investment: '$11.8B', growth: '+25%' },
-      'Ohio': { zones: 320, investment: '$7.8B', growth: '+22%' },
-      'Pennsylvania': { zones: 300, investment: '$6.5B', growth: '+20%' },
-      'Illinois': { zones: 327, investment: '$8.1B', growth: '+24%' },
-      'Michigan': { zones: 288, investment: '$5.9B', growth: '+19%' },
-      'Georgia': { zones: 260, investment: '$9.2B', growth: '+30%' },
-      'North Carolina': { zones: 252, investment: '$7.1B', growth: '+26%' }
+    if (!ozData || !ozData.data || !ozData.data[stateName]) {
+      return null;
+    }
+    
+    const stateRow = ozData.data[stateName];
+    
+    return {
+      zones: stateRow.totalOZSpaces,
+      activeProjects: stateRow.activeProjects,
+      investmentBillions: stateRow.investmentBillions,
+      activeProjectRate: stateRow.activeProjectRate,
+      category: stateRow.category
     };
-    return data[stateName] || { 
-      zones: Math.floor(Math.random() * 200 + 50), 
-      investment: `$${(Math.random() * 5 + 1).toFixed(1)}B`, 
-      growth: `+${Math.floor(Math.random() * 20 + 10)}%` 
-    };
-  }, []);
+  }, [ozData]);
 
   const stateData = hoveredState ? getStateData(hoveredState) : null;
 
   return (
-    <div 
-      ref={containerRef} 
-      className="relative w-full h-full bg-white dark:bg-black"
-      onMouseMove={handleMouseMove}
-    >
-      <svg
-        ref={svgRef}
-        width={dimensions.width}
-        height={dimensions.height}
-        className="absolute inset-0"
-      />
+    <div className="w-full h-full flex flex-col bg-white dark:bg-black">
+      {/* Map container - slightly smaller to accommodate action buttons */}
+      <div 
+        ref={containerRef} 
+        className="relative flex-1 w-full bg-white dark:bg-black"
+        style={{ height: 'calc(100% - 140px)' }} // Reduce height by 140px for action buttons
+        onMouseMove={handleMouseMove}
+      >
+        <svg
+          ref={svgRef}
+          width={dimensions.width}
+          height={dimensions.height}
+          className="absolute inset-0"
+        />
 
-      {/* Header with Apple-style typography */}
-      <div className="absolute top-0 left-0 right-0 p-12 pointer-events-none text-center animate-fadeIn">
-        <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
-        <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
-          8,764 zones • $105B+ invested • 2.1M jobs created
-        </p>
+        {/* Header with Apple-style typography */}
+        <div className="absolute top-0 left-0 right-0 p-12 pointer-events-none text-center animate-fadeIn">
+          <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
+          <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
+            {ozData && ozData.metadata ? (
+              <>
+                {ozData.metadata.total_oz_spaces.toLocaleString()} zones • 
+                ${(ozData.metadata.total_investment_volume_estimate / 1000000000).toFixed(0)}B+ invested • 
+                {ozData.metadata.total_active_projects_estimate.toLocaleString()} active projects
+              </>
+            ) : (
+              '8,765 zones • $100B+ invested • 6,284 active projects'
+            )}
+          </p>
+        </div>
+
+        {/* State Tooltip - Glassmorphism style */}
+        {hoveredState && stateData && (
+          <div 
+            className="absolute glass-card rounded-2xl p-6 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
+            style={{
+              left: `${Math.min(mousePosition.x + 20, dimensions.width - 280)}px`,
+              top: `${Math.min(mousePosition.y + 20, dimensions.height - 180)}px`
+            }}
+          >
+            <h3 className="text-2xl font-semibold text-black dark:text-white mb-3">{hoveredState}</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between gap-12">
+                <span className="text-black/60 dark:text-white/60">OZ Zones</span>
+                <span className="text-black dark:text-white font-medium">{stateData.zones}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-black/60 dark:text-white/60">Active Projects</span>
+                <span className="text-[#0071e3] font-medium">{stateData.activeProjects}</span>
+              </div>
+              <div className="flex justify-between gap-12">
+                <span className="text-black/60 dark:text-white/60">Investment Volume</span>
+                <span className="text-[#30d158] font-medium">${stateData.investmentBillions}B</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black">
+            <div className="text-center">
+              <div className="w-12 h-12 border-2 border-black/20 dark:border-white/20 border-t-black/60 dark:border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
+              <p className="text-black/60 dark:text-white/60 font-light">Loading opportunity zones...</p>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* State Tooltip - Glassmorphism style */}
-      {hoveredState && stateData && (
-        <div 
-          className="absolute glass-card rounded-2xl p-6 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
-          style={{
-            left: `${Math.min(mousePosition.x + 20, dimensions.width - 280)}px`,
-            top: `${Math.min(mousePosition.y + 20, dimensions.height - 180)}px`
-          }}
-        >
-          <h3 className="text-2xl font-semibold text-black dark:text-white mb-3">{hoveredState}</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between gap-12">
-              <span className="text-black/60 dark:text-white/60">OZ Count</span>
-              <span className="text-black dark:text-white font-medium">{stateData.zones}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-black/60 dark:text-white/60">Investment</span>
-              <span className="text-[#30d158] font-medium">{stateData.investment}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-black/60 dark:text-white/60">YoY Growth</span>
-              <span className="text-[#0071e3] font-medium">{stateData.growth}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-
-
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black">
-          <div className="text-center">
-            <div className="w-12 h-12 border-2 border-black/20 dark:border-white/20 border-t-black/60 dark:border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
-            <p className="text-black/60 dark:text-white/60 font-light">Loading opportunity zones...</p>
-          </div>
-        </div>
-      )}
+      {/* Action buttons section at the bottom */}
+      <div className="flex-shrink-0 py-8 flex justify-center px-4 bg-white dark:bg-black">
+        <ActionButtons />
+      </div>
     </div>
   );
 }
