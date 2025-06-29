@@ -12,8 +12,8 @@ export default function SlideContainer({ slides, className = '' }) {
   const router = useRouter();
 
   // Scroll threshold - how much scroll is needed to trigger slide change
-  const SCROLL_THRESHOLD = 100;
-  const SCROLL_DEBOUNCE = 150; // ms to debounce scroll events
+  const SCROLL_THRESHOLD = 250; // Increased from 100 to make less sensitive
+  const SCROLL_DEBOUNCE = 300; // Increased from 150ms to make less sensitive
   const TRANSITION_DURATION = 600; // ms for slide transitions
 
   // Handle scroll events
@@ -37,7 +37,7 @@ export default function SlideContainer({ slides, className = '' }) {
 
     // Clear accumulator after debounce period
     setTimeout(() => {
-      scrollAccumulator.current *= 0.9; // Decay accumulated scroll
+      scrollAccumulator.current *= 0.7; // Increased decay from 0.9 to 0.7 for less sensitivity
     }, SCROLL_DEBOUNCE);
 
     // Check if we've scrolled enough to trigger a slide change
