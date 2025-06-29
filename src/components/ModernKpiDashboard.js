@@ -274,23 +274,23 @@ export default function ModernKpiDashboard() {
     ];
 
     return (
-      <div className="min-h-screen bg-white dark:bg-black px-8 py-16">
+      <div className="min-h-screen bg-white dark:bg-black px-8 py-8">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-12 animate-fadeIn">
-            <h2 className="text-5xl font-semibold text-black dark:text-white tracking-tight mb-3">Market Overview</h2>
+          <div className="text-center mb-8 animate-fadeIn">
+            <h2 className="text-5xl font-semibold text-black dark:text-white tracking-tight mb-2">Market Overview</h2>
             <p className="text-xl text-black/60 dark:text-white/60 font-light">Comprehensive view of the $110+ billion Opportunity Zone marketplace</p>
           </div>
           
           {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {kpis.map((kpi, idx) => (
               <div
                 key={idx}
-                className="glass-card rounded-2xl p-8 hover:scale-[1.02] transition-all duration-300 animate-fadeIn bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10"
+                className="glass-card rounded-2xl p-6 hover:scale-[1.02] transition-all duration-300 animate-fadeIn bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10"
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
-                <div className="flex items-start justify-between mb-4">
+                <div className="flex items-start justify-between mb-3">
                   <div className="text-3xl">{kpi.icon}</div>
                   <div className={`flex items-center space-x-1 text-sm font-medium ${
                     kpi.trend === 'up' ? 'text-[#30d158]' : 'text-[#ff375f]'
@@ -306,7 +306,7 @@ export default function ModernKpiDashboard() {
                   </div>
                 </div>
                 
-                <h3 className="text-sm font-medium text-black/60 dark:text-white/60 mb-2">{kpi.title}</h3>
+                <h3 className="text-sm font-medium text-black/60 dark:text-white/60 mb-1">{kpi.title}</h3>
                 <p className="text-3xl font-semibold text-black dark:text-white mb-1">{kpi.value}</p>
                 <p className="text-xs text-black/40 dark:text-white/40">{kpi.description}</p>
               </div>
@@ -314,8 +314,8 @@ export default function ModernKpiDashboard() {
           </div>
 
           {/* Charts Section */}
-          <div className="space-y-8">
-            <div className="flex flex-wrap gap-2 mb-6">
+          <div className="space-y-6">
+            <div className="flex flex-wrap gap-2 mb-4">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
@@ -332,12 +332,12 @@ export default function ModernKpiDashboard() {
               ))}
             </div>
 
-            <div className="glass-card rounded-3xl p-8 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10" style={{ minHeight: '480px' }}>
+            <div className="glass-card rounded-3xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10" style={{ minHeight: '320px' }}>
               {activeTab === 'overview' && (
-                <div className="space-y-6">
-                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Investment Overview</h3>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">Investment Overview</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl">
                       <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">Total Investment</h4>
                       <p className="text-3xl font-bold text-indigo-900 dark:text-indigo-300">$110B+</p>
@@ -355,13 +355,13 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div style={{ height: '400px' }}>
-                      <h4 className="text-lg font-medium text-black dark:text-white mb-4">Investment Growth Trend</h4>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div style={{ height: '280px' }}>
+                      <h4 className="text-lg font-medium text-black dark:text-white mb-3">Investment Growth Trend</h4>
                       <Line data={investmentGrowthData} options={chartOptions} />
                     </div>
-                    <div style={{ height: '400px' }}>
-                      <h4 className="text-lg font-medium text-black dark:text-white mb-4">Sector Allocation</h4>
+                    <div style={{ height: '280px' }}>
+                      <h4 className="text-lg font-medium text-black dark:text-white mb-3">Sector Allocation</h4>
                       <Doughnut data={sectorAllocationData} options={{
                         responsive: true,
                         maintainAspectRatio: false,
@@ -382,10 +382,10 @@ export default function ModernKpiDashboard() {
               )}
               
               {activeTab === 'qof-performance' && (
-                <div className="space-y-6">
-                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">QOF Performance Intelligence Center</h3>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">QOF Performance Intelligence Center</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl">
                       <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">Average Fund Size</h4>
                       <p className="text-3xl font-bold text-indigo-900 dark:text-indigo-300">$7.9M</p>
@@ -403,18 +403,18 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '400px' }}>
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-4">QOF Growth & Formation Trends</h4>
+                  <div style={{ height: '280px' }}>
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">QOF Growth & Formation Trends</h4>
                     <Line data={qofPerformanceData} options={dualAxisOptions} />
                   </div>
                 </div>
               )}
               
               {activeTab === 'geographic' && (
-                <div className="space-y-6">
-                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Geographic Investment Analysis</h3>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">Geographic Investment Analysis</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl">
                       <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">Leading State</h4>
                       <p className="text-2xl font-bold text-indigo-900 dark:text-indigo-300">California</p>
@@ -432,18 +432,18 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '400px' }}>
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-4">Top 10 States by Investment Volume</h4>
+                  <div style={{ height: '280px' }}>
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">Top 10 States by Investment Volume</h4>
                     <Bar data={geographicData} options={chartOptions} />
                   </div>
                 </div>
               )}
 
               {activeTab === 'social-impact' && (
-                <div className="space-y-6">
-                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Social Impact</h3>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">Social Impact</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-red-50 to-pink-100 dark:from-red-900/20 dark:to-pink-900/20 p-6 rounded-2xl">
                       <h4 className="font-semibold text-red-900 dark:text-red-300 mb-2">Poverty Reduction</h4>
                       <p className="text-3xl font-bold text-red-900 dark:text-red-300">-2.3%</p>
@@ -461,18 +461,18 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '400px' }}>
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-4">Socioeconomic Comparison</h4>
+                  <div style={{ height: '280px' }}>
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">Socioeconomic Comparison</h4>
                     <Bar data={socialImpactData} options={chartOptions} />
                   </div>
                 </div>
               )}
 
               {activeTab === 'compliance' && (
-                <div className="space-y-6">
-                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Regulatory Compliance Dashboard</h3>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">Regulatory Compliance Dashboard</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-2xl">
                       <h4 className="font-semibold text-emerald-900 dark:text-emerald-300 mb-2">Overall Compliance Rate</h4>
                       <p className="text-3xl font-bold text-emerald-900 dark:text-emerald-300">95.3%</p>
@@ -490,18 +490,18 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '400px' }}>
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-4">Compliance Rate Trends</h4>
+                  <div style={{ height: '280px' }}>
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">Compliance Rate Trends</h4>
                     <Line data={complianceData} options={chartOptions} />
                   </div>
                 </div>
               )}
 
               {activeTab === 'market-intelligence' && (
-                <div className="space-y-6">
-                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Market Intelligence</h3>
+                <div className="space-y-4">
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">Market Intelligence</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl">
                       <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">Median OZ Home Value</h4>
                       <p className="text-3xl font-bold text-indigo-900 dark:text-indigo-300">$220,000</p>
@@ -519,8 +519,8 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '400px' }}>
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-4">Property Value Trends</h4>
+                  <div style={{ height: '280px' }}>
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">Property Value Trends</h4>
                     <Bar data={propertyTrendsData} options={chartOptions} />
                   </div>
                 </div>
