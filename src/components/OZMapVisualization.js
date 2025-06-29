@@ -14,6 +14,7 @@ export default function OZMapVisualization() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [loading, setLoading] = useState(true);
   const [mapData, setMapData] = useState({ states: null, ozs: null });
+  const [ozData, setOzData] = useState(null);
 
   // Resize handling (debounced to avoid rapid re-renders)
   useEffect(() => {
@@ -45,12 +46,27 @@ export default function OZMapVisualization() {
   useEffect(() => {
     Promise.all([
       fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r => r.json()),
-      fetch('/data/opportunity-zones-compressed.geojson').then(r => r.json())
-    ]).then(([topoData, ozData]) => {
+      fetch('/data/opportunity-zones-compressed.geojson').then(r => r.json()),
+      fetch('/data/us-opportunity-zones-data.json').then(r => r.json())
+    ]).then(([topoData, ozData, ozJsonData]) => {
+      // Convert JSON data to a lookup object keyed by state name
+      const dataLookup = {};
+      Object.entries(ozJsonData.states_and_territories).forEach(([stateName, stateData]) => {
+        dataLookup[stateName] = {
+          category: stateData.category,
+          totalOZSpaces: stateData.total_oz_spaces,
+          activeProjects: stateData.active_projects_estimate,
+          investmentVolume: stateData.investment_volume_estimate,
+          investmentBillions: (stateData.investment_volume_estimate / 1000000000).toFixed(2),
+          activeProjectRate: stateData.active_project_rate
+        };
+      });
+      
       setMapData({
         states: feature(topoData, topoData.objects.states),
         ozs: ozData
       });
+      setOzData({ data: dataLookup, metadata: ozJsonData.metadata });
       setLoading(false);
     }).catch(err => {
       console.error('Error loading map data:', err);
@@ -210,35 +226,20 @@ export default function OZMapVisualization() {
   }, [dimensions, mapData, projection, stateOZPaths, isDarkMode]);
 
   const getStateData = useCallback((stateName) => {
-    // Get actual OZ count from optimized data
-    const stateFeature = mapData.ozs?.features?.find(f => f.properties.state === stateName);
-    const actualOZCount = stateFeature?.properties?.ozCount || 0;
+    if (!ozData || !ozData.data || !ozData.data[stateName]) {
+      return null;
+    }
     
-    // Mock investment data (in real app, this would come from API)
-    const investmentData = {
-      'California': { investment: '$18.2B', growth: '+32%' },
-      'Texas': { investment: '$14.5B', growth: '+28%' },
-      'Florida': { investment: '$12.3B', growth: '+35%' },
-      'New York': { investment: '$11.8B', growth: '+25%' },
-      'Ohio': { investment: '$7.8B', growth: '+22%' },
-      'Pennsylvania': { investment: '$6.5B', growth: '+20%' },
-      'Illinois': { investment: '$8.1B', growth: '+24%' },
-      'Michigan': { investment: '$5.9B', growth: '+19%' },
-      'Georgia': { investment: '$9.2B', growth: '+30%' },
-      'North Carolina': { investment: '$7.1B', growth: '+26%' }
-    };
-    
-    const mockData = investmentData[stateName] || { 
-      investment: `$${(Math.random() * 5 + 1).toFixed(1)}B`, 
-      growth: `+${Math.floor(Math.random() * 20 + 10)}%` 
-    };
+    const stateRow = ozData.data[stateName];
     
     return {
-      zones: actualOZCount,
-      investment: mockData.investment,
-      growth: mockData.growth
+      zones: stateRow.totalOZSpaces,
+      activeProjects: stateRow.activeProjects,
+      investmentBillions: stateRow.investmentBillions,
+      activeProjectRate: stateRow.activeProjectRate,
+      category: stateRow.category
     };
-  }, [mapData.ozs]);
+  }, [ozData]);
 
   const stateData = hoveredState ? getStateData(hoveredState) : null;
 
@@ -258,8 +259,16 @@ export default function OZMapVisualization() {
       {/* Header with Apple-style typography */}
       <div className="absolute top-0 left-0 right-0 p-12 pointer-events-none text-center animate-fadeIn">
         <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
-        <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
-          {mapData.ozs?.properties?.totalOZCount || 8765} zones • $105B+ invested • 2.1M jobs created
+                          <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
+          {ozData && ozData.metadata ? (
+            <>
+              {ozData.metadata.total_oz_spaces.toLocaleString()} zones • 
+              ${(ozData.metadata.total_investment_volume_estimate / 1000000000).toFixed(0)}B+ invested • 
+              {ozData.metadata.total_active_projects_estimate.toLocaleString()} active projects
+            </>
+          ) : (
+            '8,765 zones • $100B+ invested • 6,284 active projects'
+          )}
         </p>
       </div>
 
@@ -275,16 +284,16 @@ export default function OZMapVisualization() {
           <h3 className="text-2xl font-semibold text-black dark:text-white mb-3">{hoveredState}</h3>
           <div className="space-y-2">
             <div className="flex justify-between gap-12">
-              <span className="text-black/60 dark:text-white/60">OZ Count</span>
+              <span className="text-black/60 dark:text-white/60">OZ Zones</span>
               <span className="text-black dark:text-white font-medium">{stateData.zones}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-black/60 dark:text-white/60">Investment</span>
-              <span className="text-[#30d158] font-medium">{stateData.investment}</span>
+              <span className="text-black/60 dark:text-white/60">Active Projects</span>
+              <span className="text-[#0071e3] font-medium">{stateData.activeProjects}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-black/60 dark:text-white/60">YoY Growth</span>
-              <span className="text-[#0071e3] font-medium">{stateData.growth}</span>
+              <span className="text-black/60 dark:text-white/60">Investment Volume</span>
+              <span className="text-[#30d158] font-medium">${stateData.investmentBillions}B</span>
             </div>
           </div>
         </div>
