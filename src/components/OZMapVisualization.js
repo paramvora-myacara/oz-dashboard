@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
 import { feature } from 'topojson-client';
+import ActionButtons from './ActionButtons';
 
 export default function OZMapVisualization() {
   const svgRef = useRef(null);
@@ -93,9 +94,12 @@ export default function OZMapVisualization() {
   // Memoized projection
   const projection = useMemo(() => {
     if (!dimensions.width || !dimensions.height) return null;
+    // Account for header space (roughly 160px) by adjusting the map's vertical position
+    const headerSpace = 160;
+    const availableHeight = dimensions.height - headerSpace;
     return d3.geoAlbersUsa()
-      .scale(dimensions.width * 1.3)
-      .translate([dimensions.width / 2, dimensions.height / 2]);
+      .scale(dimensions.width * 1.2) // Slightly reduced scale to fit better
+      .translate([dimensions.width / 2, (availableHeight / 2) + headerSpace]);
   }, [dimensions.width, dimensions.height]);
 
   // Create paths for optimized state-grouped OZ data
@@ -243,69 +247,78 @@ export default function OZMapVisualization() {
   const stateData = hoveredState ? getStateData(hoveredState) : null;
 
   return (
-    <div 
-      ref={containerRef} 
-      className="relative w-full h-full bg-white dark:bg-black"
-      onMouseMove={handleMouseMove}
-    >
-      <svg
-        ref={svgRef}
-        width={dimensions.width}
-        height={dimensions.height}
-        className="absolute inset-0"
-      />
+    <div className="w-full h-full flex flex-col bg-white dark:bg-black">
+      {/* Map container - slightly smaller to accommodate action buttons */}
+      <div 
+        ref={containerRef} 
+        className="relative flex-1 w-full bg-white dark:bg-black"
+        style={{ height: 'calc(100% - 140px)' }} // Reduce height by 140px for action buttons
+        onMouseMove={handleMouseMove}
+      >
+        <svg
+          ref={svgRef}
+          width={dimensions.width}
+          height={dimensions.height}
+          className="absolute inset-0"
+        />
 
-      {/* Header with Apple-style typography */}
-      <div className="absolute top-0 left-0 right-0 p-12 pointer-events-none text-center animate-fadeIn">
-        <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
-        <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
-          {ozData && ozData.metadata ? (
-            <>
-              {ozData.metadata.total_oz_spaces.toLocaleString()} zones • 
-              ${(ozData.metadata.total_investment_volume_estimate / 1000000000).toFixed(0)}B+ invested • 
-              {ozData.metadata.total_active_projects_estimate.toLocaleString()} active projects
-            </>
-          ) : (
-            '8,765 zones • $100B+ invested • 6,284 active projects'
-          )}
-        </p>
+        {/* Header with Apple-style typography */}
+        <div className="absolute top-0 left-0 right-0 p-12 pointer-events-none text-center animate-fadeIn">
+          <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
+          <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
+            {ozData && ozData.metadata ? (
+              <>
+                {ozData.metadata.total_oz_spaces.toLocaleString()} zones • 
+                ${(ozData.metadata.total_investment_volume_estimate / 1000000000).toFixed(0)}B+ invested • 
+                {ozData.metadata.total_active_projects_estimate.toLocaleString()} active projects
+              </>
+            ) : (
+              '8,765 zones • $100B+ invested • 6,284 active projects'
+            )}
+          </p>
+        </div>
+
+        {/* State Tooltip - Glassmorphism style */}
+        {hoveredState && stateData && (
+          <div 
+            className="absolute glass-card rounded-2xl p-6 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
+            style={{
+              left: `${Math.min(mousePosition.x + 20, dimensions.width - 280)}px`,
+              top: `${Math.min(mousePosition.y + 20, dimensions.height - 180)}px`
+            }}
+          >
+            <h3 className="text-2xl font-semibold text-black dark:text-white mb-3">{hoveredState}</h3>
+            <div className="space-y-2">
+              <div className="flex justify-between gap-12">
+                <span className="text-black/60 dark:text-white/60">OZ Zones</span>
+                <span className="text-black dark:text-white font-medium">{stateData.zones}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-black/60 dark:text-white/60">Active Projects</span>
+                <span className="text-[#0071e3] font-medium">{stateData.activeProjects}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-black/60 dark:text-white/60">Investment Volume</span>
+                <span className="text-[#30d158] font-medium">${stateData.investmentBillions}B</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black">
+            <div className="text-center">
+              <div className="w-12 h-12 border-2 border-black/20 dark:border-white/20 border-t-black/60 dark:border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
+              <p className="text-black/60 dark:text-white/60 font-light">Loading opportunity zones...</p>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* State Tooltip - Glassmorphism style */}
-      {hoveredState && stateData && (
-        <div 
-          className="absolute glass-card rounded-2xl p-6 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
-          style={{
-            left: `${Math.min(mousePosition.x + 20, dimensions.width - 280)}px`,
-            top: `${Math.min(mousePosition.y + 20, dimensions.height - 180)}px`
-          }}
-        >
-          <h3 className="text-2xl font-semibold text-black dark:text-white mb-3">{hoveredState}</h3>
-          <div className="space-y-2">
-            <div className="flex justify-between gap-12">
-              <span className="text-black/60 dark:text-white/60">OZ Zones</span>
-              <span className="text-black dark:text-white font-medium">{stateData.zones}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-black/60 dark:text-white/60">Active Projects</span>
-              <span className="text-[#0071e3] font-medium">{stateData.activeProjects}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-black/60 dark:text-white/60">Investment Volume</span>
-              <span className="text-[#30d158] font-medium">${stateData.investmentBillions}B</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black">
-          <div className="text-center">
-            <div className="w-12 h-12 border-2 border-black/20 dark:border-white/20 border-t-black/60 dark:border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
-            <p className="text-black/60 dark:text-white/60 font-light">Loading opportunity zones...</p>
-          </div>
-        </div>
-      )}
+      {/* Action buttons section at the bottom */}
+      <div className="flex-shrink-0 py-8 flex justify-center px-4 bg-white dark:bg-black">
+        <ActionButtons />
+      </div>
     </div>
   );
 }

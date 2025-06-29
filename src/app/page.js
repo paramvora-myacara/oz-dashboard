@@ -5,7 +5,6 @@
 import SlideContainer from '@/components/SlideContainer';
 import ModernKpiDashboard from '@/components/ModernKpiDashboard';
 import ClientOZMapLoader from '@/components/ClientOZMapLoader';
-import ActionButtons from '@/components/ActionButtons';
 
 export default function HomePage() {
   // Define slides for the slide deck
@@ -45,10 +44,6 @@ export default function HomePage() {
       title: 'Market Overview',
       component: (
         <div className="h-full w-full bg-white dark:bg-black overflow-y-auto flex flex-col">
-          {/* Action buttons section with dedicated space */}
-          <div className="flex-shrink-0 py-8 flex justify-center">
-            <ActionButtons />
-          </div>
           {/* Market overview content */}
           <div className="flex-1">
             <ModernKpiDashboard />
