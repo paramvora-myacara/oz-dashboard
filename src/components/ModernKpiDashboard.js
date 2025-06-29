@@ -338,31 +338,48 @@ export default function ModernKpiDashboard() {
 
             <div className="glass-card rounded-3xl p-8 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10" style={{ minHeight: '480px' }}>
               {activeTab === 'overview' && (
-                <div className="space-y-8">
-                  <div>
-                    <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Investment Overview</h3>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      <div style={{ height: '400px' }}>
-                        <h4 className="text-lg font-medium text-black dark:text-white mb-4">Investment Growth Trend</h4>
-                        <Line data={investmentGrowthData} options={chartOptions} />
-                      </div>
-                      <div style={{ height: '400px' }}>
-                        <h4 className="text-lg font-medium text-black dark:text-white mb-4">Sector Allocation</h4>
-                        <Doughnut data={sectorAllocationData} options={{
-                          responsive: true,
-                          maintainAspectRatio: false,
-                          plugins: {
-                            legend: { 
-                              position: 'right',
-                              labels: {
-                                color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
-                                  ? 'rgb(229, 231, 235)' 
-                                  : 'rgb(75, 85, 99)'
-                              }
+                <div className="space-y-6">
+                  <h3 className="text-2xl font-semibold text-black dark:text-white mb-6">Investment Overview</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl">
+                      <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">Total Investment</h4>
+                      <p className="text-3xl font-bold text-indigo-900 dark:text-indigo-300">$110B+</p>
+                      <p className="text-sm text-indigo-700 dark:text-indigo-400 mt-1">Since 2018</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-2xl">
+                      <h4 className="font-semibold text-purple-900 dark:text-purple-300 mb-2">Active QOFs</h4>
+                      <p className="text-3xl font-bold text-purple-900 dark:text-purple-300">14,000+</p>
+                      <p className="text-sm text-purple-700 dark:text-purple-400 mt-1">Nationwide</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-2xl">
+                      <h4 className="font-semibold text-emerald-900 dark:text-emerald-300 mb-2">Investment Growth</h4>
+                      <p className="text-3xl font-bold text-emerald-900 dark:text-emerald-300">+15%</p>
+                      <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-1">YoY Growth</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div style={{ height: '400px' }}>
+                      <h4 className="text-lg font-medium text-black dark:text-white mb-4">Investment Growth Trend</h4>
+                      <Line data={investmentGrowthData} options={chartOptions} />
+                    </div>
+                    <div style={{ height: '400px' }}>
+                      <h4 className="text-lg font-medium text-black dark:text-white mb-4">Sector Allocation</h4>
+                      <Doughnut data={sectorAllocationData} options={{
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                          legend: { 
+                            position: 'right',
+                            labels: {
+                              color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                                ? 'rgb(229, 231, 235)' 
+                                : 'rgb(75, 85, 99)'
                             }
                           }
-                        }} />
-                      </div>
+                        }
+                      }} />
                     </div>
                   </div>
                 </div>
