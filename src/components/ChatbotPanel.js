@@ -6,8 +6,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChatBubbleLeftEllipsisIcon, PaperAirplaneIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { SparklesIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthOverlay from './AuthOverlay';
 
 export default function ChatbotPanel() {
+  const { user, loading, signOut } = useAuth();
   const [msgs, setMsgs] = useState([
     { 
       id: 1, 
@@ -17,6 +20,8 @@ export default function ChatbotPanel() {
   ]);
   const [input, setInput] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
+  const [showAuthOverlay, setShowAuthOverlay] = useState(false);
+  const [messageCount, setMessageCount] = useState(0);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   
@@ -37,6 +42,13 @@ export default function ChatbotPanel() {
     scrollToBottom();
   }, [msgs]);
 
+  // Hide auth overlay when user signs in
+  useEffect(() => {
+    if (user && showAuthOverlay) {
+      setShowAuthOverlay(false);
+    }
+  }, [user, showAuthOverlay]);
+
   const handlePresetClick = (question) => {
     handleSend(null, question);
   };
@@ -45,9 +57,16 @@ export default function ChatbotPanel() {
     if (e) e.preventDefault();
     const messageText = presetQuestion || input;
     if (!messageText.trim()) return;
+
+    // Check if this is the second message and user is not authenticated
+    if (messageCount >= 1 && !user) {
+      setShowAuthOverlay(true);
+      return;
+    }
     
     const userMsg = { id: Date.now(), text: messageText, sender: 'user' };
     setMsgs(ms => [...ms, userMsg]);
+    setMessageCount(prev => prev + 1);
     if (!presetQuestion) setInput('');
     
     setTimeout(() => {
@@ -88,7 +107,7 @@ export default function ChatbotPanel() {
   }
 
   return (
-    <aside className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10">
+    <aside className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10 relative">
       <header className="p-6 border-b border-black/10 dark:border-white/5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -96,7 +115,25 @@ export default function ChatbotPanel() {
               <SparklesIcon className="h-5 w-5 text-white"/>
             </div>
             <div>
-              <h3 className="font-semibold text-black dark:text-white text-lg">Ozzie</h3>
+              <h3 className="font-semibold text-black dark:text-white text-lg">
+                {user ? (
+                  <span className="flex items-center gap-2">
+                    Ozzie,{' '}
+                    <button
+                      onClick={signOut}
+                      className="text-[#0071e3] hover:text-[#0077ed] transition-colors relative group"
+                      title="Log out"
+                    >
+                      {user.email}
+                      <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        Log out
+                      </span>
+                    </button>
+                  </span>
+                ) : (
+                  'Ozzie'
+                )}
+              </h3>
               <p className="text-xs text-black/50 dark:text-white/50 font-light">Your OZ Investment Expert</p>
             </div>
           </div>
@@ -167,6 +204,11 @@ export default function ChatbotPanel() {
           </button>
         </div>
       </div>
+
+      {/* Auth Overlay */}
+      {showAuthOverlay && (
+        <AuthOverlay onClose={() => setShowAuthOverlay(false)} />
+      )}
     </aside>
   );
 }
