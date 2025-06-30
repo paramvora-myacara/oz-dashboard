@@ -332,7 +332,7 @@ export default function ModernKpiDashboard() {
               ))}
             </div>
 
-            <div className="glass-card rounded-3xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10" style={{ minHeight: '320px' }}>
+            <div className="glass-card rounded-3xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 min-h-[50vh] lg:min-h-[60vh]">
               {activeTab === 'overview' && (
                 <div className="space-y-4">
                   <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">Investment Overview</h3>
@@ -356,11 +356,11 @@ export default function ModernKpiDashboard() {
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div style={{ height: '280px' }}>
+                    <div className="h-64 md:h-72 lg:h-80">
                       <h4 className="text-lg font-medium text-black dark:text-white mb-3">Investment Growth Trend</h4>
                       <Line data={investmentGrowthData} options={chartOptions} />
                     </div>
-                    <div style={{ height: '280px' }}>
+                    <div className="h-64 md:h-72 lg:h-80">
                       <h4 className="text-lg font-medium text-black dark:text-white mb-3">Sector Allocation</h4>
                       <Doughnut data={sectorAllocationData} options={{
                         responsive: true,
@@ -403,7 +403,7 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '280px' }}>
+                  <div className="h-64 md:h-72 lg:h-80">
                     <h4 className="text-lg font-medium text-black dark:text-white mb-3">QOF Growth & Formation Trends</h4>
                     <Line data={qofPerformanceData} options={dualAxisOptions} />
                   </div>
@@ -432,7 +432,7 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '280px' }}>
+                  <div className="h-64 md:h-72 lg:h-80">
                     <h4 className="text-lg font-medium text-black dark:text-white mb-3">Top 10 States by Investment Volume</h4>
                     <Bar data={geographicData} options={chartOptions} />
                   </div>
@@ -461,7 +461,7 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '280px' }}>
+                  <div className="h-64 md:h-72 lg:h-80">
                     <h4 className="text-lg font-medium text-black dark:text-white mb-3">Socioeconomic Comparison</h4>
                     <Bar data={socialImpactData} options={chartOptions} />
                   </div>
@@ -490,7 +490,7 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '280px' }}>
+                  <div className="h-64 md:h-72 lg:h-80">
                     <h4 className="text-lg font-medium text-black dark:text-white mb-3">Compliance Rate Trends</h4>
                     <Line data={complianceData} options={chartOptions} />
                   </div>
@@ -519,7 +519,7 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ height: '280px' }}>
+                  <div className="h-64 md:h-72 lg:h-80">
                     <h4 className="text-lg font-medium text-black dark:text-white mb-3">Property Value Trends</h4>
                     <Bar data={propertyTrendsData} options={chartOptions} />
                   </div>
