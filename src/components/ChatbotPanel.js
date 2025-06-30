@@ -7,23 +7,37 @@ import { useState, useRef, useEffect } from 'react';
 import { ChatBubbleLeftEllipsisIcon, PaperAirplaneIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
+import { useChatStore } from '@/stores/chatStore';
 import AuthOverlay from './AuthOverlay';
 
 export default function ChatbotPanel() {
   const { user, loading, signOut } = useAuth();
-  const [msgs, setMsgs] = useState([
-    { 
-      id: 1, 
-      text: "Hey there! I'm Ozzie, your AI-powered Opportunity Zone expert. I can help you understand OZ investments, tax benefits, market trends, and find the best opportunities for your portfolio. What would you like to explore today?", 
-      sender: 'bot' 
-    }
-  ]);
+  const {
+    getCurrentConversation,
+    getCurrentMessageCount,
+    addMessage,
+    incrementMessageCount,
+    setCurrentUser,
+    copyGuestToUser
+  } = useChatStore();
+  
   const [input, setInput] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
-  const [messageCount, setMessageCount] = useState(0);
+  const [pendingQuestion, setPendingQuestion] = useState(null);
+  const [isHydrated, setIsHydrated] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  
+  // Handle hydration to prevent SSR/client mismatch
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+  
+  // Get current conversation and message count from store
+  const currentConversation = getCurrentConversation();
+  const msgs = isHydrated ? currentConversation.messages : [];
+  const messageCount = getCurrentMessageCount();
   
   const presetQuestions = [
     "What are OZs?",
@@ -42,33 +56,48 @@ export default function ChatbotPanel() {
     scrollToBottom();
   }, [msgs]);
 
-  // Hide auth overlay when user signs in
+  // Handle user auth state changes
   useEffect(() => {
-    if (user && showAuthOverlay) {
-      setShowAuthOverlay(false);
+    if (user) {
+      const state = useChatStore.getState();
+      const userHasConversation = state.conversations[user.id];
+      
+      // If user doesn't have a conversation yet, copy from guest
+      if (!userHasConversation) {
+        copyGuestToUser(user.id);
+        
+        // Close auth overlay if it's open
+        if (showAuthOverlay) {
+          setShowAuthOverlay(false);
+        }
+        
+        // If there was a pending question, answer it now
+        if (pendingQuestion) {
+          setTimeout(() => {
+            generateBotResponse(pendingQuestion);
+            setPendingQuestion(null);
+          }, 500);
+        }
+      } else {
+        // Just switch to user's existing conversation
+        setCurrentUser(user.id);
+        
+        // Close auth overlay if it's open
+        if (showAuthOverlay) {
+          setShowAuthOverlay(false);
+        }
+      }
+    } else {
+      // User signed out - switch back to guest
+      setCurrentUser('guest');
     }
-  }, [user, showAuthOverlay]);
+  }, [user, showAuthOverlay, pendingQuestion, copyGuestToUser, setCurrentUser]);
 
   const handlePresetClick = (question) => {
     handleSend(null, question);
   };
 
-  const handleSend = (e, presetQuestion = null) => {
-    if (e) e.preventDefault();
-    const messageText = presetQuestion || input;
-    if (!messageText.trim()) return;
-
-    // Check if this is the second message and user is not authenticated
-    if (messageCount >= 1 && !user) {
-      setShowAuthOverlay(true);
-      return;
-    }
-    
-    const userMsg = { id: Date.now(), text: messageText, sender: 'user' };
-    setMsgs(ms => [...ms, userMsg]);
-    setMessageCount(prev => prev + 1);
-    if (!presetQuestion) setInput('');
-    
+  const generateBotResponse = (messageText) => {
     setTimeout(() => {
       let response = "";
       const query = messageText.toLowerCase();
@@ -89,9 +118,39 @@ export default function ChatbotPanel() {
         response = `Great question about "${messageText.slice(0,50)}..." Based on current market data, OZ investments are showing strong momentum with average returns of 23.7%. The key is finding the right balance between impact and returns. Would you like me to dive deeper into any specific aspect?`;
       }
       
-      const botMsg = { id: Date.now() + 1, text: response, sender: 'bot' };
-      setMsgs(ms => [...ms, botMsg]);
+      const botMsg = { text: response, sender: 'bot' };
+      addMessage(botMsg);
     }, 800);
+  };
+
+  const handleSend = (e, presetQuestion = null) => {
+    if (e) e.preventDefault();
+    const messageText = presetQuestion || input;
+    if (!messageText.trim()) return;
+
+    // Check if this is the second message and user is not authenticated
+    if (messageCount >= 1 && !user) {
+      // Add the user's question but don't generate response yet
+      const userMsg = { text: messageText, sender: 'user' };
+      addMessage(userMsg);
+      incrementMessageCount();
+      
+      // Store the question for later response and show auth overlay
+      setPendingQuestion(messageText);
+      setShowAuthOverlay(true);
+      
+      if (!presetQuestion) setInput('');
+      return;
+    }
+    
+    // Normal flow - add message and generate response
+    const userMsg = { text: messageText, sender: 'user' };
+    addMessage(userMsg);
+    incrementMessageCount();
+    if (!presetQuestion) setInput('');
+    
+    // Generate bot response
+    generateBotResponse(messageText);
   };
 
   if (!isExpanded) {
@@ -167,17 +226,25 @@ export default function ChatbotPanel() {
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto p-6 space-y-4"
       >
-        {msgs.map(m => (
-          <div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
-            <div className={`max-w-[85%] ${
-              m.sender === 'user'
-                ? 'bg-[#0071e3] text-white rounded-3xl rounded-tr-lg px-5 py-3'
-                : 'glass-card text-black/90 dark:text-white/90 rounded-3xl rounded-tl-lg px-5 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10'
-            }`}>
-              <p className="text-sm leading-relaxed font-light">{m.text}</p>
+        {!isHydrated ? (
+          <div className="flex justify-start animate-fadeIn">
+            <div className="max-w-[85%] glass-card text-black/90 dark:text-white/90 rounded-3xl rounded-tl-lg px-5 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+              <p className="text-sm leading-relaxed font-light">Loading conversation...</p>
             </div>
           </div>
-        ))}
+        ) : (
+          msgs.map(m => (
+            <div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
+              <div className={`max-w-[85%] ${
+                m.sender === 'user'
+                  ? 'bg-[#0071e3] text-white rounded-3xl rounded-tr-lg px-5 py-3'
+                  : 'glass-card text-black/90 dark:text-white/90 rounded-3xl rounded-tl-lg px-5 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10'
+              }`}>
+                <p className="text-sm leading-relaxed font-light">{m.text}</p>
+              </div>
+            </div>
+          ))
+        )}
         <div ref={messagesEndRef} />
       </div>
       
@@ -207,7 +274,10 @@ export default function ChatbotPanel() {
 
       {/* Auth Overlay */}
       {showAuthOverlay && (
-        <AuthOverlay onClose={() => setShowAuthOverlay(false)} />
+        <AuthOverlay onClose={() => {
+          setShowAuthOverlay(false);
+          setPendingQuestion(null); // Clear pending question when user closes overlay
+        }} />
       )}
     </aside>
   );
