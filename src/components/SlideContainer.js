@@ -11,10 +11,10 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
   const scrollAccumulator = useRef(0);
   const router = useRouter();
 
-  // Scroll threshold - how much scroll is needed to trigger slide change
-  const SCROLL_THRESHOLD = 250; // Increased from 100 to make less sensitive
-  const SCROLL_DEBOUNCE = 300; // Increased from 150ms to make less sensitive
-  const TRANSITION_DURATION = 600; // ms for slide transitions
+  // Updated scroll thresholds for more gradual behavior
+  const SCROLL_THRESHOLD = 80; // Reduced from 250 to 80 for more responsive scrolling
+  const SCROLL_DEBOUNCE = 100; // Reduced from 300 to 100ms for quicker response
+  const TRANSITION_DURATION = 400; // Reduced from 600 to 400ms for snappier transitions
 
   // Function to change slides
   const changeSlide = useCallback((newSlideIndex) => {
@@ -40,8 +40,8 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
       // Reset transition state after slide change
       setTimeout(() => {
         setIsTransitioning(false);
-      }, 300); // Additional time for mounting
-    }, 200); // Small delay to show loading state
+      }, 200); // Reduced transition time
+    }, 100); // Reduced delay for more responsive feel
   }, [currentSlide, isTransitioning, slides, renderSlides]);
 
   // Get slides - either from the slides prop or by calling renderSlides with changeSlide
@@ -52,7 +52,7 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
     return typeof slides === 'function' ? slides(changeSlide) : slides;
   }, [slides, renderSlides, changeSlide]);
 
-  // Handle scroll events
+  // Handle scroll events with more responsive behavior
   const handleScroll = useCallback((event) => {
     if (isTransitioning) {
       event.preventDefault();
@@ -62,21 +62,21 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
     const now = Date.now();
     const deltaY = event.deltaY;
 
-    // Debounce rapid scroll events
-    if (now - lastScrollTime.current < 50) {
+    // Reduced debounce time for more responsive scrolling
+    if (now - lastScrollTime.current < 20) {
       return;
     }
     lastScrollTime.current = now;
 
-    // Accumulate scroll delta
+    // More responsive accumulation - less aggressive decay
     scrollAccumulator.current += deltaY;
 
-    // Clear accumulator after debounce period
+    // Faster decay for more immediate response
     setTimeout(() => {
-      scrollAccumulator.current *= 0.7; // Increased decay from 0.9 to 0.7 for less sensitivity
+      scrollAccumulator.current *= 0.5; // More aggressive decay from 0.7 to 0.5
     }, SCROLL_DEBOUNCE);
 
-    // Check if we've scrolled enough to trigger a slide change
+    // Check if we've scrolled enough to trigger a slide change with lower threshold
     if (Math.abs(scrollAccumulator.current) > SCROLL_THRESHOLD) {
       const direction = scrollAccumulator.current > 0 ? 1 : -1;
       const newSlide = currentSlide + direction;
