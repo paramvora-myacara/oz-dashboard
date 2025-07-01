@@ -1,9 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OZ Dashboard
+
+A comprehensive Opportunity Zone (OZ) dashboard built with Next.js that helps users analyze and interact with Opportunity Zone data across the United States.
+
+## Features
+
+- **Interactive OZ Map Visualization**: Explore Opportunity Zones on an interactive map
+- **Development Location Checker**: Protected feature to check if a specific address or coordinates fall within an Opportunity Zone
+- **Investment Insights**: Comprehensive analytics and KPIs for Opportunity Zone investments
+- **User Authentication**: Secure login with Supabase and Google OAuth
+- **Responsive Design**: Modern, mobile-friendly interface with dark/light theme support
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm, yarn, pnpm, or bun
+- Google Maps API key (for address autocomplete and geocoding)
+- Supabase project (for authentication)
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```bash
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Google Maps API Configuration
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+```
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd oz-dashboard
+```
+
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
+```
+
+3. Set up environment variables (see above)
+
+4. Run the development server:
 ```bash
 npm run dev
 # or
@@ -16,21 +66,80 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## API Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Google Maps API Key
 
-## Learn More
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the following APIs:
+   - **Maps JavaScript API**
+   - **Places API (New)** - Make sure to enable the NEW version, not the legacy one
+   - **Geocoding API**
+4. Create credentials (API Key)
+5. Restrict the API key to your domain for security
+6. Add the key to your `.env.local` file
 
-To learn more about Next.js, take a look at the following resources:
+**Important**: Make sure you enable the **Places API (New)** and not the legacy "Places API". The legacy version is deprecated and will cause errors.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Supabase Setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Follow the authentication setup guide in `docs/SETUP_AUTH.md` for detailed Supabase configuration instructions.
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `/src/app` - Next.js app router pages
+- `/src/components` - React components
+- `/src/data` - Static data and mock data
+- `/src/services` - API services and data processing
+- `/public/data` - GeoJSON and map data files
+- `/docs` - Documentation files
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Key Features
+
+### Development Location Checker (`/check-development`)
+
+A protected route that allows authenticated users to:
+- Enter an address with Google Places autocomplete
+- Input coordinates directly
+- Check if the location falls within an Opportunity Zone
+- View detailed OZ information including census tract, state, and county data
+
+The feature uses:
+- Client-side processing with Turf.js for geospatial calculations
+- 1MB compressed GeoJSON data for fast performance
+- Google Places API for address autocomplete
+- Google Geocoding API for address-to-coordinate conversion
+
+## Technologies Used
+
+- **Framework**: Next.js 15
+- **Styling**: Tailwind CSS
+- **Authentication**: Supabase Auth with Google OAuth
+- **Maps & Geocoding**: Google Maps API
+- **Geospatial Processing**: Turf.js
+- **Data Visualization**: Chart.js, D3.js
+- **State Management**: Zustand
+- **UI Components**: Heroicons, Lucide React
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run the linter: `npm run lint`
+5. Submit a pull request
+
+## Deployment
+
+The easiest way to deploy is using [Vercel](https://vercel.com/new):
+
+1. Connect your GitHub repository
+2. Add environment variables in Vercel dashboard
+3. Deploy automatically on every push
+
+For other deployment options, check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying).
+
+## License
+
+[Add your license here]
