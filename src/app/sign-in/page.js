@@ -112,7 +112,7 @@ export default function SignInPage() {
               {redirectTo !== '/' && (
                 <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                   <p className="text-blue-600 dark:text-blue-400 text-sm text-center">
-                    After signing in, you'll be redirected to your intended page
+                    After signing in, you&apos;ll be redirected to your intended page
                   </p>
                 </div>
               )}

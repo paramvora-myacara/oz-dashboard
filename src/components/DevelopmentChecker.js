@@ -132,6 +132,15 @@ export default function DevelopmentChecker() {
         const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement();
         console.log('✅ PlaceAutocompleteElement created successfully:', placeAutocomplete);
         
+        // Apply styling to match our theme - let container handle background and border
+        placeAutocomplete.style.width = '100%';
+        placeAutocomplete.style.border = 'none';
+        placeAutocomplete.style.borderRadius = '0.5rem';
+        placeAutocomplete.style.backgroundColor = 'transparent';
+        placeAutocomplete.style.minHeight = '48px';
+        placeAutocomplete.style.fontSize = '16px';
+        placeAutocomplete.style.outline = 'none';
+        
         // Clear the input container and append the new element
         inputRef.current.innerHTML = '';
         inputRef.current.appendChild(placeAutocomplete);
@@ -175,8 +184,15 @@ export default function DevelopmentChecker() {
           fallbackInput.type = 'text';
           fallbackInput.placeholder = 'Enter address manually';
           fallbackInput.value = address;
-          fallbackInput.className = 'w-full px-4 py-3 bg-transparent border-0 text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none';
-          fallbackInput.style.borderRadius = '0.375rem';
+          fallbackInput.style.width = '100%';
+          fallbackInput.style.padding = '12px 16px';
+          fallbackInput.style.border = 'none';
+          fallbackInput.style.borderRadius = '0.5rem';
+          fallbackInput.style.backgroundColor = 'transparent';
+          fallbackInput.style.minHeight = '48px';
+          fallbackInput.style.fontSize = '16px';
+          fallbackInput.style.outline = 'none';
+          fallbackInput.style.color = 'black';
           
           fallbackInput.addEventListener('input', (e) => {
             setAddress(e.target.value);
@@ -374,7 +390,7 @@ export default function DevelopmentChecker() {
             {/* Container for the new PlaceAutocompleteElement */}
             <div 
               ref={inputRef}
-              className="w-full min-h-[48px] bg-white dark:bg-black/20 border border-black/20 dark:border-white/20 rounded-lg focus-within:ring-2 focus-within:ring-[#0071e3] focus-within:border-[#0071e3]"
+              className="w-full min-h-[48px] bg-white border border-black/20 dark:border-white/20 rounded-lg focus-within:ring-2 focus-within:ring-[#0071e3] focus-within:border-[#0071e3]"
               style={{
                 // Ensure the autocomplete element fits nicely
                 display: 'flex',
