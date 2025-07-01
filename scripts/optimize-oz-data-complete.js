@@ -12,6 +12,7 @@ const args = process.argv.slice(2);
 const options = {
   debug: args.includes('--debug'),
   skipFetch: args.includes('--skip-fetch'),
+  saveRaw: args.includes('--save-raw'),
   help: args.includes('--help') || args.includes('-h')
 };
 
@@ -24,12 +25,14 @@ Usage: node scripts/optimize-oz-data-complete.js [options]
 Options:
   --debug        Save intermediate optimized file for debugging
   --skip-fetch   Use existing intermediate file instead of fetching
+  --save-raw     Save unoptimized raw data after fetching
   --help, -h     Show this help message
 
 Examples:
   node scripts/optimize-oz-data-complete.js              # Full pipeline
   node scripts/optimize-oz-data-complete.js --debug      # Save intermediate file
   node scripts/optimize-oz-data-complete.js --skip-fetch # Use existing data
+  node scripts/optimize-oz-data-complete.js --save-raw   # Save raw unoptimized data
 `);
   process.exit(0);
 }
@@ -397,6 +400,29 @@ async function main() {
       
       if (features.length === 0) {
         throw new Error('No OZ data fetched');
+      }
+      
+      // Save raw unoptimized data if requested
+      if (options.saveRaw) {
+        const rawGeoJSON = {
+          type: 'FeatureCollection',
+          properties: {
+            generatedAt: new Date().toISOString(),
+            totalFeatures: features.length,
+            description: 'Raw unoptimized US Opportunity Zones data'
+          },
+          features: features
+        };
+        
+        const outputDir = path.join(process.cwd(), 'public', 'data');
+        if (!fs.existsSync(outputDir)) {
+          fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        const rawPath = path.join(outputDir, 'opportunity-zones-raw.geojson');
+        fs.writeFileSync(rawPath, JSON.stringify(rawGeoJSON, null, 2));
+        const rawSizeMB = (JSON.stringify(rawGeoJSON).length / (1024 * 1024)).toFixed(2);
+        console.log(`💾 Raw data saved to ${rawPath} (${rawSizeMB} MB)`);
       }
       
       // Process and optimize
