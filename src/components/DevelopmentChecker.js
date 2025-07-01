@@ -337,7 +337,7 @@ export default function DevelopmentChecker() {
     checkOZStatus(lat, lng);
   };
 
-  // Handle address geocoding and check
+  // Handle address search using Places API (New) Text Search
   const handleAddressCheck = async () => {
     if (!address.trim()) {
       setError('Please enter an address');
@@ -348,21 +348,46 @@ export default function DevelopmentChecker() {
     setError(null);
 
     try {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-      );
+      // Use Places API (New) Text Search instead of Geocoding API
+      console.log('🔍 Using Places API Text Search for:', address);
       
-      const data = await response.json();
+      const loader = new Loader({
+        apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+        version: 'weekly',
+        libraries: ['places']
+      });
+
+      const google = await loader.load();
+      const { Place } = await google.maps.importLibrary("places");
       
-      if (data.status === 'OK' && data.results.length > 0) {
-        const location = data.results[0].geometry.location;
-        checkOZStatus(location.lat, location.lng, data.results[0].formatted_address);
+      // Create a text search request
+      const request = {
+        textQuery: address,
+        fields: ['displayName', 'formattedAddress', 'location'],
+        locationBias: { lat: 39.8283, lng: -98.5795 }, // Center of US for better results
+      };
+
+      // Use the Places API (New) searchByText method
+      const { places } = await Place.searchByText(request);
+      
+      if (places && places.length > 0) {
+        const place = places[0]; // Take the first/best result
+        const location = place.location;
+        const displayName = place.displayName || place.formattedAddress || address;
+        
+        console.log('✅ Places API Text Search result:', {
+          displayName,
+          formattedAddress: place.formattedAddress,
+          location: { lat: location.lat(), lng: location.lng() }
+        });
+        
+        checkOZStatus(location.lat(), location.lng(), displayName);
       } else {
         setError('Address not found. Please try a different address.');
         setChecking(false);
       }
     } catch (err) {
-      console.error('Geocoding error:', err);
+      console.error('Places API Text Search error:', err);
       setError('Error finding address. Please try again.');
       setChecking(false);
     }
