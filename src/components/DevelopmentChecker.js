@@ -68,13 +68,12 @@ export default function DevelopmentChecker() {
     loadOZData();
   }, []);
 
-  // Initialize Google Places Autocomplete - wait for input to be available
+  // Initialize Google Places Autocomplete using the new Places API
   useEffect(() => {
-    console.log('🔍 Autocomplete useEffect triggered with:', {
+    console.log('🔍 New Autocomplete useEffect triggered with:', {
       inputType,
       hasInputRef: !!inputRef.current,
-      hasAutocompleteRef: !!autocompleteRef.current,
-      inputElement: inputRef.current
+      hasAutocompleteRef: !!autocompleteRef.current
     });
     
     if (inputType !== 'address' || autocompleteRef.current) {
@@ -83,27 +82,28 @@ export default function DevelopmentChecker() {
     
     let mounted = true;
     
-    const initWithDelay = async () => {
-      // Wait for input to be available
+    const initNewAutocomplete = async () => {
+      // Wait for input container to be available
       let attempts = 0;
       const maxAttempts = 20;
       
       while (attempts < maxAttempts && !inputRef.current) {
-        console.log(`⏳ Waiting for input element (attempt ${attempts + 1}/${maxAttempts})`);
+        console.log(`⏳ Waiting for input container (attempt ${attempts + 1}/${maxAttempts})`);
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
       }
       
       if (!inputRef.current) {
-        console.error('❌ Input element never became available');
+        console.error('❌ Input container never became available');
         return;
       }
       
-      console.log('✅ Input element found, starting autocomplete initialization...');
+      console.log('✅ Input container found, starting new autocomplete initialization...');
       
       try {
-        console.log('📦 Loading Google Maps with Loader...');
+        console.log('📦 Loading Google Maps with Loader first...');
         
+        // First load Google Maps using the existing Loader
         const loader = new Loader({
           apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
           version: 'weekly',
@@ -111,57 +111,93 @@ export default function DevelopmentChecker() {
         });
 
         const google = await loader.load();
-        console.log('✅ Google Maps loaded via Loader:', !!google.maps.places);
+        console.log('✅ Google Maps loaded via Loader');
+        
+        // Now load the new places library
+        await google.maps.importLibrary("places");
+        console.log('✅ Places library (new) imported');
         
         if (!mounted || !inputRef.current) {
           console.log('❌ Component unmounted or input missing during load');
           return;
         }
         
-        console.log('🔄 Creating autocomplete widget...');
+        console.log('🔄 Creating new PlaceAutocompleteElement...');
+        console.log('🔧 Google Maps Version:', google.maps.version);
+        console.log('🔧 Available libraries:', Object.keys(google.maps));
+        console.log('🔧 Places library check:', !!google.maps.places);
+        console.log('🔧 PlaceAutocompleteElement check:', !!google.maps.places?.PlaceAutocompleteElement);
         
-        const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
-          types: ['address'],
-          componentRestrictions: { country: 'us' },
-          fields: ['formatted_address', 'geometry', 'name']
-        });
+        // Create the new PlaceAutocompleteElement (minimal configuration)
+        const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement();
+        console.log('✅ PlaceAutocompleteElement created successfully:', placeAutocomplete);
+        
+        // Clear the input container and append the new element
+        inputRef.current.innerHTML = '';
+        inputRef.current.appendChild(placeAutocomplete);
+        
+        console.log('✅ PlaceAutocompleteElement created and added to DOM');
 
-        console.log('✅ Autocomplete widget created');
-
-        autocomplete.addListener('place_changed', () => {
-          console.log('📍 Place selected from autocomplete');
-          const place = autocomplete.getPlace();
+        // Add event listener for place selection
+        placeAutocomplete.addEventListener('gmp-select', async ({ placePrediction }) => {
+          console.log('📍 Place selected from new autocomplete');
           
-          if (place.geometry && place.geometry.location) {
-            setAddress(place.formatted_address || place.name);
-            checkOZStatus(
-              place.geometry.location.lat(),
-              place.geometry.location.lng(),
-              place.formatted_address || place.name
-            );
+          try {
+            const place = placePrediction.toPlace();
+            await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] });
+            
+            if (place.location) {
+              const displayName = place.displayName || place.formattedAddress;
+              setAddress(displayName);
+              checkOZStatus(
+                place.location.lat(),
+                place.location.lng(),
+                displayName
+              );
+            }
+          } catch (error) {
+            console.error('Error processing place selection:', error);
           }
         });
 
         if (mounted) {
-          autocompleteRef.current = autocomplete;
-          console.log('✅ Autocomplete initialization complete');
+          autocompleteRef.current = placeAutocomplete;
+          console.log('✅ New autocomplete initialization complete');
         }
         
       } catch (error) {
-        console.error('❌ Autocomplete initialization failed:', error);
-        console.warn('Autocomplete disabled, but manual address entry will still work');
+        console.error('❌ New autocomplete initialization failed:', error);
+        console.warn('Falling back to manual address entry');
+        
+        // Fallback: show a regular input field
+        if (inputRef.current && mounted) {
+          const fallbackInput = document.createElement('input');
+          fallbackInput.type = 'text';
+          fallbackInput.placeholder = 'Enter address manually';
+          fallbackInput.value = address;
+          fallbackInput.className = 'w-full px-4 py-3 bg-transparent border-0 text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none';
+          fallbackInput.style.borderRadius = '0.375rem';
+          
+          fallbackInput.addEventListener('input', (e) => {
+            setAddress(e.target.value);
+          });
+          
+          inputRef.current.innerHTML = '';
+          inputRef.current.appendChild(fallbackInput);
+        }
       }
     };
     
-    initWithDelay();
+    initNewAutocomplete();
 
     return () => {
       mounted = false;
       if (autocompleteRef.current) {
         try {
-          google.maps.event.clearInstanceListeners(autocompleteRef.current);
+          // Clean up the new autocomplete element
+          autocompleteRef.current.removeEventListener?.('gmp-select', () => {});
         } catch (e) {
-          console.warn('Error clearing autocomplete listeners:', e);
+          console.warn('Error cleaning up new autocomplete:', e);
         }
         autocompleteRef.current = null;
       }
@@ -335,17 +371,21 @@ export default function DevelopmentChecker() {
             <label className="block text-sm font-medium text-black dark:text-white">
               Property Address
             </label>
-            <input
+            {/* Container for the new PlaceAutocompleteElement */}
+            <div 
               ref={inputRef}
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              placeholder="Enter address (e.g., 1600 Amphitheatre Parkway, Mountain View, CA)"
-              className="w-full px-4 py-3 bg-white dark:bg-black/20 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3]"
-            />
+              className="w-full min-h-[48px] bg-white dark:bg-black/20 border border-black/20 dark:border-white/20 rounded-lg focus-within:ring-2 focus-within:ring-[#0071e3] focus-within:border-[#0071e3]"
+              style={{
+                // Ensure the autocomplete element fits nicely
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              {/* This will be replaced by PlaceAutocompleteElement or fallback input */}
+            </div>
             {!autocompleteRef.current && (
               <p className="text-xs text-black/50 dark:text-white/50 mt-1">
-                Note: Address autocomplete not available. Type the full address and click "Check Location".
+                Note: Loading address autocomplete...
               </p>
             )}
             <button
