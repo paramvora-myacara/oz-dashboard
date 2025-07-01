@@ -49,7 +49,7 @@ export default function DevelopmentChecker() {
         setLoading(true);
         setError(null);
         
-        const response = await fetch('/data/opportunity-zones-compressed.geojson');
+        const response = await fetch('/data/opportunity-zones-checker.geojson');
         if (!response.ok) {
           throw new Error(`Failed to load OZ data: ${response.status}`);
         }
@@ -68,6 +68,44 @@ export default function DevelopmentChecker() {
     loadOZData();
   }, []);
 
+  // -------------------------------------------------------------
+  // ⚙️  DEBUG TESTS – automatically verify OZ hit-detection logic
+  // -------------------------------------------------------------
+  useEffect(() => {
+    // Only run once OZ data is loaded and available
+    if (!ozData || !Array.isArray(ozData.features) || ozData.features.length === 0) return;
+
+    // Helper that returns true if point is inside ANY OZ feature
+    const isInAnyOZ = (lat, lng) => {
+      const pt = turf.point([parseFloat(lng), parseFloat(lat)]);
+      return ozData.features.some((f) => {
+        try {
+          return turf.booleanPointInPolygon(pt, f);
+        } catch (err) {
+          console.warn('Test polygon error:', err);
+          return false;
+        }
+      });
+    };
+
+    // A coordinate that *should* be in an OZ – we use one of the literal
+    // vertices from the first feature in the compressed dataset so the
+    // hit-test is guaranteed to succeed if the data is loaded correctly.
+    const positiveTest = { lat: 37.35, lng: -79.494, label: 'Dataset vertex (should be IN OZ)' };
+
+    // A coordinate that should NOT be in an OZ (middle of the Atlantic)
+    const negativeTest = { lat: 0, lng: 0, label: 'Null Island (should be OUTSIDE OZ)' };
+
+    const tests = [positiveTest, negativeTest];
+
+    console.groupCollapsed('%c🧪 Opportunity-Zone sanity tests', 'color:#0071e3;font-weight:bold');
+    tests.forEach(({ lat, lng, label }) => {
+      const inside = isInAnyOZ(lat, lng);
+      console.log(`• ${label}:`, inside ? '%cINSIDE' : '%cOUTSIDE', inside ? 'color:green' : 'color:red');
+    });
+    console.groupEnd();
+  }, [ozData]);
+
   // Initialize Google Places Autocomplete using the new Places API
   useEffect(() => {
     console.log('🔍 New Autocomplete useEffect triggered with:', {
@@ -82,19 +120,49 @@ export default function DevelopmentChecker() {
     
     let mounted = true;
     
+    const createFallbackInput = () => {
+      if (!inputRef.current || !mounted) return;
+      
+      const fallbackInput = document.createElement('input');
+      fallbackInput.type = 'text';
+      fallbackInput.placeholder = 'Enter address manually';
+      fallbackInput.value = address;
+      fallbackInput.style.width = '100%';
+      fallbackInput.style.padding = '12px 16px';
+      fallbackInput.style.border = 'none';
+      fallbackInput.style.borderRadius = '0.5rem';
+      fallbackInput.style.backgroundColor = 'transparent';
+      fallbackInput.style.minHeight = '48px';
+      fallbackInput.style.fontSize = '16px';
+      fallbackInput.style.outline = 'none';
+      fallbackInput.style.color = 'black';
+      
+      fallbackInput.addEventListener('input', (e) => {
+        setAddress(e.target.value);
+      });
+      
+      inputRef.current.innerHTML = '';
+      inputRef.current.appendChild(fallbackInput);
+      console.log('✅ Fallback input created');
+    };
+
     const initNewAutocomplete = async () => {
       // Wait for input container to be available
       let attempts = 0;
-      const maxAttempts = 20;
+      const maxAttempts = 50; // Increased attempts
       
-      while (attempts < maxAttempts && !inputRef.current) {
+      while (attempts < maxAttempts && (!inputRef.current || !document.contains(inputRef.current))) {
         console.log(`⏳ Waiting for input container (attempt ${attempts + 1}/${maxAttempts})`);
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 200)); // Increased wait time
         attempts++;
       }
       
-      if (!inputRef.current) {
-        console.error('❌ Input container never became available');
+      if (!inputRef.current || !document.contains(inputRef.current)) {
+        console.warn('⚠️ Input container not available, falling back to simple input');
+        // Create a fallback input immediately
+        if (mounted) {
+          createFallbackInput();
+        }
         return;
       }
       
@@ -179,27 +247,8 @@ export default function DevelopmentChecker() {
         console.warn('Falling back to manual address entry');
         
         // Fallback: show a regular input field
-        if (inputRef.current && mounted) {
-          const fallbackInput = document.createElement('input');
-          fallbackInput.type = 'text';
-          fallbackInput.placeholder = 'Enter address manually';
-          fallbackInput.value = address;
-          fallbackInput.style.width = '100%';
-          fallbackInput.style.padding = '12px 16px';
-          fallbackInput.style.border = 'none';
-          fallbackInput.style.borderRadius = '0.5rem';
-          fallbackInput.style.backgroundColor = 'transparent';
-          fallbackInput.style.minHeight = '48px';
-          fallbackInput.style.fontSize = '16px';
-          fallbackInput.style.outline = 'none';
-          fallbackInput.style.color = 'black';
-          
-          fallbackInput.addEventListener('input', (e) => {
-            setAddress(e.target.value);
-          });
-          
-          inputRef.current.innerHTML = '';
-          inputRef.current.appendChild(fallbackInput);
+        if (mounted) {
+          createFallbackInput();
         }
       }
     };
@@ -229,6 +278,9 @@ export default function DevelopmentChecker() {
 
   // Check OZ status using coordinates
   const checkOZStatus = async (lat, lng, locationName = null) => {
+    // Debug: show the coordinate pair exactly as it arrives
+    console.log('🔎 Running OZ check', { lat: parseFloat(lat), lng: parseFloat(lng) });
+
     if (!ozData || !lat || !lng) return;
 
     setChecking(true);
@@ -252,11 +304,8 @@ export default function DevelopmentChecker() {
         location: locationName || `${lat}, ${lng}`,
         isInOZ: !!matchingZone,
         ozInfo: matchingZone ? {
-          name: matchingZone.properties?.NAME || 'Unknown',
-          geoid: matchingZone.properties?.GEOID || matchingZone.properties?.geoid || 'Unknown',
-          state: matchingZone.properties?.STATE || 'Unknown',
-          county: matchingZone.properties?.COUNTY || 'Unknown',
-          tractce: matchingZone.properties?.TRACTCE || 'Unknown'
+          geoid: matchingZone.properties?.geoid || 'Unknown',
+          display: `Census Tract ${matchingZone.properties?.geoid || 'Unknown'}`
         } : null
       };
 
@@ -493,22 +542,14 @@ export default function DevelopmentChecker() {
           {result.isInOZ && result.ozInfo && (
             <div className="border-t border-black/10 dark:border-white/10 pt-6">
               <h4 className="font-semibold text-black dark:text-white mb-4">Opportunity Zone Details</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div className="text-sm">
                 <div>
-                  <span className="text-black/60 dark:text-white/60">Zone Name:</span>
-                  <span className="block font-medium text-black dark:text-white">{result.ozInfo.name}</span>
-                </div>
-                <div>
-                  <span className="text-black/60 dark:text-white/60">Census Tract:</span>
+                  <span className="text-black/60 dark:text-white/60">Census Tract (GEOID):</span>
                   <span className="block font-medium text-black dark:text-white">{result.ozInfo.geoid}</span>
                 </div>
-                <div>
-                  <span className="text-black/60 dark:text-white/60">State:</span>
-                  <span className="block font-medium text-black dark:text-white">{result.ozInfo.state}</span>
-                </div>
-                <div>
-                  <span className="text-black/60 dark:text-white/60">County:</span>
-                  <span className="block font-medium text-black dark:text-white">{result.ozInfo.county}</span>
+                <div className="mt-3">
+                  <span className="text-black/60 dark:text-white/60">Official Designation:</span>
+                  <span className="block font-medium text-black dark:text-white">{result.ozInfo.display}</span>
                 </div>
               </div>
             </div>
