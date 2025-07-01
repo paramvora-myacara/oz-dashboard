@@ -208,14 +208,21 @@ export default function DevelopmentChecker() {
 
     return () => {
       mounted = false;
+
+      // If an autocomplete element exists, remove it and clear references
       if (autocompleteRef.current) {
         try {
-          // Clean up the new autocomplete element
-          autocompleteRef.current.removeEventListener?.('gmp-select', () => {});
+          // Detach the element from the DOM entirely
+          autocompleteRef.current.remove();
         } catch (e) {
-          console.warn('Error cleaning up new autocomplete:', e);
+          console.warn('Error removing autocomplete element:', e);
         }
         autocompleteRef.current = null;
+      }
+
+      // Also clear any leftover markup inside the input container
+      if (inputRef.current) {
+        inputRef.current.innerHTML = '';
       }
     };
   }, [inputType]);
@@ -424,7 +431,7 @@ export default function DevelopmentChecker() {
                 value={latitude}
                 onChange={(e) => setLatitude(e.target.value)}
                 placeholder="Latitude (e.g., 40.7128)"
-                className="px-4 py-3 bg-white dark:bg-black/20 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3]"
+                className="px-4 py-3 bg-white border border-black/20 dark:border-white/20 rounded-lg text-black placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3]"
               />
               <input
                 type="number"
@@ -432,7 +439,7 @@ export default function DevelopmentChecker() {
                 value={longitude}
                 onChange={(e) => setLongitude(e.target.value)}
                 placeholder="Longitude (e.g., -74.0060)"
-                className="px-4 py-3 bg-white dark:bg-black/20 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3]"
+                className="px-4 py-3 bg-white border border-black/20 dark:border-white/20 rounded-lg text-black placeholder-black/40 focus:outline-none focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3]"
               />
             </div>
             <button
