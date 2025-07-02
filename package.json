@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.50.2",
     "chart.js": "^4.5.0",
     "d3": "^7.8.5",
     "leaflet": "^1.9.4",
@@ -21,7 +23,8 @@
     "react-dom": "^19.1.0",
     "react-leaflet": "^5.0.0",
     "react-tooltip": "^5.29.1",
-    "topojson-client": "^3.1.0"
+    "topojson-client": "^3.1.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
