@@ -5,7 +5,7 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as d3 from 'd3';
 import { feature } from 'topojson-client';
-import ActionButtons from './ActionButtons';
+
 
 export default function OZMapVisualization() {
   const svgRef = useRef(null);
@@ -248,11 +248,10 @@ export default function OZMapVisualization() {
 
   return (
     <div className="w-full h-full flex flex-col bg-white dark:bg-black">
-      {/* Map container - slightly smaller to accommodate action buttons */}
+      {/* Map container - full height */}
       <div 
         ref={containerRef} 
         className="relative flex-1 w-full bg-white dark:bg-black"
-        style={{ height: 'calc(100% - 140px)' }} // Reduce height by 140px for action buttons
         onMouseMove={handleMouseMove}
       >
         <svg
@@ -313,11 +312,6 @@ export default function OZMapVisualization() {
             </div>
           </div>
         )}
-      </div>
-
-      {/* Action buttons section at the bottom */}
-      <div className="flex-shrink-0 py-8 flex justify-center px-4 bg-white dark:bg-black">
-        <ActionButtons />
       </div>
     </div>
   );
