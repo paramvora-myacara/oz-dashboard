@@ -67,46 +67,46 @@ export default function OZInvestmentReasons() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black px-8 py-12">
+    <div className="min-h-screen bg-white dark:bg-black px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12 animate-fadeIn">
-          <h2 className="text-5xl font-semibold text-black dark:text-white tracking-tight mb-4">
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16 animate-fadeIn">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-black dark:text-white tracking-tight mb-3 sm:mb-4 lg:mb-6">
             Why Invest in Opportunity Zones?
           </h2>
-          <p className="text-xl text-black/60 dark:text-white/60 font-light max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-black/60 dark:text-white/60 font-light max-w-3xl mx-auto px-4 sm:px-0">
             Discover the compelling reasons why sophisticated investors are choosing Opportunity Zones 
             for tax advantages, social impact, and exceptional returns
           </p>
         </div>
 
         {/* Investment Reasons Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 mb-12 sm:mb-16 lg:mb-20">
           {investmentReasons.map((reason, index) => (
             <div 
               key={reason.id}
-              className={`glass-card rounded-3xl p-8 bg-gradient-to-br ${reason.gradient} border border-black/10 dark:border-white/10 hover:scale-[1.02] transition-all duration-300 animate-fadeIn`}
+              className={`glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 bg-gradient-to-br ${reason.gradient} border border-black/10 dark:border-white/10 hover:scale-[1.02] transition-all duration-300 animate-fadeIn`}
               style={{ animationDelay: `${index * 150}ms` }}
             >
               {/* Card Header */}
-              <div className="flex items-start gap-4 mb-6">
-                <div className="text-4xl">{reason.icon}</div>
+              <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div className="text-3xl sm:text-4xl">{reason.icon}</div>
                 <div className="flex-1">
-                  <h3 className={`text-2xl font-semibold ${reason.textColor} mb-2`}>
+                  <h3 className={`text-xl sm:text-2xl font-semibold ${reason.textColor} mb-2 sm:mb-3`}>
                     {reason.title}
                   </h3>
-                  <p className={`${reason.accentColor} text-base font-light leading-relaxed`}>
+                  <p className={`${reason.accentColor} text-sm sm:text-base font-light leading-relaxed`}>
                     {reason.description}
                   </p>
                 </div>
               </div>
 
               {/* Key Highlights */}
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {reason.highlights.map((highlight, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <div className={`w-1.5 h-1.5 ${reason.textColor.replace('text-', 'bg-')} rounded-full mt-2 flex-shrink-0`} />
-                    <p className={`${reason.accentColor} text-sm font-light leading-relaxed`}>
+                  <div key={idx} className="flex items-start gap-2 sm:gap-3">
+                    <div className={`w-1.5 h-1.5 ${reason.textColor.replace('text-', 'bg-')} rounded-full mt-1.5 sm:mt-2 flex-shrink-0`} />
+                    <p className={`${reason.accentColor} text-xs sm:text-sm font-light leading-relaxed`}>
                       {highlight}
                     </p>
                   </div>
@@ -117,7 +117,7 @@ export default function OZInvestmentReasons() {
         </div>
 
         {/* Action Buttons */}
-        <div className="text-center">
+        <div className="text-center px-4 sm:px-0">
           <ActionButtons />
         </div>
       </div>
