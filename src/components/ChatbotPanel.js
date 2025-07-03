@@ -26,12 +26,39 @@ export default function ChatbotPanel() {
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
   const [pendingQuestion, setPendingQuestion] = useState(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [highlightedQuestions, setHighlightedQuestions] = useState(new Set());
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   
   // Handle hydration to prevent SSR/client mismatch
   useEffect(() => {
     setIsHydrated(true);
+  }, []);
+  
+  // Animate preset questions with breathing highlights
+  useEffect(() => {
+    const animateQuestions = () => {
+      const totalQuestions = presetQuestions.length;
+      const numHighlighted = 1; // Number of questions to highlight at once
+      
+      // Create a wave effect by highlighting different questions
+      const startIndex = Math.floor(Math.random() * totalQuestions);
+      const highlighted = new Set();
+      
+      for (let i = 0; i < numHighlighted; i++) {
+        highlighted.add((startIndex + i) % totalQuestions);
+      }
+      
+      setHighlightedQuestions(highlighted);
+    };
+
+    // Initial animation
+    animateQuestions();
+    
+    // Continue animating every 3 seconds
+    const interval = setInterval(animateQuestions, 3000);
+    
+    return () => clearInterval(interval);
   }, []);
   
   // Get current conversation and message count from store
@@ -167,11 +194,51 @@ export default function ChatbotPanel() {
 
   return (
     <aside className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10 relative">
+      <style jsx>{`
+        @keyframes breathe {
+          0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(0, 113, 227, 0.4);
+          }
+          50% { 
+            transform: scale(1.02);
+            box-shadow: 0 0 0 8px rgba(0, 113, 227, 0.1);
+          }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-2px); }
+        }
+        
+        @keyframes sparkle-spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes avatar-pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.02); }
+        }
+        
+        .breathing {
+          animation: breathe 3s ease-in-out infinite;
+        }
+        
+        .floating-avatar {
+          animation: float 4s ease-in-out infinite, avatar-pulse 6s ease-in-out infinite;
+        }
+        
+        .sparkle-rotate {
+          animation: sparkle-spin 8s linear infinite;
+        }
+      `}</style>
+      
       <header className="p-6 border-b border-black/10 dark:border-white/5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 floating-avatar">
             <div className="p-2.5 bg-[#0071e3] rounded-2xl">
-              <SparklesIcon className="h-5 w-5 text-white"/>
+              <SparklesIcon className="h-5 w-5 text-white sparkle-rotate"/>
             </div>
             <div>
               <h3 className="font-semibold text-black dark:text-white text-lg">
@@ -213,7 +280,7 @@ export default function ChatbotPanel() {
             <button
               key={idx}
               onClick={() => handlePresetClick(question)}
-              className="text-xs px-3 py-1.5 glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white rounded-full transition-all hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10"
+              className={`text-xs px-3 py-1.5 glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white rounded-full transition-all hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 ${highlightedQuestions.has(idx) ? 'breathing' : ''}`}
             >
               {question}
             </button>
