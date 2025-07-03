@@ -92,10 +92,10 @@ export default function OZInvestmentReasons() {
               <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
                 <div className="text-3xl sm:text-4xl">{reason.icon}</div>
                 <div className="flex-1">
-                  <h3 className={`text-xl sm:text-2xl font-semibold ${reason.textColor} mb-2 sm:mb-3`}>
+                  <h3 className={`text-2xl sm:text-3xl font-semibold ${reason.textColor} mb-2 sm:mb-3`}>
                     {reason.title}
                   </h3>
-                  <p className={`${reason.accentColor} text-sm sm:text-base font-light leading-relaxed`}>
+                  <p className={`${reason.accentColor} text-base sm:text-lg font-light leading-relaxed`}>
                     {reason.description}
                   </p>
                 </div>
@@ -106,7 +106,7 @@ export default function OZInvestmentReasons() {
                 {reason.highlights.map((highlight, idx) => (
                   <div key={idx} className="flex items-start gap-2 sm:gap-3">
                     <div className={`w-1.5 h-1.5 ${reason.textColor.replace('text-', 'bg-')} rounded-full mt-1.5 sm:mt-2 flex-shrink-0`} />
-                    <p className={`${reason.accentColor} text-xs sm:text-sm font-light leading-relaxed`}>
+                    <p className={`${reason.accentColor} text-sm sm:text-base font-light leading-relaxed`}>
                       {highlight}
                     </p>
                   </div>
