@@ -10,10 +10,10 @@ export default function OZInvestmentReasons() {
       icon: '💰',
       description: 'Defer and reduce capital gains taxes with significant long-term savings',
       highlights: [
-        'Defer capital gains taxes until 2026',
-        'Reduce original gain by up to 15%',
-        'Eliminate taxes on new OZ gains if held 10+ years',
-        'No annual income limits or investment caps'
+        <>Defer capital gains taxes until <span className="text-white font-bold">2026</span></>,
+        <>Reduce original gain by up to <span className="text-white font-bold">15%</span></>,
+        <>Eliminate taxes on new OZ gains if held <span className="text-white font-bold">10+ years</span></>,
+        <>No annual income limits or investment caps</>
       ],
       gradient: 'from-emerald-50 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20',
       textColor: 'text-emerald-900 dark:text-emerald-300',
@@ -25,10 +25,10 @@ export default function OZInvestmentReasons() {
       icon: '🤝',
       description: 'Create lasting positive change in America\'s most underserved communities',
       highlights: [
-        'Revitalize distressed communities nationwide',
-        'Create jobs in areas that need them most',
-        'Support affordable housing development',
-        'Build generational wealth for local residents'
+        <>Revitalize distressed communities nationwide</>,
+        <>Create jobs in areas that need them most</>,
+        <>Support affordable housing development</>,
+        <>Build generational wealth for local residents</>
       ],
       gradient: 'from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20',
       textColor: 'text-indigo-900 dark:text-indigo-300',
@@ -40,10 +40,10 @@ export default function OZInvestmentReasons() {
       icon: '📊',
       description: 'Access unique real estate and business opportunities with enhanced returns',
       highlights: [
-        'Invest in emerging markets with growth potential',
-        'Access institutional-quality deals',
-        'Diversify across geographies and sectors',
-        'Benefit from gentrification and appreciation'
+        <>Invest in emerging markets with growth potential</>,
+        <>Access institutional-quality deals</>,
+        <>Diversify across geographies and sectors</>,
+        <>Benefit from gentrification and appreciation</>
       ],
       gradient: 'from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20',
       textColor: 'text-purple-900 dark:text-purple-300',
@@ -55,10 +55,10 @@ export default function OZInvestmentReasons() {
       icon: '🚀',
       description: 'Be part of the largest economic development initiative in modern U.S. history',
       highlights: [
-        '$110+ billion already invested nationwide',
-        '8,765 designated zones across all 50 states',
-        'Bipartisan support ensuring program stability',
-        'First-mover advantage in emerging markets'
+        <><span className="text-white font-bold">$110+ billion</span> already invested nationwide</>,
+        <><span className="text-white font-bold">8,765</span> designated zones across all <span className="text-white font-bold">50 states</span></>,
+        <>Bipartisan support ensuring program stability</>,
+        <>First-mover advantage in emerging markets</>
       ],
       gradient: 'from-orange-50 to-red-100 dark:from-orange-900/20 dark:to-red-900/20',
       textColor: 'text-orange-900 dark:text-orange-300',
@@ -106,9 +106,9 @@ export default function OZInvestmentReasons() {
                 {reason.highlights.map((highlight, idx) => (
                   <div key={idx} className="flex items-start gap-2 sm:gap-3">
                     <div className={`w-1.5 h-1.5 ${reason.textColor.replace('text-', 'bg-')} rounded-full mt-1.5 sm:mt-2 flex-shrink-0`} />
-                    <p className={`${reason.accentColor} text-sm sm:text-base font-light leading-relaxed`}>
+                    <div className={`${reason.accentColor} text-sm sm:text-base font-light leading-relaxed`}>
                       {highlight}
-                    </p>
+                    </div>
                   </div>
                 ))}
               </div>
