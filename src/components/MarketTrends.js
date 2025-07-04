@@ -1,4 +1,5 @@
 // src/components/MarketTrends.js
+import { Flame, TrendingUp } from 'lucide-react';
 
 export default function MarketTrends() {
     const trends = [
@@ -124,12 +125,16 @@ export default function MarketTrends() {
             {/* Quick Stats */}
             <div className="mt-6 grid grid-cols-2 gap-4">
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md">
-                <div className="text-2xl mb-1">🔥</div>
+                <div className="mb-1">
+                  <Flame className="w-6 h-6 text-orange-500" />
+                </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Active Deals</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">342</p>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md">
-                <div className="text-2xl mb-1">📈</div>
+                <div className="mb-1">
+                  <TrendingUp className="w-6 h-6 text-green-500" />
+                </div>
                 <p className="text-sm text-gray-600 dark:text-gray-300">Avg IRR</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">18.5%</p>
               </div>

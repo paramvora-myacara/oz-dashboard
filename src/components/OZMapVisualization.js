@@ -7,7 +7,7 @@ import * as d3 from 'd3';
 import { feature } from 'topojson-client';
 
 
-export default function OZMapVisualization() {
+export default function OZMapVisualization({ onNavigate }) {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -91,15 +91,13 @@ export default function OZMapVisualization() {
     }
   }, []);
 
-  // Memoized projection
+  // Memoized projection - adjusted for 70% height map container
   const projection = useMemo(() => {
     if (!dimensions.width || !dimensions.height) return null;
-    // Account for header space (roughly 160px) by adjusting the map's vertical position
-    const headerSpace = 160;
-    const availableHeight = dimensions.height - headerSpace;
+    // Map now takes 70% of the total height, so we adjust accordingly
     return d3.geoAlbersUsa()
-      .scale(dimensions.width * 1.2) // Slightly reduced scale to fit better
-      .translate([dimensions.width / 2, (availableHeight / 2) + headerSpace]);
+      .scale(dimensions.width * 1.3) // Increased scale since map has more dedicated space
+      .translate([dimensions.width / 2, dimensions.height / 2]);
   }, [dimensions.width, dimensions.height]);
 
   // Create paths for optimized state-grouped OZ data
@@ -248,10 +246,26 @@ export default function OZMapVisualization() {
 
   return (
     <div className="w-full h-full flex flex-col bg-white dark:bg-black">
-      {/* Map container - full height */}
+      {/* Header Section - 20% of height */}
+      <div className="w-full h-1/5 flex flex-col justify-center items-center text-center animate-fadeIn px-12">
+        <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
+        <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
+          {ozData && ozData.metadata ? (
+            <>
+              {ozData.metadata.total_oz_spaces.toLocaleString()} zones • 
+              ${(ozData.metadata.total_investment_volume_estimate / 1000000000).toFixed(0)}B+ invested • 
+              {ozData.metadata.total_active_projects_estimate.toLocaleString()} active projects
+            </>
+          ) : (
+            '8,765 zones • $100B+ invested • 6,284 active projects'
+          )}
+        </p>
+      </div>
+
+      {/* Map Section - 70% of height */}
       <div 
         ref={containerRef} 
-        className="relative flex-1 w-full bg-white dark:bg-black"
+        className="relative w-full h-[70%] bg-white dark:bg-black"
         onMouseMove={handleMouseMove}
       >
         <svg
@@ -260,22 +274,6 @@ export default function OZMapVisualization() {
           height={dimensions.height}
           className="absolute inset-0"
         />
-
-        {/* Header with Apple-style typography */}
-        <div className="absolute top-0 left-0 right-0 p-12 pointer-events-none text-center animate-fadeIn">
-          <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
-          <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
-            {ozData && ozData.metadata ? (
-              <>
-                {ozData.metadata.total_oz_spaces.toLocaleString()} zones • 
-                ${(ozData.metadata.total_investment_volume_estimate / 1000000000).toFixed(0)}B+ invested • 
-                {ozData.metadata.total_active_projects_estimate.toLocaleString()} active projects
-              </>
-            ) : (
-              '8,765 zones • $100B+ invested • 6,284 active projects'
-            )}
-          </p>
-        </div>
 
         {/* State Tooltip - Glassmorphism style */}
         {hoveredState && stateData && (
@@ -312,6 +310,28 @@ export default function OZMapVisualization() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Footer Section - 5% of height */}
+      <div className="w-full h-[5%] relative">
+        {/* Scroll down button positioned in bottom-right corner */}
+        <div className="absolute bottom-2 right-8 z-50">
+          <div 
+            className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
+            onClick={() => onNavigate && onNavigate(1)}
+          >
+            <span>Scroll down for investment reasons</span>
+            <svg 
+              className="w-4 h-4 animate-bounce" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              style={{ animationDuration: '1.5s' }}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
   );

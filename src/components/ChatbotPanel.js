@@ -234,10 +234,12 @@ export default function ChatbotPanel() {
         }
       `}</style>
       
-      <header className="p-6 border-b border-black/10 dark:border-white/5">
+      <header className="p-6 border-b border-black/10 dark:border-white/5 relative overflow-hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 floating-avatar">
-            <div className="p-2.5 bg-[#0071e3] rounded-2xl">
+            <div 
+              className="p-2.5 bg-[#0071e3] rounded-2xl transition-all duration-75 ease-linear"
+            >
               <SparklesIcon className="h-5 w-5 text-white sparkle-rotate"/>
             </div>
             <div>

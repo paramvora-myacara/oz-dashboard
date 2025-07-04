@@ -5,6 +5,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, Filler, ArcElement } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
+import { BarChart3, Building2, MapPin } from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, Filler, ArcElement);
 
@@ -59,9 +60,9 @@ export default function InvestmentInsights() {
   };
 
   const tabs = [
-    { id: 'performance', label: 'Performance Trends', icon: '📊' },
-    { id: 'sectors', label: 'Sector Allocation', icon: '🏢' },
-    { id: 'regions', label: 'Regional Distribution', icon: '🗺️' }
+    { id: 'performance', label: 'Performance Trends', icon: BarChart3 },
+    { id: 'sectors', label: 'Sector Allocation', icon: Building2 },
+    { id: 'regions', label: 'Regional Distribution', icon: MapPin }
   ];
 
   return (
@@ -73,20 +74,23 @@ export default function InvestmentInsights() {
       
       <div className="p-8">
         <div className="flex space-x-1 mb-8 bg-gray-100 dark:bg-gray-700 rounded-xl p-1">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition-all ${
-                activeTab === tab.id
-                  ? 'bg-white dark:bg-gray-600 text-indigo-600 dark:text-white shadow-md'
-                  : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
-              }`}
-            >
-              <span className="text-xl">{tab.icon}</span>
-              <span>{tab.label}</span>
-            </button>
-          ))}
+          {tabs.map(tab => {
+            const IconComponent = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-white dark:bg-gray-600 text-indigo-600 dark:text-white shadow-md'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                }`}
+              >
+                <IconComponent className="w-5 h-5" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="h-96">

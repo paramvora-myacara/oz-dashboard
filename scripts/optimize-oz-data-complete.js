@@ -17,7 +17,7 @@ const options = {
 
 if (options.help) {
   console.log(`
-🎯 Complete OZ Data Optimization Pipeline
+*** Complete OZ Data Optimization Pipeline ***
 
 Usage: node scripts/optimize-oz-data-complete.js [options]
 
@@ -203,7 +203,7 @@ function combineGeometries(geometries) {
 
 // Fetch all OZ data with pagination
 async function fetchAllOZData() {
-  console.log('🚀 Starting OZ data fetch...');
+  console.log('>>> Starting OZ data fetch...');
   
   const baseUrl = 'https://services.arcgis.com/VTyQ9soqVukalItT/arcgis/rest/services/Opportunity_Zones/FeatureServer/13/query';
   
@@ -222,7 +222,7 @@ async function fetchAllOZData() {
         allFeatures.push(...data.features);
         offset += data.features.length;
         hasMore = data.features.length === 2000;
-        console.log(`   ✅ Got ${data.features.length} features (total: ${allFeatures.length})`);
+        console.log(`   [OK] Got ${data.features.length} features (total: ${allFeatures.length})`);
         
         // Be respectful to the API
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -230,8 +230,8 @@ async function fetchAllOZData() {
         hasMore = false;
       }
     } catch (error) {
-      console.error(`❌ Error fetching batch at offset ${offset}:`, error.message);
-      console.log('   🔄 Retrying after 2 seconds...');
+      console.error(`[ERROR] Error fetching batch at offset ${offset}:`, error.message);
+      console.log('   -> Retrying after 2 seconds...');
       await new Promise(resolve => setTimeout(resolve, 2000));
       try {
         const retryData = await fetchJson(url);
@@ -239,18 +239,18 @@ async function fetchAllOZData() {
           allFeatures.push(...retryData.features);
           offset += retryData.features.length;
           hasMore = retryData.features.length === 2000;
-          console.log(`   ✅ Retry successful: ${retryData.features.length} features (total: ${allFeatures.length})`);
+          console.log(`   [OK] Retry successful: ${retryData.features.length} features (total: ${allFeatures.length})`);
         } else {
           hasMore = false;
         }
       } catch (retryError) {
-        console.error(`❌ Retry failed:`, retryError.message);
+        console.error(`[ERROR] Retry failed:`, retryError.message);
         hasMore = false;
       }
     }
   }
   
-  console.log(`🎉 Total OZ features fetched: ${allFeatures.length}`);
+  console.log(`*** Total OZ features fetched: ${allFeatures.length}`);
   return allFeatures;
 }
 
@@ -262,7 +262,7 @@ function loadIntermediateData() {
     throw new Error('Intermediate file not found. Run without --skip-fetch first.');
   }
   
-  console.log('📂 Loading existing intermediate data...');
+  console.log('>>> Loading existing intermediate data...');
   const rawData = fs.readFileSync(inputPath, 'utf8');
   const data = JSON.parse(rawData);
   
@@ -271,7 +271,7 @@ function loadIntermediateData() {
 
 // Process and optimize OZ data (basic optimization)
 function processOZData(features) {
-  console.log('🔄 Processing and optimizing data (basic)...');
+  console.log('>>> Processing and optimizing data (basic)...');
   
   // Group features by state
   const stateGroups = {};
@@ -300,7 +300,7 @@ function processOZData(features) {
     processedCount++;
   }
   
-  console.log(`   📊 Processed ${processedCount} features across ${Object.keys(stateGroups).length} states`);
+  console.log(`   [STATS] Processed ${processedCount} features across ${Object.keys(stateGroups).length} states`);
   
   // Create optimized GeoJSON with combined state geometries
   const optimizedFeatures = [];
@@ -321,7 +321,7 @@ function processOZData(features) {
     });
     
     totalOZCount += group.ozCount;
-    console.log(`   🗺️  ${stateName}: ${group.ozCount} OZs combined`);
+    console.log(`   [MAP] ${stateName}: ${group.ozCount} OZs combined`);
   }
   
   const optimizedGeoJSON = {
@@ -335,19 +335,19 @@ function processOZData(features) {
     features: optimizedFeatures
   };
   
-  console.log(`✨ Basic optimization complete: ${totalOZCount} OZs → ${optimizedFeatures.length} state features`);
+  console.log(`*** Basic optimization complete: ${totalOZCount} OZs → ${optimizedFeatures.length} state features`);
   return optimizedGeoJSON;
 }
 
 // Apply aggressive optimization to already processed data
 function applyAggressiveOptimization(data) {
-  console.log('🔄 Applying aggressive optimization...');
+  console.log('>>> Applying aggressive optimization...');
   
   const optimizedFeatures = [];
   
   for (const [index, feature] of data.features.entries()) {
     const stateName = feature.properties.state;
-    console.log(`   🗺️  Processing ${stateName} (${index + 1}/${data.features.length})`);
+    console.log(`   [MAP] Processing ${stateName} (${index + 1}/${data.features.length})`);
     
     // Apply aggressive simplification
     let simplified = simplifyGeometryAggressive(feature.geometry, 0.005);
@@ -377,14 +377,14 @@ function applyAggressiveOptimization(data) {
     features: optimizedFeatures
   };
   
-  console.log(`✨ Aggressive optimization complete: ${optimizedFeatures.length} state features`);
+  console.log(`*** Aggressive optimization complete: ${optimizedFeatures.length} state features`);
   return compressedData;
 }
 
 // Main execution
 async function main() {
   try {
-    console.log('🎯 Complete OZ Data Optimization Pipeline Starting...\n');
+    console.log('*** Complete OZ Data Optimization Pipeline Starting...\n');
     
     let optimizedData;
     
@@ -411,7 +411,7 @@ async function main() {
         
         const intermediatePath = path.join(outputDir, 'opportunity-zones-optimized.geojson');
         fs.writeFileSync(intermediatePath, JSON.stringify(optimizedData, null, 2));
-        console.log(`💾 Debug: Intermediate file saved to ${intermediatePath}`);
+        console.log(`[DEBUG] Intermediate file saved to ${intermediatePath}`);
       }
     }
     
@@ -432,19 +432,19 @@ async function main() {
     // Calculate final statistics
     const fileSizeMB = (outputJson.length / (1024 * 1024)).toFixed(2);
     
-    console.log('\n🎉 COMPLETE SUCCESS!');
-    console.log(`📁 Final output: ${outputPath}`);
-    console.log(`📏 Final size: ${fileSizeMB} MB`);
-    console.log(`📊 Features: ${compressedData.features.length} states`);
-    console.log(`🎯 Total OZs: ${compressedData.properties.totalOZCount}`);
-    console.log('\n💡 Update your component to use: /data/opportunity-zones-compressed.geojson');
+    console.log('\n*** COMPLETE SUCCESS! ***');
+    console.log(`[FILE] Final output: ${outputPath}`);
+    console.log(`[SIZE] Final size: ${fileSizeMB} MB`);
+    console.log(`[STATS] Features: ${compressedData.features.length} states`);
+    console.log(`[STATS] Total OZs: ${compressedData.properties.totalOZCount}`);
+    console.log('\n[INFO] Update your component to use: /data/opportunity-zones-compressed.geojson');
     
     if (!options.debug && !options.skipFetch) {
-      console.log('✨ No intermediate files created - pipeline completed in memory!');
+      console.log('*** No intermediate files created - pipeline completed in memory!');
     }
     
   } catch (error) {
-    console.error('\n❌ Pipeline failed:', error.message);
+    console.error('\n[ERROR] Pipeline failed:', error.message);
     process.exit(1);
   }
 }
