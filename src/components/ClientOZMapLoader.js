@@ -18,6 +18,6 @@ const OZMapVisualization = dynamic(() => import('./OZMapVisualization'), {
   )
 });
 
-export default function ClientOZMapLoader() {
-  return <OZMapVisualization />;
+export default function ClientOZMapLoader({ onNavigate }) {
+  return <OZMapVisualization onNavigate={onNavigate} />;
 }
