@@ -20,6 +20,9 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
   const changeSlide = useCallback((newSlideIndex) => {
     if (newSlideIndex === currentSlide || isTransitioning) return;
     
+    // CRITICAL: Reset accumulator immediately to prevent overshoot on all platforms
+    scrollAccumulator.current = 0;
+    
     setIsTransitioning(true);
 
     // Get current slides
