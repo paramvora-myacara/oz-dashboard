@@ -108,7 +108,12 @@ a {
 
 /* Smooth Transitions */
 * {
-  transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Theme-aware background transitions - faster for theme switching */
+*:not(.no-bg-transition) {
+  transition: border-color 0.3s ease, background-color 0.15s ease, transform 0.3s ease;
 }
 
 /* Custom Animations */

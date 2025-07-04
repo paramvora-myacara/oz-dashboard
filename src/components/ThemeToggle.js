@@ -99,7 +99,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="p-2.5 glass-card rounded-2xl text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-all hover:bg-black/10 dark:hover:bg-white/10 group bg-white/80 dark:bg-black/20 backdrop-blur-2xl border border-black/10 dark:border-white/10"
+      className="p-2.5 glass-card rounded-2xl text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-all active:scale-95 group bg-white/80 dark:bg-black/20 backdrop-blur-2xl border border-black/10 dark:border-white/10"
       title={getTooltip()}
     >
       {getIcon()}
