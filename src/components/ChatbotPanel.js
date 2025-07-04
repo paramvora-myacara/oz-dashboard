@@ -27,13 +27,49 @@ export default function ChatbotPanel() {
   const [pendingQuestion, setPendingQuestion] = useState(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const [highlightedQuestions, setHighlightedQuestions] = useState(new Set());
+  const [ozziePosition, setOzziePosition] = useState({ x: 0 });
+  const [ozzieDirection, setOzzieDirection] = useState(1);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const headerRef = useRef(null);
   
   // Handle hydration to prevent SSR/client mismatch
   useEffect(() => {
     setIsHydrated(true);
   }, []);
+  
+  // Add Ozzie bouncing animation
+  useEffect(() => {
+    if (!isExpanded) return;
+    
+    const animateOzzie = () => {
+      const headerWidth = headerRef.current?.offsetWidth || 300;
+      const logoWidth = 50; // Approximate width of the logo
+      const maxX = headerWidth - logoWidth - 48; // Account for padding
+      
+      setOzziePosition(prev => {
+        let newX = prev.x + (ozzieDirection * 2);
+        let newDirection = ozzieDirection;
+        
+        // Bounce off edges
+        if (newX >= maxX) {
+          newX = maxX;
+          newDirection = -1;
+        } else if (newX <= 0) {
+          newX = 0;
+          newDirection = 1;
+        }
+        
+        // Update direction for next frame
+        setOzzieDirection(newDirection);
+        
+        return { x: newX };
+      });
+    };
+    
+    const interval = setInterval(animateOzzie, 50); // 20fps for smooth animation
+    return () => clearInterval(interval);
+  }, [isExpanded, ozzieDirection]);
   
   // Animate preset questions with breathing highlights
   useEffect(() => {
@@ -234,10 +270,17 @@ export default function ChatbotPanel() {
         }
       `}</style>
       
-      <header className="p-6 border-b border-black/10 dark:border-white/5">
+      <header ref={headerRef} className="p-6 border-b border-black/10 dark:border-white/5 relative overflow-hidden">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 floating-avatar">
-            <div className="p-2.5 bg-[#0071e3] rounded-2xl">
+            <div 
+              className="p-2.5 bg-[#0071e3] rounded-2xl transition-all duration-75 ease-linear"
+              style={{
+                transform: `translateX(${ozziePosition.x}px)`,
+                position: 'relative',
+                zIndex: 10
+              }}
+            >
               <SparklesIcon className="h-5 w-5 text-white sparkle-rotate"/>
             </div>
             <div>
