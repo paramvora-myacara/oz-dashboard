@@ -9,6 +9,9 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
   const containerRef = useRef(null);
   const lastScrollTime = useRef(0);
   const scrollAccumulator = useRef(0);
+  const lastSlideChangeTime = useRef(0);
+  const scrollDirection = useRef(0);
+  const directionConsistency = useRef(0);
   const router = useRouter();
 
   // Updated scroll thresholds for more gradual behavior
@@ -20,8 +23,10 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
   const changeSlide = useCallback((newSlideIndex) => {
     if (newSlideIndex === currentSlide || isTransitioning) return;
     
-    // CRITICAL: Reset accumulator immediately to prevent overshoot on all platforms
+    // CRITICAL: Reset accumulator and tracking immediately to prevent overshoot
     scrollAccumulator.current = 0;
+    lastSlideChangeTime.current = Date.now();
+    directionConsistency.current = 0;
     
     setIsTransitioning(true);
 
@@ -55,7 +60,7 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
     return typeof slides === 'function' ? slides(changeSlide) : slides;
   }, [slides, renderSlides, changeSlide]);
 
-  // Handle scroll events with more responsive behavior
+  // Handle scroll events with Mac trackpad momentum protection
   const handleScroll = useCallback((event) => {
     if (isTransitioning) {
       event.preventDefault();
@@ -64,23 +69,60 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
 
     const now = Date.now();
     const deltaY = event.deltaY;
+    const timeSinceLastSlide = now - lastSlideChangeTime.current;
 
-    // Reduced debounce time for more responsive scrolling
-    if (now - lastScrollTime.current < 20) {
+    // CRITICAL: Ignore scroll events for 600ms after slide change (Mac trackpad momentum period)
+    if (timeSinceLastSlide < 600) {
+      event.preventDefault();
+      return;
+    }
+
+    // Detect Mac trackpad vs mouse wheel
+    const isMacTrackpad = Math.abs(deltaY) < 50 && deltaY % 1 !== 0;
+    const isMouseWheel = Math.abs(deltaY) >= 100;
+    
+    // Different debounce times for different input types
+    const debounceTime = isMacTrackpad ? 100 : 20;
+    
+    if (now - lastScrollTime.current < debounceTime) {
+      event.preventDefault();
       return;
     }
     lastScrollTime.current = now;
 
-    // More responsive accumulation - less aggressive decay
-    scrollAccumulator.current += deltaY;
+    // For Mac trackpads, require direction consistency to prevent accidental triggers
+    if (isMacTrackpad) {
+      const currentDirection = deltaY > 0 ? 1 : -1;
+      
+      if (currentDirection === scrollDirection.current) {
+        directionConsistency.current++;
+      } else {
+        directionConsistency.current = 0;
+        scrollDirection.current = currentDirection;
+        scrollAccumulator.current = 0; // Reset accumulator when direction changes
+      }
+      
+      // Require 3 consistent scroll events for trackpads
+      if (directionConsistency.current < 3) {
+        event.preventDefault();
+        return;
+      }
+    }
 
-    // Faster decay for more immediate response
-    setTimeout(() => {
-      scrollAccumulator.current *= 0.5; // More aggressive decay from 0.7 to 0.5
-    }, SCROLL_DEBOUNCE);
+    // Accumulate scroll with input-specific behavior
+    if (isMacTrackpad) {
+      // For trackpads, use smaller accumulation to prevent overshooting
+      scrollAccumulator.current += deltaY * 0.3; // Reduce trackpad sensitivity
+    } else {
+      // For mouse wheels, use full accumulation
+      scrollAccumulator.current += deltaY;
+    }
 
-    // Check if we've scrolled enough to trigger a slide change with lower threshold
-    if (Math.abs(scrollAccumulator.current) > SCROLL_THRESHOLD) {
+    // Different thresholds for different input types
+    const threshold = isMacTrackpad ? 60 : isMouseWheel ? 80 : 100;
+
+    // Check if we've scrolled enough to trigger a slide change
+    if (Math.abs(scrollAccumulator.current) > threshold) {
       const direction = scrollAccumulator.current > 0 ? 1 : -1;
       const newSlide = currentSlide + direction;
 
@@ -90,8 +132,19 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
         changeSlide(newSlide);
       }
 
-      // Reset accumulator
+      // Reset accumulator immediately after triggering
       scrollAccumulator.current = 0;
+    }
+
+    // Decay accumulator more aggressively for trackpads
+    if (isMacTrackpad) {
+      setTimeout(() => {
+        scrollAccumulator.current *= 0.2; // Very aggressive decay for trackpads
+      }, 50);
+    } else {
+      setTimeout(() => {
+        scrollAccumulator.current *= 0.5; // Normal decay for mouse wheels
+      }, SCROLL_DEBOUNCE);
     }
 
     // Prevent default scroll behavior
