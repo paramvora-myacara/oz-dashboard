@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, Filler, ArcElement } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
+import { TrendingUp, Building2, MapPin, Home, BarChart3, CheckCircle, Target, Users } from 'lucide-react';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, Filler, ArcElement);
 
@@ -16,28 +17,32 @@ export default function ModernKpiDashboard() {
         value: "$110B+",
         change: "+10%",
         trend: "up",
-        icon: "📈"
+        icon: TrendingUp,
+        iconColor: "text-emerald-600 dark:text-emerald-400"
       },
       {
         title: "Active QOFs",
         value: "14,000+",
         change: "+12%",
         trend: "up",
-        icon: "🏢"
+        icon: Building2,
+        iconColor: "text-indigo-600 dark:text-indigo-400"
       },
       {
         title: "Zones with Investment",
         value: "68%",
         change: "+3%",
         trend: "up",
-        icon: "🗺️"
+        icon: MapPin,
+        iconColor: "text-orange-600 dark:text-orange-400"
       },
       {
         title: "New Housing Units",
         value: "313,000+",
         change: "+8%",
         trend: "up",
-        icon: "🏠"
+        icon: Home,
+        iconColor: "text-purple-600 dark:text-purple-400"
       }
     ];
 
@@ -265,12 +270,12 @@ export default function ModernKpiDashboard() {
     };
 
     const tabs = [
-      { id: 'overview', label: 'Overview', icon: '📊' },
-      { id: 'qof-performance', label: 'QOF Performance', icon: '📈' },
-      { id: 'geographic', label: 'Geographic Analysis', icon: '🗺️' },
-      { id: 'social-impact', label: 'Social Impact', icon: '👥' },
-      { id: 'compliance', label: 'Compliance', icon: '✅' },
-      { id: 'market-intelligence', label: 'Market Intelligence', icon: '🎯' }
+      { id: 'overview', label: 'Overview', icon: BarChart3, iconColor: 'text-indigo-500' },
+      { id: 'qof-performance', label: 'QOF Performance', icon: TrendingUp, iconColor: 'text-emerald-500' },
+      { id: 'geographic', label: 'Geographic Analysis', icon: MapPin, iconColor: 'text-orange-500' },
+      { id: 'social-impact', label: 'Social Impact', icon: Users, iconColor: 'text-purple-500' },
+      { id: 'compliance', label: 'Compliance', icon: CheckCircle, iconColor: 'text-green-500' },
+      { id: 'market-intelligence', label: 'Market Intelligence', icon: Target, iconColor: 'text-pink-500' }
     ];
 
     return (
@@ -284,14 +289,18 @@ export default function ModernKpiDashboard() {
           
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {kpis.map((kpi, idx) => (
-              <div
-                key={idx}
-                className="glass-card rounded-2xl p-6 hover:scale-[1.02] transition-all duration-300 animate-fadeIn bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10"
-                style={{ animationDelay: `${idx * 100}ms` }}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="text-3xl">{kpi.icon}</div>
+            {kpis.map((kpi, idx) => {
+              const IconComponent = kpi.icon;
+              return (
+                <div
+                  key={idx}
+                  className="glass-card rounded-2xl p-6 hover:scale-[1.02] transition-all duration-300 animate-fadeIn bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10"
+                  style={{ animationDelay: `${idx * 100}ms` }}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-shrink-0">
+                      <IconComponent className={`w-8 h-8 ${kpi.iconColor}`} />
+                    </div>
                   <div className={`flex items-center space-x-1 text-sm font-medium ${
                     kpi.trend === 'up' ? 'text-[#30d158]' : 'text-[#ff375f]'
                   }`}>
@@ -310,26 +319,30 @@ export default function ModernKpiDashboard() {
                 <p className="text-3xl font-semibold text-black dark:text-white mb-1">{kpi.value}</p>
                 <p className="text-xs text-black/40 dark:text-white/40">{kpi.description}</p>
               </div>
-            ))}
+            );
+          })}
           </div>
 
           {/* Charts Section */}
           <div className="space-y-6">
             <div className="flex flex-wrap gap-2 mb-4">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-6 py-3 rounded-full text-sm font-medium transition-all flex items-center space-x-2 ${
-                    activeTab === tab.id
-                      ? 'bg-black dark:bg-white text-white dark:text-black'
-                      : 'glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10'
-                  }`}
-                >
-                  <span>{tab.icon}</span>
-                  <span>{tab.label}</span>
-                </button>
-              ))}
+              {tabs.map(tab => {
+                const IconComponent = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-6 py-3 rounded-full text-sm font-medium transition-all flex items-center space-x-2 ${
+                      activeTab === tab.id
+                        ? 'bg-black dark:bg-white text-white dark:text-black'
+                        : 'glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10'
+                    }`}
+                  >
+                    <IconComponent className={`w-4 h-4 ${activeTab === tab.id ? 'text-white dark:text-black' : tab.iconColor}`} />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
             <div className="glass-card rounded-3xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 min-h-[50vh] lg:min-h-[60vh]">
