@@ -16,6 +16,8 @@ export default function OZMapVisualization({ onNavigate }) {
   const [loading, setLoading] = useState(true);
   const [mapData, setMapData] = useState({ states: null, ozs: null });
   const [ozData, setOzData] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Resize handling (debounced to avoid rapid re-renders)
   useEffect(() => {
@@ -94,9 +96,10 @@ export default function OZMapVisualization({ onNavigate }) {
   // Memoized projection - adjusted for 70% height map container
   const projection = useMemo(() => {
     if (!dimensions.width || !dimensions.height) return null;
-    // Map now takes 70% of the total height, so we adjust accordingly
+    // Calculate scale based on both width and height to ensure map fits properly
+    const scale = Math.min(dimensions.width * 0.9, dimensions.height * 1.2);
     return d3.geoAlbersUsa()
-      .scale(dimensions.width * 1.3) // Increased scale since map has more dedicated space
+      .scale(scale) // Reduced scale to ensure entire US fits without cropping
       .translate([dimensions.width / 2, dimensions.height / 2]);
   }, [dimensions.width, dimensions.height]);
 
@@ -115,12 +118,33 @@ export default function OZMapVisualization({ onNavigate }) {
     return acc;
   }, [mapData.ozs, projection]);
 
-  // Check if dark mode is active
-  const isDarkMode = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+  // Reactive theme detection
+  useEffect(() => {
+    setMounted(true);
+    
+    // Check initial theme
+    const checkTheme = () => {
+      setIsDarkMode(document.documentElement.classList.contains('dark'));
+    };
+    
+    checkTheme();
+
+    // Create observer to watch for theme changes
+    const observer = new MutationObserver(() => {
+      checkTheme();
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // Render map
   useEffect(() => {
-    if (!dimensions.width || !dimensions.height || !mapData.states || !projection || !stateOZPaths) return;
+    if (!mounted || !dimensions.width || !dimensions.height || !mapData.states || !projection || !stateOZPaths) return;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove();
@@ -224,7 +248,7 @@ export default function OZMapVisualization({ onNavigate }) {
         .attr('data-state-name', stateName)
         .style('pointer-events', 'none');
     });
-  }, [dimensions, mapData, projection, stateOZPaths, isDarkMode]);
+  }, [dimensions, mapData, projection, stateOZPaths, isDarkMode, mounted]);
 
   const getStateData = useCallback((stateName) => {
     if (!ozData || !ozData.data || !ozData.data[stateName]) {
