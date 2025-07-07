@@ -96,10 +96,10 @@ export default function OZMapVisualization({ onNavigate }) {
   // Memoized projection - adjusted for 70% height map container
   const projection = useMemo(() => {
     if (!dimensions.width || !dimensions.height) return null;
-    // Calculate scale based on both width and height to ensure map fits properly
-    const scale = Math.min(dimensions.width * 0.9, dimensions.height * 1.2);
+    // Calculate scale based on both width and height to maximize map size
+    const scale = Math.min(dimensions.width * 1.4, dimensions.height * 2.0);
     return d3.geoAlbersUsa()
-      .scale(scale) // Reduced scale to ensure entire US fits without cropping
+      .scale(scale) // Maximized scale for optimal visibility
       .translate([dimensions.width / 2, dimensions.height / 2]);
   }, [dimensions.width, dimensions.height]);
 
