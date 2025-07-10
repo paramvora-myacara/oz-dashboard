@@ -117,3 +117,55 @@ CREATE POLICY "Service role full access" ON user_profiles
 ## Backend Usage
 
 Use the service role key to access and update profile data from your backend services. This allows for user profiling based on chat interactions, investment behavior, and other signals to provide more personalized responses. 
+
+If `curl` works but your browser fetch from the frontend does not, the issue is almost certainly **CORS** (Cross-Origin Resource Sharing). Here’s why:
+
+- **curl** does not enforce CORS, so it can talk to your backend directly.
+- **Browsers** enforce CORS for security, so your backend must explicitly allow requests from your frontend’s origin (`http://localhost:3000`).
+
+### Why is this happening?
+
+Your FastAPI backend CORS config currently only allows requests from your deployed frontend, not from localhost. So when your browser tries to send a request from `http://localhost:3000`, the backend does not include the required `Access-Control-Allow-Origin` header, and the browser blocks the response.
+
+### How to fix
+
+**You must update your FastAPI backend to allow requests from `http://localhost:3000` during development.**
+
+#### Example fix:
+
+In your FastAPI backend (in the file where you have `app.add_middleware(CORSMiddleware, ...)`), change:
+
+```python
+frontend_url = "https://ozlistings-chat-frontend-1098767556937.us-central1.run.app"
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        frontend_url,
+        "http://localhost:3000",  # <-- add this for local dev
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+```
+
+**To:**
+
+```python
+<code_block_to_apply_changes_from>
+```
+
+Then **restart your backend server**.
+
+---
+
+### Summary
+
+- `curl` works because it ignores CORS.
+- Browsers block the request due to missing CORS headers.
+- Add `http://localhost:3000` to `allow_origins` in your FastAPI CORS config and restart the backend.
+
+---
+
+If you do this and still have issues, let me know the exact error message you see in the browser console after the change! 
