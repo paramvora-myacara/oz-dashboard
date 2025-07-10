@@ -124,30 +124,87 @@ export default function ChatbotPanel() {
     handleSend(null, question);
   };
 
-  const generateBotResponse = (messageText) => {
-    setTimeout(() => {
-      let response = "";
-      const query = messageText.toLowerCase();
+  // Replace generateBotResponse with an async API call
+  const generateBotResponse = async (messageText) => {
+    // Add a loading message with proper ID
+    const loadingMsg = { 
+      text: 'Ozzie is thinking...', 
+      sender: 'bot', 
+      isLoading: true,
+      id: crypto?.randomUUID ? crypto.randomUUID() : `loading-${Date.now()}-${Math.random()}`
+    };
+    addMessage(loadingMsg);
+
+    // Prepare payload
+    const userId = user?.id || 'guest';
+    const backendUrl = process.env.NEXT_PUBLIC_OZ_BACKEND_URL;
+    if (!backendUrl) {
+      throw new Error('NEXT_PUBLIC_OZ_BACKEND_URL environment variable is required');
+    }
+    
+    try {
+      const res = await fetch(`${backendUrl}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId, message: messageText })
+      });
       
-      if (query.includes('what are ozs') || query.includes('what are opportunity zones')) {
-        response = "Opportunity Zones (OZs) are economically distressed communities designated by states and certified by the U.S. Treasury. Created by the 2017 Tax Cuts and Jobs Act, they offer significant tax incentives to investors who deploy capital gains into these areas through Qualified Opportunity Funds (QOFs). The goal is to spur economic development and job creation in underserved communities.";
-      } else if (query.includes('what are qofs') || query.includes('qualified opportunity fund')) {
-        response = "Qualified Opportunity Funds (QOFs) are investment vehicles organized as corporations or partnerships for investing in eligible property located in Opportunity Zones. To qualify, a fund must hold at least 90% of its assets in OZ property. QOFs can invest in real estate, operating businesses, or infrastructure projects within designated zones.";
-      } else if (query.includes('tax benefit') || query.includes('tax incentive')) {
-        response = "OZ investments offer three major tax benefits: 1) Temporary deferral of capital gains tax until December 31, 2026, 2) Step-up in basis of 10% if investment held for 5 years, 15% for 7 years, and 3) Permanent exclusion from capital gains tax on appreciation of OZ investment if held for 10+ years. This can result in significant tax savings!";
-      } else if (query.includes('best performing') || query.includes('top state')) {
-        response = "Top performing OZ markets by investment volume and ROI: 1) California ($18.2B, 879 zones), 2) Texas ($14.5B, 628 zones), 3) Florida ($12.3B, 427 zones), 4) New York ($11.8B, 514 zones), 5) Georgia ($9.2B, 260 zones). Miami, Austin, and Phoenix show the highest ROI at 32%, 28%, and 27% respectively.";
-      } else if (query.includes('how to invest') || query.includes('get started')) {
-        response = "To invest in OZs: 1) Realize a capital gain from any source, 2) Invest that gain in a QOF within 180 days, 3) Choose between investing in an existing QOF or creating your own, 4) Hold for at least 10 years for maximum tax benefits. Most investors start with $100K+ minimum. Consider diversifying across multiple zones and sectors for optimal risk-adjusted returns.";
-      } else if (query.includes('2025') || query.includes('outlook') || query.includes('forecast')) {
-        response = "2025 OZ market outlook is strong: Expected $15-20B in new investments, focus shifting to climate-resilient developments and workforce housing. Key trends include tech hub developments in secondary cities, increased institutional participation, and potential legislative extensions. Best opportunities in Southeast and Southwest markets with population growth.";
-      } else {
-        response = `Great question about "${messageText.slice(0,50)}..." Based on current market data, OZ investments are showing strong momentum with average returns of 23.7%. The key is finding the right balance between impact and returns. Would you like me to dive deeper into any specific aspect?`;
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Backend error response:', errorText);
+        throw new Error(`HTTP error! status: ${res.status} - ${errorText}`);
       }
       
-      const botMsg = { text: response, sender: 'bot' };
-      addMessage(botMsg);
-    }, 800);
+      const data = await res.json();
+      console.log('Backend response:', data);
+      
+      // Remove the loading message and add the actual response
+      // We need to remove the loading message first, then add the real response
+      const currentConversation = getCurrentConversation();
+      const messagesWithoutLoading = currentConversation.messages.filter(msg => !msg.isLoading);
+      
+      // Create the response message with a proper ID
+      const responseMessage = {
+        text: data.response,
+        sender: 'bot',
+        id: crypto?.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}-${Math.random()}`
+      };
+      
+      // Update the store with messages without loading, then add the response
+      useChatStore.setState((state) => ({
+        conversations: {
+          ...state.conversations,
+          [state.currentUserId]: {
+            ...state.conversations[state.currentUserId],
+            messages: [...messagesWithoutLoading, responseMessage]
+          }
+        }
+      }));
+      
+    } catch (err) {
+      console.error('Ozzie backend error:', err);
+      
+      // Remove loading message and add error message
+      const currentConversation = getCurrentConversation();
+      const messagesWithoutLoading = currentConversation.messages.filter(msg => !msg.isLoading);
+      
+      // Create the error message with a proper ID
+      const errorMessage = {
+        text: 'Sorry, Ozzie is having trouble responding right now. Please try again later.',
+        sender: 'bot',
+        id: crypto?.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}-${Math.random()}`
+      };
+      
+      useChatStore.setState((state) => ({
+        conversations: {
+          ...state.conversations,
+          [state.currentUserId]: {
+            ...state.conversations[state.currentUserId],
+            messages: [...messagesWithoutLoading, errorMessage]
+          }
+        }
+      }));
+    }
   };
 
   const handleSend = (e, presetQuestion = null) => {
@@ -302,8 +359,8 @@ export default function ChatbotPanel() {
             </div>
           </div>
         ) : (
-          msgs.map(m => (
-            <div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
+          msgs.map((m, index) => (
+            <div key={m.id || `fallback-${index}`} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
               <div className={`max-w-[85%] ${
                 m.sender === 'user'
                   ? 'bg-[#0071e3] text-white rounded-3xl rounded-tr-lg px-5 py-3'
