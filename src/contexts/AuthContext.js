@@ -22,6 +22,8 @@ export function AuthProvider({ children }) {
     // Get initial session
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
+      console.log('Initial session:', session);
+      console.log('Initial user:', session?.user);
       setUser(session?.user ?? null)
       setLoading(false)
     }
@@ -31,6 +33,9 @@ export function AuthProvider({ children }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state change event:', event);
+        console.log('Auth state change session:', session);
+        console.log('Auth state change user:', session?.user);
         setUser(session?.user ?? null)
         setLoading(false)
       }
@@ -54,11 +59,19 @@ export function AuthProvider({ children }) {
     return { error }
   }
 
+  const getCurrentUser = async () => {
+    const { data: { user }, error } = await supabase.auth.getUser()
+    console.log('Current user from getCurrentUser:', user);
+    console.log('Current user error:', error);
+    return { user, error }
+  }
+
   const value = {
     user,
     loading,
     signInWithGoogle,
     signOut,
+    getCurrentUser,
   }
 
   return (

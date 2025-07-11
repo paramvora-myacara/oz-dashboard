@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist, devtools } from 'zustand/middleware';
+import { devtools } from 'zustand/middleware';
 
 const createWelcomeMessage = () => ({
   id: typeof window !== 'undefined' && crypto?.randomUUID ? crypto.randomUUID() : `welcome-${Date.now()}`,
@@ -9,8 +9,7 @@ const createWelcomeMessage = () => ({
 
 export const useChatStore = create(
   devtools(
-    persist(
-      (set, get) => ({
+    (set, get) => ({
       // Current active user ID
       currentUserId: 'guest',
       
@@ -22,6 +21,9 @@ export const useChatStore = create(
         }
       },
       
+      // Pending question waiting for authentication
+      pendingQuestion: null,
+      
       // Get current conversation
       getCurrentConversation: () => {
         const { conversations, currentUserId } = get();
@@ -31,23 +33,23 @@ export const useChatStore = create(
         };
       },
       
-             // Add message to current conversation
-       addMessage: (message) => set((state) => {
-         const messageWithId = {
-           ...message,
-           id: message.id || (crypto?.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}-${Math.random()}`)
-         };
-         
-         const updatedConversations = {
-           ...state.conversations,
-           [state.currentUserId]: {
-             ...state.conversations[state.currentUserId],
-             messages: [...(state.conversations[state.currentUserId]?.messages || []), messageWithId]
-           }
-         };
-         
-         return { conversations: updatedConversations };
-       }, false, 'addMessage'),
+      // Add message to current conversation
+      addMessage: (message) => set((state) => {
+        const messageWithId = {
+          ...message,
+          id: message.id || (crypto?.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}-${Math.random()}`)
+        };
+        
+        const updatedConversations = {
+          ...state.conversations,
+          [state.currentUserId]: {
+            ...state.conversations[state.currentUserId],
+            messages: [...(state.conversations[state.currentUserId]?.messages || []), messageWithId]
+          }
+        };
+        
+        return { conversations: updatedConversations };
+      }, false, 'addMessage'),
       
       // Increment message count for current user
       incrementMessageCount: () => set((state) => ({
@@ -66,13 +68,13 @@ export const useChatStore = create(
         if (!state.conversations[userId]) {
           return {
             currentUserId: userId,
-                          conversations: {
-                ...state.conversations,
-                [userId]: {
-                  messages: [createWelcomeMessage()],
-                  messageCount: 0
-                }
+            conversations: {
+              ...state.conversations,
+              [userId]: {
+                messages: [createWelcomeMessage()],
+                messageCount: 0
               }
+            }
           };
         }
         
@@ -111,6 +113,15 @@ export const useChatStore = create(
         return conversations[currentUserId]?.messageCount || 0;
       },
       
+      // Set pending question (for auth flow)
+      setPendingQuestion: (question) => set({ pendingQuestion: question }, false, 'setPendingQuestion'),
+      
+      // Get pending question
+      getPendingQuestion: () => get().pendingQuestion,
+      
+      // Clear pending question
+      clearPendingQuestion: () => set({ pendingQuestion: null }, false, 'clearPendingQuestion'),
+      
       // Reset conversation for current user
       resetCurrentConversation: () => set((state) => ({
         conversations: {
@@ -121,18 +132,9 @@ export const useChatStore = create(
           }
         }
       }), false, 'resetCurrentConversation')
-         }),
-     {
-       name: 'ozzie-chat-storage',
-       // Only persist the conversations and currentUserId
-       partialize: (state) => ({
-         conversations: state.conversations,
-         currentUserId: state.currentUserId
-       })
-     }
-   ),
-   {
-     name: 'ozzie-chat-store' // Name that appears in Redux DevTools
-   }
- )
+    }),
+    {
+      name: 'ozzie-chat-store' // Name that appears in Redux DevTools
+    }
+  )
 ); 

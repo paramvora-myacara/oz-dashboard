@@ -11,20 +11,22 @@ import { useChatStore } from '@/stores/chatStore';
 import AuthOverlay from './AuthOverlay';
 
 export default function ChatbotPanel() {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, getCurrentUser } = useAuth();
   const {
     getCurrentConversation,
     getCurrentMessageCount,
     addMessage,
     incrementMessageCount,
     setCurrentUser,
-    copyGuestToUser
+    copyGuestToUser,
+    setPendingQuestion,
+    getPendingQuestion,
+    clearPendingQuestion
   } = useChatStore();
   
   const [input, setInput] = useState('');
   const [isExpanded, setIsExpanded] = useState(true);
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
-  const [pendingQuestion, setPendingQuestion] = useState(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const [highlightedQuestions, setHighlightedQuestions] = useState(new Set());
   const messagesEndRef = useRef(null);
@@ -88,6 +90,7 @@ export default function ChatbotPanel() {
     if (user) {
       const state = useChatStore.getState();
       const userHasConversation = state.conversations[user.id];
+      const pendingQuestion = getPendingQuestion();
       
       // If user doesn't have a conversation yet, copy from guest
       if (!userHasConversation) {
@@ -100,9 +103,17 @@ export default function ChatbotPanel() {
         
         // If there was a pending question, answer it now
         if (pendingQuestion) {
+          // Add a brief message to indicate Ozzie is processing the previous question
+          const processingMsg = { 
+            text: 'Thanks for signing in! Let me answer your previous question...', 
+            sender: 'bot',
+            id: crypto?.randomUUID ? crypto.randomUUID() : `processing-${Date.now()}-${Math.random()}`
+          };
+          addMessage(processingMsg);
+          
           setTimeout(() => {
             generateBotResponse(pendingQuestion);
-            setPendingQuestion(null);
+            clearPendingQuestion();
           }, 500);
         }
       } else {
@@ -113,12 +124,28 @@ export default function ChatbotPanel() {
         if (showAuthOverlay) {
           setShowAuthOverlay(false);
         }
+        
+        // If there was a pending question, answer it now
+        if (pendingQuestion) {
+          // Add a brief message to indicate Ozzie is processing the previous question
+          const processingMsg = { 
+            text: 'Thanks for signing in! Let me answer your previous question...', 
+            sender: 'bot',
+            id: crypto?.randomUUID ? crypto.randomUUID() : `processing-${Date.now()}-${Math.random()}`
+          };
+          addMessage(processingMsg);
+          
+          setTimeout(() => {
+            generateBotResponse(pendingQuestion);
+            clearPendingQuestion();
+          }, 500);
+        }
       }
     } else {
       // User signed out - switch back to guest
       setCurrentUser('guest');
     }
-  }, [user, showAuthOverlay, pendingQuestion, copyGuestToUser, setCurrentUser]);
+  }, [user, showAuthOverlay, copyGuestToUser, setCurrentUser, getPendingQuestion, clearPendingQuestion]);
 
   const handlePresetClick = (question) => {
     handleSend(null, question);
@@ -136,11 +163,15 @@ export default function ChatbotPanel() {
     addMessage(loadingMsg);
 
     // Prepare payload
-    const userId = user?.id || 'guest';
-    const backendUrl = process.env.NEXT_PUBLIC_OZ_BACKEND_URL;
-    if (!backendUrl) {
-      throw new Error('NEXT_PUBLIC_OZ_BACKEND_URL environment variable is required');
-    }
+    // Get the current user directly from Supabase to ensure we have the correct ID
+    const { user: currentUser } = await getCurrentUser();
+    const userId = currentUser?.id || user?.id || 'guest';
+    const backendUrl = process.env.NEXT_PUBLIC_OZ_BACKEND_URL || 'http://localhost:8001';
+    console.log('Using backend URL:', backendUrl);
+    console.log('User object from context:', user);
+    console.log('Current user from Supabase:', currentUser);
+    console.log('User ID being sent:', userId);
+    console.log('User email:', currentUser?.email || user?.email);
     
     try {
       const res = await fetch(`${backendUrl}/chat`, {
@@ -402,7 +433,7 @@ export default function ChatbotPanel() {
       {showAuthOverlay && (
         <AuthOverlay onClose={() => {
           setShowAuthOverlay(false);
-          setPendingQuestion(null); // Clear pending question when user closes overlay
+          clearPendingQuestion(); // Clear pending question when user closes overlay
         }} />
       )}
     </aside>
