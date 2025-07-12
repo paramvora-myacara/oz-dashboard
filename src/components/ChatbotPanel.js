@@ -4,8 +4,8 @@
 
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { ChatBubbleLeftEllipsisIcon, PaperAirplaneIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import { SparklesIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
+import { SparklesIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChatStore } from '@/stores/chatStore';
 import AuthOverlay from './AuthOverlay';
@@ -21,11 +21,40 @@ export default function ChatbotPanel() {
     copyGuestToUser,
     setPendingQuestion,
     getPendingQuestion,
-    clearPendingQuestion
+    clearPendingQuestion,
+    restoreGuestForAuth
   } = useChatStore();
+
+  // Helper function to get user's first name
+  const getUserFirstName = (user) => {
+    if (!user) return '';
+    
+    // Try to get name from user metadata (Google OAuth typically stores this)
+    if (user.user_metadata) {
+      if (user.user_metadata.first_name) {
+        return user.user_metadata.first_name;
+      }
+      if (user.user_metadata.full_name) {
+        return user.user_metadata.full_name.split(' ')[0];
+      }
+      if (user.user_metadata.name) {
+        return user.user_metadata.name.split(' ')[0];
+      }
+    }
+    
+    // Fallback: extract first name from email
+    if (user.email) {
+      const emailPrefix = user.email.split('@')[0];
+      // If email has dots, take first part; otherwise take first 10 chars
+      return emailPrefix.includes('.') 
+        ? emailPrefix.split('.')[0] 
+        : emailPrefix.substring(0, 10);
+    }
+    
+    return user.email || 'User';
+  };
   
   const [input, setInput] = useState('');
-  const [isExpanded, setIsExpanded] = useState(true);
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [highlightedQuestions, setHighlightedQuestions] = useState(new Set());
@@ -35,6 +64,8 @@ export default function ChatbotPanel() {
   // Handle hydration to prevent SSR/client mismatch
   useEffect(() => {
     setIsHydrated(true);
+    // Restore guest conversation after OAuth redirect
+    restoreGuestForAuth();
   }, []);
   
   // Animate preset questions with breathing highlights
@@ -90,56 +121,39 @@ export default function ChatbotPanel() {
     if (user) {
       const state = useChatStore.getState();
       const userHasConversation = state.conversations[user.id];
+      const guestConversation = state.conversations.guest;
       const pendingQuestion = getPendingQuestion();
       
-      // If user doesn't have a conversation yet, copy from guest
-      if (!userHasConversation) {
+      // Only copy from guest if:
+      // 1. User doesn't have existing conversation AND
+      // 2. Guest has meaningful conversation (more than just welcome message)
+      const hasGuestContent = guestConversation && guestConversation.messages.length > 1;
+      
+      if (!userHasConversation && hasGuestContent) {
+        // User is logging in mid-conversation, preserve chat history
         copyGuestToUser(user.id);
-        
-        // Close auth overlay if it's open
-        if (showAuthOverlay) {
-          setShowAuthOverlay(false);
-        }
-        
-        // If there was a pending question, answer it now
-        if (pendingQuestion) {
-          // Add a brief message to indicate Ozzie is processing the previous question
-          const processingMsg = { 
-            text: 'Thanks for signing in! Let me answer your previous question...', 
-            sender: 'bot',
-            id: crypto?.randomUUID ? crypto.randomUUID() : `processing-${Date.now()}-${Math.random()}`
-          };
-          addMessage(processingMsg);
-          
-          setTimeout(() => {
-            generateBotResponse(pendingQuestion);
-            clearPendingQuestion();
-          }, 500);
-        }
-      } else {
-        // Just switch to user's existing conversation
+      } else if (userHasConversation) {
+        // User has existing conversation, just switch to it
         setCurrentUser(user.id);
+      } else {
+        // User has no conversation and no guest content, create fresh
+        setCurrentUser(user.id);
+      }
+      
+      // Close auth overlay if it's open
+      if (showAuthOverlay) {
+        setShowAuthOverlay(false);
+      }
+      
+      // If there was a pending question, answer it now (only once)
+      if (pendingQuestion) {
+        // Clear pending question immediately to prevent multiple executions
+        clearPendingQuestion();
         
-        // Close auth overlay if it's open
-        if (showAuthOverlay) {
-          setShowAuthOverlay(false);
-        }
-        
-        // If there was a pending question, answer it now
-        if (pendingQuestion) {
-          // Add a brief message to indicate Ozzie is processing the previous question
-          const processingMsg = { 
-            text: 'Thanks for signing in! Let me answer your previous question...', 
-            sender: 'bot',
-            id: crypto?.randomUUID ? crypto.randomUUID() : `processing-${Date.now()}-${Math.random()}`
-          };
-          addMessage(processingMsg);
-          
-          setTimeout(() => {
-            generateBotResponse(pendingQuestion);
-            clearPendingQuestion();
-          }, 500);
-        }
+        // Generate response directly without extra message
+        setTimeout(() => {
+          generateBotResponse(pendingQuestion);
+        }, 300);
       }
     } else {
       // User signed out - switch back to guest
@@ -268,17 +282,7 @@ export default function ChatbotPanel() {
     generateBotResponse(messageText);
   };
 
-  if (!isExpanded) {
-    return (
-      <button
-        onClick={() => setIsExpanded(true)}
-        className="fixed right-6 bottom-6 p-4 bg-[#0071e3] hover:bg-[#0077ed] rounded-full shadow-2xl transition-all hover:scale-105"
-      >
-        <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-white"/>
-        <span className="absolute -top-1 -right-1 h-3 w-3 bg-[#30d158] rounded-full animate-pulse"></span>
-      </button>
-    );
-  }
+
 
   return (
     <aside className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10 relative">
@@ -333,18 +337,8 @@ export default function ChatbotPanel() {
             <div>
               <h3 className="font-semibold text-black dark:text-white text-lg">
                 {user ? (
-                  <span className="flex items-center gap-2">
-                    Ozzie,{' '}
-                    <button
-                      onClick={signOut}
-                      className="text-[#0071e3] hover:text-[#0077ed] transition-colors relative group"
-                      title="Log out"
-                    >
-                      {user.email}
-                      <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        Log out
-                      </span>
-                    </button>
+                  <span>
+                    Ozzie, <span className="text-[#0071e3]">{getUserFirstName(user)}</span>
                   </span>
                 ) : (
                   'Ozzie'
@@ -353,12 +347,20 @@ export default function ChatbotPanel() {
               <p className="text-xs text-black/50 dark:text-white/50 font-light">Your OZ Investment Expert</p>
             </div>
           </div>
-          <button
-            onClick={() => setIsExpanded(false)}
-            className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all"
-          >
-            <XMarkIcon className="h-5 w-5 text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60"/>
-          </button>
+          <div className="flex items-center gap-2">
+            {user && (
+              <button
+                onClick={signOut}
+                className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all relative group"
+                title="Log out"
+              >
+                <ArrowRightOnRectangleIcon className="h-5 w-5 text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60"/>
+                <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  Log out
+                </span>
+              </button>
+            )}
+          </div>
         </div>
       </header>
       

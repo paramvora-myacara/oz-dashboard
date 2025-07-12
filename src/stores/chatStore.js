@@ -122,6 +122,42 @@ export const useChatStore = create(
       // Clear pending question
       clearPendingQuestion: () => set({ pendingQuestion: null }, false, 'clearPendingQuestion'),
       
+      // Save guest conversation to localStorage before OAuth redirect
+      saveGuestForAuth: () => {
+        const { conversations } = get();
+        const guestConversation = conversations.guest;
+        if (guestConversation && guestConversation.messages.length > 1) {
+          localStorage.setItem('ozzie-guest-conversation', JSON.stringify(guestConversation));
+        }
+      },
+      
+      // Restore guest conversation from localStorage after OAuth redirect
+      restoreGuestForAuth: () => {
+        const saved = localStorage.getItem('ozzie-guest-conversation');
+        if (saved) {
+          try {
+            const guestConversation = JSON.parse(saved);
+            
+            // Check if the last message is from user and needs a response
+            const lastMessage = guestConversation.messages[guestConversation.messages.length - 1];
+            if (lastMessage && lastMessage.sender === 'user') {
+              // Set this as a pending question to be answered after login
+              set({ pendingQuestion: lastMessage.text }, false, 'setPendingQuestion');
+            }
+            
+            set((state) => ({
+              conversations: {
+                ...state.conversations,
+                guest: guestConversation
+              }
+            }), false, 'restoreGuestForAuth');
+            localStorage.removeItem('ozzie-guest-conversation');
+          } catch (error) {
+            console.error('Error restoring guest conversation:', error);
+          }
+        }
+      },
+      
       // Reset conversation for current user
       resetCurrentConversation: () => set((state) => ({
         conversations: {
