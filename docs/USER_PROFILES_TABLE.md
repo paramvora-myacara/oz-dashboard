@@ -169,3 +169,132 @@ Then **restart your backend server**.
 ---
 
 If you do this and still have issues, let me know the exact error message you see in the browser console after the change! 
+
+# Schema Migration v2
+
+This section contains the migration statements to update the existing `user_profiles` table to the new schema based on the updated requirements.
+
+## Migration Overview
+
+The v2 schema introduces:
+- Role-based user classification (Developer vs Investor)
+- Capital gains tracking for investors
+- Location-based data (state codes for investment zones, coordinates/addresses for development)
+- Conditional fields based on user type
+- Email fetched from `auth.users` table instead of duplicated storage
+
+## Migration SQL Statements
+
+```sql
+-- Step 1: Add new columns
+ALTER TABLE user_profiles 
+ADD COLUMN role TEXT CHECK (role IN ('Developer', 'Investor')),
+ADD COLUMN cap_gain_or_not BOOLEAN DEFAULT NULL,
+ADD COLUMN size_of_cap_gain NUMERIC DEFAULT NULL,
+ADD COLUMN time_of_cap_gain TEXT CHECK (time_of_cap_gain IN ('Last 180 days', 'More than 180 days AGO', 'Upcoming')),
+ADD COLUMN geographical_zone_of_investment TEXT CHECK (LENGTH(geographical_zone_of_investment) = 2),
+ADD COLUMN need_team_contact BOOLEAN DEFAULT NULL,
+ADD COLUMN location_of_development TEXT DEFAULT NULL;
+
+-- Step 2: Remove old columns
+ALTER TABLE user_profiles 
+DROP COLUMN accredited_investor,
+DROP COLUMN check_size,
+DROP COLUMN geographical_zone,
+DROP COLUMN real_estate_investment_experience,
+DROP COLUMN investment_timeline,
+DROP COLUMN investment_priorities,
+DROP COLUMN deal_readiness,
+DROP COLUMN preferred_asset_types,
+DROP COLUMN needs_team_contact;
+
+-- Step 3: Add constraints for conditional fields
+-- Cap gain size should only be set if cap_gain_or_not is true
+ALTER TABLE user_profiles 
+ADD CONSTRAINT check_cap_gain_size 
+CHECK (
+    (cap_gain_or_not = true AND size_of_cap_gain IS NOT NULL) OR 
+    (cap_gain_or_not = false AND size_of_cap_gain IS NULL) OR 
+    (cap_gain_or_not IS NULL AND size_of_cap_gain IS NULL)
+);
+
+-- Time of cap gain should only be set if cap_gain_or_not is true
+ALTER TABLE user_profiles 
+ADD CONSTRAINT check_cap_gain_time 
+CHECK (
+    (cap_gain_or_not = true AND time_of_cap_gain IS NOT NULL) OR 
+    (cap_gain_or_not = false AND time_of_cap_gain IS NULL) OR 
+    (cap_gain_or_not IS NULL AND time_of_cap_gain IS NULL)
+);
+
+-- Cap gain fields should only apply to Investors
+ALTER TABLE user_profiles 
+ADD CONSTRAINT check_investor_cap_gain 
+CHECK (
+    (role = 'Investor') OR 
+    (role = 'Developer' AND cap_gain_or_not IS NULL AND size_of_cap_gain IS NULL AND time_of_cap_gain IS NULL) OR
+    (role IS NULL AND cap_gain_or_not IS NULL AND size_of_cap_gain IS NULL AND time_of_cap_gain IS NULL)
+);
+
+-- Location of development should only apply to Developers
+ALTER TABLE user_profiles 
+ADD CONSTRAINT check_developer_location 
+CHECK (
+    (role = 'Developer') OR 
+    (role = 'Investor' AND location_of_development IS NULL) OR
+    (role IS NULL AND location_of_development IS NULL)
+);
+
+-- Step 4: Update indexes
+DROP INDEX IF EXISTS idx_user_profiles_user_id;
+CREATE INDEX idx_user_profiles_user_id ON user_profiles(user_id);
+CREATE INDEX idx_user_profiles_role ON user_profiles(role);
+CREATE INDEX idx_user_profiles_geo_zone ON user_profiles(geographical_zone_of_investment);
+
+-- Step 5: Create a view for easy access to user profiles with email
+CREATE OR REPLACE VIEW user_profiles_with_email AS
+SELECT 
+    up.*,
+    au.email
+FROM user_profiles up
+JOIN auth.users au ON up.user_id = au.id;
+```
+
+## Updated Table Schema (v2)
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | UUID | Primary key, auto-generated |
+| `user_id` | UUID | Foreign key to `auth.users(id)`, unique |
+| `role` | TEXT | User role: 'Developer' or 'Investor' |
+| `cap_gain_or_not` | BOOLEAN | Whether user has capital gains (Investors only) |
+| `size_of_cap_gain` | NUMERIC | Amount of capital gains (if cap_gain_or_not = true) |
+| `time_of_cap_gain` | TEXT | Timing of capital gains: 'Last 180 days', 'More than 180 days AGO', 'Upcoming' |
+| `geographical_zone_of_investment` | TEXT | 2-letter US state code for investment zone |
+| `need_team_contact` | BOOLEAN | Whether user needs team contact (no database constraints) |
+| `location_of_development` | TEXT | Coordinates or address for development (Developers only) |
+| `created_at` | TIMESTAMP | Record creation time |
+| `updated_at` | TIMESTAMP | Last update time |
+
+**Note:** Email is accessed via JOIN with `auth.users` table or through the `user_profiles_with_email` view.
+
+## Email Access Examples
+
+### Using JOIN:
+```sql
+SELECT up.*, au.email 
+FROM user_profiles up 
+JOIN auth.users au ON up.user_id = au.id 
+WHERE up.user_id = 'some-uuid';
+```
+
+### Using the View:
+```sql
+SELECT * FROM user_profiles_with_email WHERE user_id = 'some-uuid';
+```
+
+## Migration Notes
+
+⚠️ **Important:** This migration will **lose all existing data** in the removed columns. If you need to preserve any existing data, create a backup first.
+
+The migration maintains all existing RLS policies and triggers while updating the schema to support the new role-based user profiling approach. 
