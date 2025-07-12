@@ -9,6 +9,7 @@ import { SparklesIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/out
 import { useAuth } from '@/contexts/AuthContext';
 import { useChatStore } from '@/stores/chatStore';
 import AuthOverlay from './AuthOverlay';
+import ReactMarkdown from 'react-markdown';
 
 export default function ChatbotPanel() {
   const { user, loading, signOut, getCurrentUser } = useAuth();
@@ -53,6 +54,8 @@ export default function ChatbotPanel() {
     
     return user.email || 'User';
   };
+
+
   
   const [input, setInput] = useState('');
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
@@ -60,6 +63,7 @@ export default function ChatbotPanel() {
   const [highlightedQuestions, setHighlightedQuestions] = useState(new Set());
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
+  const textareaRef = useRef(null);
   
   // Handle hydration to prevent SSR/client mismatch
   useEffect(() => {
@@ -268,7 +272,13 @@ export default function ChatbotPanel() {
       setPendingQuestion(messageText);
       setShowAuthOverlay(true);
       
-      if (!presetQuestion) setInput('');
+      if (!presetQuestion) {
+        setInput('');
+        // Reset textarea height
+        if (textareaRef.current) {
+          textareaRef.current.style.height = '48px';
+        }
+      }
       return;
     }
     
@@ -276,7 +286,13 @@ export default function ChatbotPanel() {
     const userMsg = { text: messageText, sender: 'user' };
     addMessage(userMsg);
     incrementMessageCount();
-    if (!presetQuestion) setInput('');
+    if (!presetQuestion) {
+      setInput('');
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '48px';
+      }
+    }
     
     // Generate bot response
     generateBotResponse(messageText);
@@ -350,7 +366,10 @@ export default function ChatbotPanel() {
           <div className="flex items-center gap-2">
             {user && (
               <button
-                onClick={signOut}
+                onClick={async () => {
+                  await signOut();
+                  window.location.reload();
+                }}
                 className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all relative group"
                 title="Log out"
               >
@@ -399,7 +418,17 @@ export default function ChatbotPanel() {
                   ? 'bg-[#0071e3] text-white rounded-3xl rounded-tr-lg px-5 py-3'
                   : 'glass-card text-black/90 dark:text-white/90 rounded-3xl rounded-tl-lg px-5 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10'
               }`}>
-                <p className="text-sm leading-relaxed font-light">{m.text}</p>
+                <div className="text-sm leading-relaxed font-light">
+                  <ReactMarkdown
+                    components={{
+                      p: ({ children }) => <span>{children}</span>,
+                      strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                      em: ({ children }) => <em>{children}</em>
+                    }}
+                  >
+                    {m.text}
+                  </ReactMarkdown>
+                </div>
               </div>
             </div>
           ))
@@ -409,22 +438,30 @@ export default function ChatbotPanel() {
       
       {/* Input Form */}
       <div className="p-6 border-t border-black/10 dark:border-white/5">
-        <div className="flex gap-3">
-          <input
-            className="flex-1 px-5 py-3 glass-card rounded-full text-black dark:text-white placeholder-black/30 dark:placeholder-white/30 focus:outline-none focus:border-black/20 dark:focus:border-white/20 text-sm font-light transition-all bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10"
+        <div className="flex gap-3 items-end">
+          <textarea
+            ref={textareaRef}
+            className="flex-1 px-5 py-3 glass-card rounded-2xl text-black dark:text-white placeholder-black/30 dark:placeholder-white/30 focus:outline-none focus:border-black/20 dark:focus:border-white/20 text-sm font-light transition-all bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 resize-none overflow-hidden min-h-[48px] max-h-[120px]"
             value={input} 
             onChange={e => setInput(e.target.value)} 
             placeholder="Ask Ozzie anything about OZs..."
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
+            rows={1}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 handleSend(e);
               }
+            }}
+            onInput={(e) => {
+              // Auto-resize textarea
+              e.target.style.height = 'auto';
+              e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
             }}
           />
           <button 
             onClick={(e) => handleSend(e)}
             disabled={!input.trim()} 
-            className="p-3 bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-black/10 dark:disabled:bg-white/10 rounded-full transition-all disabled:cursor-not-allowed hover:scale-105"
+            className="p-3 bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-black/10 dark:disabled:bg-white/10 rounded-full transition-all disabled:cursor-not-allowed hover:scale-105 flex-shrink-0"
           >
             <PaperAirplaneIcon className="h-5 w-5 text-white"/>
           </button>
