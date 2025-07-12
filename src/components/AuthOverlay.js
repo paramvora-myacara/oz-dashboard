@@ -2,15 +2,19 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useChatStore } from '@/stores/chatStore';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 
 export default function AuthOverlay({ onClose }) {
   const { signInWithGoogle } = useAuth();
+  const { saveGuestForAuth } = useChatStore();
   const [loading, setLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
+      // Save guest conversation before OAuth redirect
+      saveGuestForAuth();
       const { error } = await signInWithGoogle();
       if (error) {
         console.error('Authentication error:', error);
