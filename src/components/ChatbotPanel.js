@@ -4,6 +4,7 @@
 
 'use client';
 import { useState, useRef, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 import { SparklesIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,6 +14,8 @@ import ReactMarkdown from 'react-markdown';
 
 export default function ChatbotPanel() {
   const { user, loading, signOut, getCurrentUser } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const {
     getCurrentConversation,
     getCurrentMessageCount,
@@ -55,8 +58,6 @@ export default function ChatbotPanel() {
     return user.email || 'User';
   };
 
-
-  
   const [input, setInput] = useState('');
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -71,6 +72,27 @@ export default function ChatbotPanel() {
     // Restore guest conversation after OAuth redirect
     restoreGuestForAuth();
   }, []);
+
+  // Check for auth requirement from URL parameters (middleware redirect)
+  useEffect(() => {
+    const authRequired = searchParams.get('auth') === 'required';
+    const returnTo = searchParams.get('returnTo');
+    
+    if (authRequired && !user && !loading) {
+      setShowAuthOverlay(true);
+      
+      // Store returnTo URL for after auth
+      if (returnTo) {
+        sessionStorage.setItem('returnTo', returnTo);
+      }
+      
+      // Clean up URL parameters
+      const newUrl = new URL(window.location);
+      newUrl.searchParams.delete('auth');
+      newUrl.searchParams.delete('returnTo');
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [searchParams, user, loading]);
   
   // Animate preset questions with breathing highlights
   useEffect(() => {
@@ -149,6 +171,14 @@ export default function ChatbotPanel() {
         setShowAuthOverlay(false);
       }
       
+      // Check for returnTo URL after successful auth
+      const returnTo = sessionStorage.getItem('returnTo');
+      if (returnTo) {
+        sessionStorage.removeItem('returnTo');
+        router.push(returnTo);
+        return; // Don't process pending question if we're redirecting
+      }
+      
       // If there was a pending question, answer it now (only once)
       if (pendingQuestion) {
         // Clear pending question immediately to prevent multiple executions
@@ -163,7 +193,7 @@ export default function ChatbotPanel() {
       // User signed out - switch back to guest
       setCurrentUser('guest');
     }
-  }, [user, showAuthOverlay, copyGuestToUser, setCurrentUser, getPendingQuestion, clearPendingQuestion]);
+  }, [user, showAuthOverlay, copyGuestToUser, setCurrentUser, getPendingQuestion, clearPendingQuestion, router]);
 
   const handlePresetClick = (question) => {
     handleSend(null, question);
@@ -298,8 +328,6 @@ export default function ChatbotPanel() {
     generateBotResponse(messageText);
   };
 
-
-
   return (
     <aside className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10 relative">
       <style jsx>{`
@@ -384,22 +412,22 @@ export default function ChatbotPanel() {
       </header>
       
       {/* Preset Questions */}
-      <div className="p-4 border-b border-black/10 dark:border-white/5">
-        <p className="text-xs text-black/40 dark:text-white/40 mb-3 font-light">Quick questions:</p>
-        <div className="flex flex-wrap gap-2">
-          {presetQuestions.map((question, idx) => (
+      <div className="p-6 border-b border-black/10 dark:border-white/5">
+        <div className="grid grid-cols-2 gap-2">
+          {presetQuestions.map((question, index) => (
             <button
-              key={idx}
+              key={index}
               onClick={() => handlePresetClick(question)}
-              className={`text-xs px-3 py-1.5 glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white rounded-full transition-all hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 ${highlightedQuestions.has(idx) ? 'breathing' : ''}`}
+              className={`p-3 text-xs text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white glass-card rounded-2xl transition-all text-left font-light hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 ${
+                highlightedQuestions.has(index) ? 'breathing' : ''
+              }`}
             >
               {question}
             </button>
           ))}
         </div>
       </div>
-
-      {/* Messages Container */}
+      
       <div 
         ref={messagesContainerRef}
         className="flex-1 overflow-y-auto p-6 space-y-4"
