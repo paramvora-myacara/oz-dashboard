@@ -6,21 +6,81 @@ import { useChatStore } from '@/stores/chatStore';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 
 export default function AuthOverlay({ onClose }) {
-  const { signInWithGoogle } = useAuth();
+  const { signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } = useAuth();
   const { saveGuestForAuth } = useChatStore();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    setError('');
     try {
       // Save guest conversation before OAuth redirect
       saveGuestForAuth();
       const { error } = await signInWithGoogle();
       if (error) {
+        setError(error.message);
         console.error('Authentication error:', error);
       }
     } catch (error) {
+      setError(error.message);
       console.error('Authentication error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailAuth = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      if (isSignUp) {
+        const { error } = await signUpWithEmail(email, password);
+        if (error) {
+          setError(error.message);
+        } else {
+          setMessage('Check your email for the confirmation link!');
+        }
+      } else {
+        const { error } = await signInWithEmail(email, password);
+        if (error) {
+          setError(error.message);
+        }
+        // Auth context will handle the user state change
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error('Authentication error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      const { error } = await resetPassword(email);
+      if (error) {
+        setError(error.message);
+      } else {
+        setMessage('Check your email for the password reset link!');
+        setShowForgotPassword(false);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error('Password reset error:', error);
     } finally {
       setLoading(false);
     }
@@ -36,7 +96,7 @@ export default function AuthOverlay({ onClose }) {
         <XMarkIcon className="h-5 w-5 text-white/40 hover:text-white/60"/>
       </button>
 
-      <div className="text-center max-w-sm px-6">
+      <div className="text-center max-w-sm px-6 w-full">
         {/* Logo/Icon */}
         <div className="mb-8">
           <div className="w-16 h-16 bg-[#0071e3] rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -51,6 +111,18 @@ export default function AuthOverlay({ onClose }) {
             By continuing, you agree to our privacy policy.
           </p>
         </div>
+
+        {/* Error/Success Messages */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-900/20 border border-red-800 rounded-xl">
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
+        )}
+        {message && (
+          <div className="mb-4 p-3 bg-green-900/20 border border-green-800 rounded-xl">
+            <p className="text-sm text-green-400">{message}</p>
+          </div>
+        )}
 
         {/* Sign in buttons */}
         <div className="space-y-3">
@@ -74,15 +146,84 @@ export default function AuthOverlay({ onClose }) {
             </div>
           </div>
 
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/20 transition-all"
-          />
+          {/* Email Authentication Form */}
+          {showForgotPassword ? (
+            <form onSubmit={handleForgotPassword} className="space-y-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/20 transition-all"
+              />
 
-          <button className="w-full px-6 py-3 bg-white/10 hover:bg-white/15 text-white font-medium rounded-xl transition-all">
-            Continue with email
-          </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full px-6 py-3 bg-[#0071e3] hover:bg-[#0077ed] text-white font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Sending...' : 'Send reset link'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(false)}
+                className="w-full text-sm text-white/60 hover:text-white/80 transition-colors"
+              >
+                ← Back to sign in
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleEmailAuth} className="space-y-3">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/20 transition-all"
+              />
+
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+                minLength={6}
+                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/20 transition-all"
+              />
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full px-6 py-3 bg-[#0071e3] hover:bg-[#0077ed] text-white font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Processing...' : (isSignUp ? 'Create account' : 'Sign in')}
+              </button>
+
+              <div className="flex items-center justify-between text-sm">
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(!isSignUp)}
+                  className="text-white/60 hover:text-white/80 transition-colors"
+                >
+                  {isSignUp ? 'Already have an account?' : 'Need an account?'}
+                </button>
+                
+                {!isSignUp && (
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-white/60 hover:text-white/80 transition-colors"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </div>
