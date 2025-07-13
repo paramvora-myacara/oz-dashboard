@@ -1,13 +1,161 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { X } from 'lucide-react';
 import ozChecker, { checkAddress, initializeOZChecker } from '@/lib/ozChecker';
+import TabContainer from '@/components/TabContainer';
+
+// Address Tab Content Component
+const AddressTabContent = ({ 
+  inputValue, 
+  setInputValue, 
+  selectedAddress, 
+  setSelectedAddress,
+  predictions, 
+  showPredictions, 
+  selectPrediction, 
+  resetForm, 
+  checkOZStatus, 
+  isLoading, 
+  ozDataLoaded,
+  inputRef,
+  predictionsRef 
+}) => (
+  <div className="glass-card rounded-3xl p-8 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 hover:scale-[1.005] transition-all duration-300 animate-fadeIn">
+    <label htmlFor="address-input" className="block text-lg font-medium text-black dark:text-white mb-4">
+      Development Address
+    </label>
+    
+    <div className="relative mb-6">
+      <input
+        ref={inputRef}
+        id="address-input"
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        placeholder="Enter street address (e.g., 123 Main Street, Tampa, FL)..."
+        className="w-full px-6 py-4 pr-14 border border-black/20 dark:border-white/20 rounded-2xl focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3] bg-white/90 dark:bg-black/30 text-black dark:text-white text-lg placeholder-black/40 dark:placeholder-white/40 transition-all backdrop-blur-sm"
+        disabled={isLoading}
+      />
+
+      {/* Clear button */}
+      {(inputValue || selectedAddress) && (
+        <button
+          onClick={resetForm}
+          disabled={isLoading}
+          className="absolute right-4 top-4 bottom-4 flex items-center justify-center w-6 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-200 disabled:cursor-not-allowed"
+          title="Clear address"
+        >
+          <X className="w-4 h-4 text-black/60 dark:text-white/60" />
+        </button>
+      )}
+
+      {/* Address format hint */}
+      <p className="mt-3 text-sm text-black/60 dark:text-white/60 font-light">
+        💡 Tip: Use street addresses with numbers (not business/building names) for best results
+      </p>
+
+      {/* Predictions Dropdown */}
+      {showPredictions && predictions.length > 0 && (
+        <div 
+          ref={predictionsRef}
+          className="absolute z-10 w-full mt-2 glass-card bg-white/95 dark:bg-black/90 border border-black/20 dark:border-white/20 rounded-2xl shadow-2xl max-h-64 overflow-y-auto backdrop-blur-xl"
+        >
+          {predictions.map((prediction, index) => (
+            <button
+              key={prediction.placeId}
+              onClick={() => selectPrediction(prediction)}
+              className="w-full px-6 py-4 text-left hover:bg-black/5 dark:hover:bg-white/5 focus:bg-black/10 dark:focus:bg-white/10 focus:outline-none text-black dark:text-white first:rounded-t-2xl last:rounded-b-2xl transition-all duration-200"
+            >
+              {prediction.description}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {/* Check Address Button */}
+    <button
+      onClick={checkOZStatus}
+      disabled={isLoading || !selectedAddress || !ozDataLoaded}
+      className="w-full bg-[#0071e3] hover:bg-[#0071e3]/90 disabled:bg-black/20 dark:disabled:bg-white/20 text-white font-medium py-4 px-8 rounded-2xl transition-all duration-300 disabled:cursor-not-allowed disabled:text-black/40 dark:disabled:text-white/40 text-lg"
+    >
+      {isLoading ? 'Checking...' : 'Check OZ Status'}
+    </button>
+  </div>
+);
+
+// Coordinates Tab Content Component
+const CoordinatesTabContent = ({ 
+  latitude, 
+  setLatitude, 
+  longitude, 
+  setLongitude, 
+  checkCoordinates, 
+  isLoading, 
+  ozDataLoaded 
+}) => (
+  <div className="glass-card rounded-3xl p-8 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 hover:scale-[1.005] transition-all duration-300 animate-fadeIn">
+    <label className="block text-lg font-medium text-black dark:text-white mb-4">
+      Property Coordinates
+    </label>
+    
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div>
+        <label htmlFor="latitude-input" className="block text-sm font-medium text-black/60 dark:text-white/60 mb-2">
+          Latitude
+        </label>
+        <input
+          id="latitude-input"
+          type="number"
+          step="any"
+          value={latitude}
+          onChange={(e) => setLatitude(e.target.value)}
+          placeholder="e.g., 27.9506"
+          className="w-full px-6 py-4 border border-black/20 dark:border-white/20 rounded-2xl focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3] bg-white/90 dark:bg-black/30 text-black dark:text-white text-lg placeholder-black/40 dark:placeholder-white/40 transition-all backdrop-blur-sm"
+          disabled={isLoading}
+        />
+      </div>
+      
+      <div>
+        <label htmlFor="longitude-input" className="block text-sm font-medium text-black/60 dark:text-white/60 mb-2">
+          Longitude
+        </label>
+        <input
+          id="longitude-input"
+          type="number"
+          step="any"
+          value={longitude}
+          onChange={(e) => setLongitude(e.target.value)}
+          placeholder="e.g., -82.4572"
+          className="w-full px-6 py-4 border border-black/20 dark:border-white/20 rounded-2xl focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3] bg-white/90 dark:bg-black/30 text-black dark:text-white text-lg placeholder-black/40 dark:placeholder-white/40 transition-all backdrop-blur-sm"
+          disabled={isLoading}
+        />
+      </div>
+    </div>
+
+    {/* Coordinates format hint */}
+    <p className="mb-6 text-sm text-black/60 dark:text-white/60 font-light">
+      💡 Tip: Use decimal degrees format. You can find coordinates from Google Maps, GPS devices, or surveyor reports
+    </p>
+
+    {/* Check Coordinates Button */}
+    <button
+      onClick={checkCoordinates}
+      disabled={isLoading || !latitude || !longitude || !ozDataLoaded}
+      className="w-full bg-[#0071e3] hover:bg-[#0071e3]/90 disabled:bg-black/20 dark:disabled:bg-white/20 text-white font-medium py-4 px-8 rounded-2xl transition-all duration-300 disabled:cursor-not-allowed disabled:text-black/40 dark:disabled:text-white/40 text-lg"
+    >
+      {isLoading ? 'Checking...' : 'Check OZ Status'}
+    </button>
+  </div>
+);
 
 export default function CheckOZPage() {
   const [inputValue, setInputValue] = useState('');
   const [predictions, setPredictions] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
@@ -130,7 +278,7 @@ export default function CheckOZPage() {
         } else if (ozResult.error.includes('No address match found')) {
           setError('Address not found. Please try:\n• Including the full street address with number\n• Verifying the address exists\n• Using a different format (e.g., "123 Main St" vs "123 Main Street")\n• Avoiding business names - use street addresses');
         } else if (ozResult.error.includes('timeout') || ozResult.error.includes('failed')) {
-          setError('Service temporarily unavailable. Please try again in a moment or use the "Use My Location" button if you\'re at the property.');
+          setError('Service temporarily unavailable. Please try again in a moment.');
         } else {
           setError(ozResult.error || 'Unable to determine if this address is in an Opportunity Zone');
         }
@@ -138,6 +286,56 @@ export default function CheckOZPage() {
     } catch (error) {
       console.error('Error checking OZ status:', error);
       setError('An error occurred while checking the address. Please try again or check your internet connection.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const checkCoordinates = async () => {
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+
+    if (isNaN(lat) || isNaN(lng)) {
+      setError('Please enter valid latitude and longitude coordinates');
+      return;
+    }
+
+    if (lat < 24 || lat > 49 || lng < -125 || lng > -66) {
+      setError('Coordinates must be within the continental United States');
+      return;
+    }
+
+    if (!ozDataLoaded) {
+      setError('OZ data is still loading. Please try again in a moment.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    setResult(null);
+
+    try {
+      console.log('Checking coordinates:', lat, lng);
+      
+      // Import and use checkCoordinates function
+      const { checkCoordinates } = await import('@/lib/ozChecker');
+      const ozResult = await checkCoordinates(lat, lng);
+
+      if (ozResult.success) {
+        setResult({
+          isInOZ: ozResult.isOpportunityZone,
+          geoid: ozResult.geoid,
+          address: `Coordinates: ${lat}, ${lng}`,
+          coordinates: ozResult.coordinates,
+          censusData: ozResult.censusData,
+          matchedAddress: ozResult.matchedAddress
+        });
+      } else {
+        setError(ozResult.error || 'Unable to determine if these coordinates are in an Opportunity Zone');
+      }
+    } catch (error) {
+      console.error('Error checking coordinates:', error);
+      setError('An error occurred while checking the coordinates. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -159,70 +357,77 @@ export default function CheckOZPage() {
   const resetForm = () => {
     setInputValue('');
     setSelectedAddress('');
+    setLatitude('');
+    setLongitude('');
     setPredictions([]);
     setShowPredictions(false);
     setResult(null);
     setError('');
   };
 
-  const checkCurrentLocation = async () => {
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
-      return;
+  // Memoize tabs array to prevent unnecessary re-renders
+  const tabs = useMemo(() => [
+    {
+      id: 'address',
+      label: 'Check Address',
+      content: (
+        <AddressTabContent
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          selectedAddress={selectedAddress}
+          setSelectedAddress={setSelectedAddress}
+          predictions={predictions}
+          showPredictions={showPredictions}
+          selectPrediction={selectPrediction}
+          resetForm={resetForm}
+          checkOZStatus={checkOZStatus}
+          isLoading={isLoading}
+          ozDataLoaded={ozDataLoaded}
+          inputRef={inputRef}
+          predictionsRef={predictionsRef}
+        />
+      )
+    },
+    {
+      id: 'coordinates',
+      label: 'Enter Coordinates',
+      content: (
+        <CoordinatesTabContent
+          latitude={latitude}
+          setLatitude={setLatitude}
+          longitude={longitude}
+          setLongitude={setLongitude}
+          checkCoordinates={checkCoordinates}
+          isLoading={isLoading}
+          ozDataLoaded={ozDataLoaded}
+        />
+      )
     }
-
-    setIsLoading(true);
-    setError('');
-    setResult(null);
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          
-          // Import checkCoordinates function
-          const { checkCoordinates } = await import('@/lib/ozChecker');
-          const ozResult = await checkCoordinates(latitude, longitude);
-
-          if (ozResult.success) {
-            setResult({
-              isInOZ: ozResult.isOpportunityZone,
-              geoid: ozResult.geoid,
-              address: 'Current Location',
-              coordinates: ozResult.coordinates,
-              censusData: ozResult.censusData,
-              matchedAddress: ozResult.matchedAddress
-            });
-            setSelectedAddress('Current Location');
-          } else {
-            setError(ozResult.error || 'Unable to determine if your current location is in an Opportunity Zone');
-          }
-        } catch (error) {
-          console.error('Error checking current location:', error);
-          setError('An error occurred while checking your location. Please try again.');
-        } finally {
-          setIsLoading(false);
-        }
-      },
-      (error) => {
-        console.error('Geolocation error:', error);
-        setError('Unable to access your location. Please check your browser permissions.');
-        setIsLoading(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
+  ], [
+    inputValue,
+    selectedAddress,
+    predictions,
+    showPredictions,
+    latitude,
+    longitude,
+    isLoading,
+    ozDataLoaded,
+    selectPrediction,
+    resetForm,
+    checkOZStatus,
+    checkCoordinates
+  ]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black px-8 py-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto w-full">
         {/* Header */}
         <div className="text-center mb-12 animate-fadeIn">
           <h1 className="text-5xl font-semibold text-black dark:text-white tracking-tight mb-4">
             Check if Your Development is in an Opportunity Zone
           </h1>
           <p className="text-xl text-black/60 dark:text-white/60 font-light">
-            Enter your development address to see if it qualifies for Opportunity Zone benefits
+            Enter your development address or coordinates to see if it qualifies for Opportunity Zone benefits
           </p>
           {!ozDataLoaded && (
             <div className="mt-6 text-sm text-[#0071e3] animate-pulse">
@@ -231,79 +436,8 @@ export default function CheckOZPage() {
           )}
         </div>
 
-        {/* Address Input */}
-        <div className="glass-card rounded-3xl p-8 mb-8 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 hover:scale-[1.005] transition-all duration-300 animate-fadeIn">
-          <label htmlFor="address-input" className="block text-lg font-medium text-black dark:text-white mb-4">
-            Development Address
-          </label>
-          
-          <div className="relative mb-6">
-            <input
-              ref={inputRef}
-              id="address-input"
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Enter street address (e.g., 123 Main Street, Tampa, FL)..."
-              className="w-full px-6 py-4 pr-14 border border-black/20 dark:border-white/20 rounded-2xl focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3] bg-white/90 dark:bg-black/30 text-black dark:text-white text-lg placeholder-black/40 dark:placeholder-white/40 transition-all backdrop-blur-sm"
-              disabled={isLoading}
-            />
-
-            {/* Clear button */}
-            {(inputValue || selectedAddress) && (
-              <button
-                onClick={resetForm}
-                disabled={isLoading}
-                className="absolute right-4 top-4 bottom-4 flex items-center justify-center w-6 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-200 disabled:cursor-not-allowed"
-                title="Clear address"
-              >
-                <X className="w-4 h-4 text-black/60 dark:text-white/60" />
-              </button>
-            )}
-
-            {/* Address format hint */}
-            <p className="mt-3 text-sm text-black/60 dark:text-white/60 font-light">
-              💡 Tip: Use street addresses with numbers (not business/building names) for best results
-            </p>
-
-            {/* Predictions Dropdown */}
-            {showPredictions && predictions.length > 0 && (
-              <div 
-                ref={predictionsRef}
-                className="absolute z-10 w-full mt-2 glass-card bg-white/95 dark:bg-black/90 border border-black/20 dark:border-white/20 rounded-2xl shadow-2xl max-h-64 overflow-y-auto backdrop-blur-xl"
-              >
-                {predictions.map((prediction, index) => (
-                  <button
-                    key={prediction.placeId}
-                    onClick={() => selectPrediction(prediction)}
-                    className="w-full px-6 py-4 text-left hover:bg-black/5 dark:hover:bg-white/5 focus:bg-black/10 dark:focus:bg-white/10 focus:outline-none text-black dark:text-white first:rounded-t-2xl last:rounded-b-2xl transition-all duration-200"
-                  >
-                    {prediction.description}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button
-              onClick={checkOZStatus}
-              disabled={isLoading || !selectedAddress || !ozDataLoaded}
-              className="flex-1 bg-[#0071e3] hover:bg-[#0071e3]/90 disabled:bg-black/20 dark:disabled:bg-white/20 text-white font-medium py-4 px-8 rounded-2xl transition-all duration-300 disabled:cursor-not-allowed disabled:text-black/40 dark:disabled:text-white/40 text-lg"
-            >
-              {isLoading ? 'Checking...' : 'Check OZ Status'}
-            </button>
-            
-            <button
-              onClick={checkCurrentLocation}
-              disabled={isLoading || !ozDataLoaded}
-              className="bg-[#30d158] hover:bg-[#30d158]/90 disabled:bg-black/20 dark:disabled:bg-white/20 text-white font-medium py-4 px-8 rounded-2xl transition-all duration-300 disabled:cursor-not-allowed disabled:text-black/40 dark:disabled:text-white/40 text-lg"
-            >
-              Use My Location
-            </button>
-          </div>
-        </div>
+        {/* Tab Container */}
+        <TabContainer tabs={tabs} defaultTab={0} className="mb-8" />
 
         {/* Error Message */}
         {error && (
@@ -352,7 +486,7 @@ export default function CheckOZPage() {
             {/* Result Details */}
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-black/60 dark:text-white/60 block mb-1">Address:</label>
+                <label className="text-sm font-medium text-black/60 dark:text-white/60 block mb-1">Location:</label>
                 <p className="text-black dark:text-white font-light text-lg">{result.matchedAddress || result.address}</p>
               </div>
               
