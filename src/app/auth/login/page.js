@@ -5,10 +5,16 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
-  const { user, loading, signInWithGoogle } = useAuth();
+  const { user, loading, signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const returnTo = searchParams.get('returnTo') || '/';
 
@@ -21,14 +27,68 @@ export default function LoginPage() {
 
   const handleGoogleSignIn = async () => {
     setIsSigningIn(true);
+    setError('');
     try {
       const { error } = await signInWithGoogle();
       if (error) {
+        setError(error.message);
         console.error('Authentication error:', error);
       }
       // The useEffect above will handle the redirect after auth
     } catch (error) {
+      setError(error.message);
       console.error('Authentication error:', error);
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
+
+  const handleEmailAuth = async (e) => {
+    e.preventDefault();
+    setIsSigningIn(true);
+    setError('');
+    setMessage('');
+
+    try {
+      if (isSignUp) {
+        const { error } = await signUpWithEmail(email, password);
+        if (error) {
+          setError(error.message);
+        } else {
+          setMessage('Check your email for the confirmation link!');
+        }
+      } else {
+        const { error } = await signInWithEmail(email, password);
+        if (error) {
+          setError(error.message);
+        }
+        // The useEffect above will handle the redirect after auth
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error('Authentication error:', error);
+    } finally {
+      setIsSigningIn(false);
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setIsSigningIn(true);
+    setError('');
+    setMessage('');
+
+    try {
+      const { error } = await resetPassword(email);
+      if (error) {
+        setError(error.message);
+      } else {
+        setMessage('Check your email for the password reset link!');
+        setShowForgotPassword(false);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error('Password reset error:', error);
     } finally {
       setIsSigningIn(false);
     }
@@ -66,6 +126,19 @@ export default function LoginPage() {
         </div>
 
         <div className="glass-card bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-3xl p-8">
+          {/* Error/Success Messages */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            </div>
+          )}
+          {message && (
+            <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+              <p className="text-sm text-green-600 dark:text-green-400">{message}</p>
+            </div>
+          )}
+
+          {/* Google Sign In */}
           <button
             onClick={handleGoogleSignIn}
             disabled={isSigningIn}
@@ -76,6 +149,113 @@ export default function LoginPage() {
               {isSigningIn ? 'Signing in...' : 'Continue with Google'}
             </span>
           </button>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-black/10 dark:border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-3 bg-white dark:bg-black text-black/60 dark:text-white/60">or</span>
+            </div>
+          </div>
+
+          {/* Email Authentication Form */}
+          {showForgotPassword ? (
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-black/70 dark:text-white/70 mb-2">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-black/10 dark:border-white/10 rounded-xl text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-[#0071e3] transition-all"
+                  placeholder="Enter your email"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSigningIn}
+                className="w-full px-6 py-4 bg-[#0071e3] hover:bg-[#0077ed] text-white font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSigningIn ? 'Sending...' : 'Send reset link'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(false)}
+                className="w-full text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+              >
+                ← Back to sign in
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleEmailAuth} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-black/70 dark:text-white/70 mb-2">
+                  Email address
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-black/10 dark:border-white/10 rounded-xl text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-[#0071e3] transition-all"
+                  placeholder="Enter your email"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-black/70 dark:text-white/70 mb-2">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-black/10 dark:border-white/10 rounded-xl text-black dark:text-white placeholder-black/40 dark:placeholder-white/40 focus:outline-none focus:border-[#0071e3] transition-all"
+                  placeholder="Enter your password"
+                  minLength={6}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSigningIn}
+                className="w-full px-6 py-4 bg-[#0071e3] hover:bg-[#0077ed] text-white font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSigningIn ? 'Processing...' : (isSignUp ? 'Create account' : 'Sign in')}
+              </button>
+
+              <div className="flex items-center justify-between text-sm">
+                <button
+                  type="button"
+                  onClick={() => setIsSignUp(!isSignUp)}
+                  className="text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+                >
+                  {isSignUp ? 'Already have an account?' : 'Need an account?'}
+                </button>
+                
+                {!isSignUp && (
+                  <button
+                    type="button"
+                    onClick={() => setShowForgotPassword(true)}
+                    className="text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+            </form>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-sm text-black/60 dark:text-white/60">
