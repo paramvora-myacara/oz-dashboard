@@ -29,7 +29,7 @@ export default function LoginPage() {
     setIsSigningIn(true);
     setError('');
     try {
-      const { error } = await signInWithGoogle();
+      const { error } = await signInWithGoogle(returnTo);
       if (error) {
         setError(error.message);
         console.error('Authentication error:', error);

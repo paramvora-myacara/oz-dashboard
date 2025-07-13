@@ -2,14 +2,10 @@ import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(request) {
-  console.log('🔥 MIDDLEWARE IS RUNNING FOR:', request.nextUrl.pathname)
-  
   // Protected routes that require authentication
-const protectedRoutes = ['/check-oz', '/tax-calculator']
+  const protectedRoutes = ['/check-oz', '/tax-calculator']
   const { pathname } = request.nextUrl
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
-
-  console.log('🔒 Is protected route:', isProtectedRoute)
 
   let response = NextResponse.next({
     request: {
@@ -38,22 +34,14 @@ const protectedRoutes = ['/check-oz', '/tax-calculator']
   // This will refresh session if expired - required for Server Components
   const { data: { user }, error } = await supabase.auth.getUser()
 
-  console.log('👤 User found:', !!user)
-  if (user) {
-    console.log('📧 User email:', user.email)
-  }
-
   // Check if this is a protected route and user is not authenticated
   if (isProtectedRoute && !user) {
-    console.log('🚫 Blocking access - redirecting to login page')
     // Redirect to login page with returnTo parameter
     const loginUrl = new URL('/auth/login', request.url)
     loginUrl.searchParams.set('returnTo', pathname)
-    console.log('🔄 Redirecting to:', loginUrl.toString())
     return NextResponse.redirect(loginUrl)
   }
 
-  console.log('✅ Allowing access to:', pathname)
   return response
 }
 
