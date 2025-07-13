@@ -5,7 +5,7 @@ export async function middleware(request) {
   console.log('🔥 MIDDLEWARE IS RUNNING FOR:', request.nextUrl.pathname)
   
   // Protected routes that require authentication
-  const protectedRoutes = ['/check-oz']
+const protectedRoutes = ['/check-oz', '/tax-calculator']
   const { pathname } = request.nextUrl
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
 
