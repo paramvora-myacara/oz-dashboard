@@ -69,20 +69,7 @@ export default function CheckInvestorEligibilityPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/login?returnTo=/check-investor-eligibility');
-    }
-  }, [user, loading, router]);
-
-  // Set role to Investor when user starts the flow
-  useEffect(() => {
-    if (user && !loading) {
-      updateUserProfile({ role: 'Investor' });
-    }
-  }, [user, loading, updateUserProfile]);
-
+  // Define updateUserProfile first
   const updateUserProfile = useCallback(async (data) => {
     if (!user) return;
     
@@ -105,6 +92,20 @@ export default function CheckInvestorEligibilityPage() {
       setIsUpdating(false);
     }
   }, [user]);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/login?returnTo=/check-investor-eligibility');
+    }
+  }, [user, loading, router]);
+
+  // Set role to Investor when user starts the flow
+  useEffect(() => {
+    if (user && !loading) {
+      updateUserProfile({ role: 'Investor' });
+    }
+  }, [user, loading, updateUserProfile]);
 
   const handleStepComplete = async (stepId, value) => {
     const newFormData = { ...formData, [stepId]: value };
