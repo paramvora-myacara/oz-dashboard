@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { X } from 'lucide-react';
 import ozChecker, { checkAddress, initializeOZChecker } from '@/lib/ozChecker';
 
 export default function CheckOZPage() {
@@ -213,30 +214,30 @@ export default function CheckOZPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-white dark:bg-black px-8 py-8">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="text-center mb-12 animate-fadeIn">
+          <h1 className="text-5xl font-semibold text-black dark:text-white tracking-tight mb-4">
             Check if Your Development is in an Opportunity Zone
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <p className="text-xl text-black/60 dark:text-white/60 font-light">
             Enter your development address to see if it qualifies for Opportunity Zone benefits
           </p>
           {!ozDataLoaded && (
-            <div className="mt-4 text-sm text-blue-600 dark:text-blue-400">
+            <div className="mt-6 text-sm text-[#0071e3] animate-pulse">
               Loading OZ data... ({ozChecker.getStats().totalOZTracts || '8,765'} census tracts)
             </div>
           )}
         </div>
 
         {/* Address Input */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-          <label htmlFor="address-input" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <div className="glass-card rounded-3xl p-8 mb-8 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 hover:scale-[1.005] transition-all duration-300 animate-fadeIn">
+          <label htmlFor="address-input" className="block text-lg font-medium text-black dark:text-white mb-4">
             Development Address
           </label>
           
-          <div className="relative">
+          <div className="relative mb-6">
             <input
               ref={inputRef}
               id="address-input"
@@ -244,12 +245,24 @@ export default function CheckOZPage() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Enter street address (e.g., 123 Main Street, Tampa, FL)..."
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-lg"
+              className="w-full px-6 py-4 pr-14 border border-black/20 dark:border-white/20 rounded-2xl focus:ring-2 focus:ring-[#0071e3] focus:border-[#0071e3] bg-white/90 dark:bg-black/30 text-black dark:text-white text-lg placeholder-black/40 dark:placeholder-white/40 transition-all backdrop-blur-sm"
               disabled={isLoading}
             />
 
+            {/* Clear button */}
+            {(inputValue || selectedAddress) && (
+              <button
+                onClick={resetForm}
+                disabled={isLoading}
+                className="absolute right-4 top-4 bottom-4 flex items-center justify-center w-6 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-200 disabled:cursor-not-allowed"
+                title="Clear address"
+              >
+                <X className="w-4 h-4 text-black/60 dark:text-white/60" />
+              </button>
+            )}
+
             {/* Address format hint */}
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-3 text-sm text-black/60 dark:text-white/60 font-light">
               💡 Tip: Use street addresses with numbers (not business/building names) for best results
             </p>
 
@@ -257,13 +270,13 @@ export default function CheckOZPage() {
             {showPredictions && predictions.length > 0 && (
               <div 
                 ref={predictionsRef}
-                className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                className="absolute z-10 w-full mt-2 glass-card bg-white/95 dark:bg-black/90 border border-black/20 dark:border-white/20 rounded-2xl shadow-2xl max-h-64 overflow-y-auto backdrop-blur-xl"
               >
                 {predictions.map((prediction, index) => (
                   <button
                     key={prediction.placeId}
                     onClick={() => selectPrediction(prediction)}
-                    className="w-full px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 focus:outline-none text-gray-900 dark:text-white first:rounded-t-lg last:rounded-b-lg"
+                    className="w-full px-6 py-4 text-left hover:bg-black/5 dark:hover:bg-white/5 focus:bg-black/10 dark:focus:bg-white/10 focus:outline-none text-black dark:text-white first:rounded-t-2xl last:rounded-b-2xl transition-all duration-200"
                   >
                     {prediction.description}
                   </button>
@@ -273,11 +286,11 @@ export default function CheckOZPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-4 mt-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={checkOZStatus}
               disabled={isLoading || !selectedAddress || !ozDataLoaded}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:cursor-not-allowed"
+              className="flex-1 bg-[#0071e3] hover:bg-[#0071e3]/90 disabled:bg-black/20 dark:disabled:bg-white/20 text-white font-medium py-4 px-8 rounded-2xl transition-all duration-300 disabled:cursor-not-allowed disabled:text-black/40 dark:disabled:text-white/40 text-lg"
             >
               {isLoading ? 'Checking...' : 'Check OZ Status'}
             </button>
@@ -285,33 +298,25 @@ export default function CheckOZPage() {
             <button
               onClick={checkCurrentLocation}
               disabled={isLoading || !ozDataLoaded}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:cursor-not-allowed"
+              className="bg-[#30d158] hover:bg-[#30d158]/90 disabled:bg-black/20 dark:disabled:bg-white/20 text-white font-medium py-4 px-8 rounded-2xl transition-all duration-300 disabled:cursor-not-allowed disabled:text-black/40 dark:disabled:text-white/40 text-lg"
             >
               Use My Location
-            </button>
-            
-            <button
-              onClick={resetForm}
-              disabled={isLoading}
-              className="bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:cursor-not-allowed"
-            >
-              Reset
             </button>
           </div>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
+          <div className="glass-card rounded-3xl p-6 mb-8 bg-[#ff375f]/5 border border-[#ff375f]/20 animate-fadeIn">
             <div className="flex items-start">
-              <div className="text-red-600 dark:text-red-400 mt-0.5">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <div className="text-[#ff375f] mt-1 mr-4">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="text-red-700 dark:text-red-300">
+              <div className="text-[#ff375f] font-medium">
                 {error.split('\n').map((line, index) => (
-                  <div key={index} className={index > 0 ? 'mt-1' : ''}>
+                  <div key={index} className={index > 0 ? 'mt-2' : ''}>
                     {line}
                   </div>
                 ))}
@@ -322,20 +327,20 @@ export default function CheckOZPage() {
 
         {/* Results */}
         {result && (
-          <div className={`rounded-lg shadow-lg p-6 mb-6 ${
+          <div className={`glass-card rounded-3xl p-8 mb-8 animate-fadeIn ${
             result.isInOZ 
-              ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' 
-              : 'bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800'
+              ? 'bg-[#30d158]/5 border border-[#30d158]/20' 
+              : 'bg-[#ff9500]/5 border border-[#ff9500]/20'
           }`}>
-            <div className="flex items-center mb-4">
-              <div className={`text-2xl mr-3 ${result.isInOZ ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'}`}>
+            <div className="flex items-center mb-6">
+              <div className={`text-3xl mr-4 ${result.isInOZ ? 'text-[#30d158]' : 'text-[#ff9500]'}`}>
                 {result.isInOZ ? '✅' : '❌'}
               </div>
               <div>
-                <h3 className={`text-xl font-bold ${result.isInOZ ? 'text-green-800 dark:text-green-200' : 'text-orange-800 dark:text-orange-200'}`}>
+                <h3 className={`text-2xl font-semibold ${result.isInOZ ? 'text-[#30d158]' : 'text-[#ff9500]'} mb-1`}>
                   {result.isInOZ ? 'Opportunity Zone Qualified!' : 'Not in an Opportunity Zone'}
                 </h3>
-                <p className={`text-sm ${result.isInOZ ? 'text-green-600 dark:text-green-300' : 'text-orange-600 dark:text-orange-300'}`}>
+                <p className={`text-lg ${result.isInOZ ? 'text-[#30d158]/80' : 'text-[#ff9500]/80'} font-light`}>
                   {result.isInOZ 
                     ? 'This development may qualify for Opportunity Zone tax benefits' 
                     : 'This location does not qualify for Opportunity Zone benefits'
@@ -345,21 +350,21 @@ export default function CheckOZPage() {
             </div>
 
             {/* Result Details */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Address:</label>
-                <p className="text-gray-900 dark:text-gray-100">{result.matchedAddress || result.address}</p>
+                <label className="text-sm font-medium text-black/60 dark:text-white/60 block mb-1">Address:</label>
+                <p className="text-black dark:text-white font-light text-lg">{result.matchedAddress || result.address}</p>
               </div>
               
               <div>
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Census Tract GEOID:</label>
-                <p className="text-gray-900 dark:text-gray-100 font-mono">{result.geoid}</p>
+                <label className="text-sm font-medium text-black/60 dark:text-white/60 block mb-1">Census Tract GEOID:</label>
+                <p className="text-black dark:text-white font-mono text-lg">{result.geoid}</p>
               </div>
 
               {result.coordinates && (
                 <div>
-                  <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Coordinates:</label>
-                  <p className="text-gray-900 dark:text-gray-100 font-mono">
+                  <label className="text-sm font-medium text-black/60 dark:text-white/60 block mb-1">Coordinates:</label>
+                  <p className="text-black dark:text-white font-mono text-lg">
                     {result.coordinates.lat.toFixed(6)}, {result.coordinates.lng.toFixed(6)}
                   </p>
                 </div>
@@ -367,8 +372,8 @@ export default function CheckOZPage() {
 
               {result.censusData && (
                 <div>
-                  <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Census Information:</label>
-                  <p className="text-gray-900 dark:text-gray-100">
+                  <label className="text-sm font-medium text-black/60 dark:text-white/60 block mb-1">Census Information:</label>
+                  <p className="text-black dark:text-white font-light text-lg">
                     State: {result.censusData.state} | County: {result.censusData.county} | Tract: {result.censusData.tract}
                   </p>
                 </div>
@@ -377,9 +382,9 @@ export default function CheckOZPage() {
 
             {/* Additional Information */}
             {result.isInOZ && (
-              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Next Steps:</h4>
-                <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+              <div className="mt-8 glass-card p-6 bg-[#0071e3]/5 rounded-2xl border border-[#0071e3]/20">
+                <h4 className="font-semibold text-[#0071e3] mb-4 text-lg">Next Steps:</h4>
+                <ul className="text-black/80 dark:text-white/80 space-y-2 font-light">
                   <li>• Consult with a qualified tax professional about OZ benefits</li>
                   <li>• Consider establishing or investing through a Qualified Opportunity Fund</li>
                   <li>• Verify current OZ designation status before proceeding</li>
@@ -389,20 +394,6 @@ export default function CheckOZPage() {
             )}
           </div>
         )}
-
-        {/* Information Section */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">About Opportunity Zones</h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-            Opportunity Zones are economically distressed communities where new investments may be 
-            eligible for preferential tax treatment. This tool checks if your development address 
-            falls within a designated Opportunity Zone census tract using official US Census data.
-          </p>
-          <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
-            <p>Data includes {ozChecker.getStats().totalOZTracts || '8,765'} Opportunity Zone census tracts across all US states and territories.</p>
-            <p>This tool is for informational purposes only. Always verify with official sources and consult tax professionals.</p>
-          </div>
-        </div>
       </div>
     </div>
   );
