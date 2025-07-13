@@ -145,6 +145,7 @@ export default function ChatbotPanel() {
   // Handle user auth state changes
   useEffect(() => {
     if (user) {
+      
       const state = useChatStore.getState();
       const userHasConversation = state.conversations[user.id];
       const guestConversation = state.conversations.guest;
@@ -171,12 +172,29 @@ export default function ChatbotPanel() {
         setShowAuthOverlay(false);
       }
       
+      // Check if we've already processed a redirect in this session
+      const redirectProcessed = sessionStorage.getItem('authFlow_redirectProcessed');
+      if (redirectProcessed) {
+        return;
+      }
+      
       // Check for returnTo URL after successful auth
       const returnTo = sessionStorage.getItem('returnTo');
-      if (returnTo) {
+      const authFlowReturnTo = sessionStorage.getItem('authFlow_returnTo');
+      
+      // Try both storage locations
+      const finalReturnTo = returnTo || authFlowReturnTo;
+      
+      if (finalReturnTo && finalReturnTo !== '/') {
+        // Mark that we've processed a redirect in this session
+        sessionStorage.setItem('authFlow_redirectProcessed', 'true');
+        // Clean up auth-related storage
         sessionStorage.removeItem('returnTo');
-        router.push(returnTo);
+        sessionStorage.removeItem('authFlow_returnTo');
+        sessionStorage.removeItem('authFlow_debug');
+        router.push(finalReturnTo);
         return; // Don't process pending question if we're redirecting
+      } else {
       }
       
       // If there was a pending question, answer it now (only once)
@@ -190,7 +208,8 @@ export default function ChatbotPanel() {
         }, 300);
       }
     } else {
-      // User signed out - switch back to guest
+      // User signed out - switch back to guest and clear redirect flag
+      sessionStorage.removeItem('authFlow_redirectProcessed');
       setCurrentUser('guest');
     }
   }, [user, showAuthOverlay, copyGuestToUser, setCurrentUser, getPendingQuestion, clearPendingQuestion, router]);
@@ -215,11 +234,6 @@ export default function ChatbotPanel() {
     const { user: currentUser } = await getCurrentUser();
     const userId = currentUser?.id || user?.id || 'guest';
     const backendUrl = process.env.NEXT_PUBLIC_OZ_BACKEND_URL || 'http://localhost:8001';
-    console.log('Using backend URL:', backendUrl);
-    console.log('User object from context:', user);
-    console.log('Current user from Supabase:', currentUser);
-    console.log('User ID being sent:', userId);
-    console.log('User email:', currentUser?.email || user?.email);
     
     try {
       const res = await fetch(`${backendUrl}/chat`, {
@@ -235,7 +249,6 @@ export default function ChatbotPanel() {
       }
       
       const data = await res.json();
-      console.log('Backend response:', data);
       
       // Remove the loading message and add the actual response
       // We need to remove the loading message first, then add the real response
@@ -326,6 +339,22 @@ export default function ChatbotPanel() {
     
     // Generate bot response
     generateBotResponse(messageText);
+  };
+
+  // Get returnTo from URL params or sessionStorage
+  const getReturnTo = () => {
+    const returnFromUrl = searchParams.get('returnTo');
+    const returnFromSession = typeof window !== 'undefined' ? sessionStorage.getItem('returnTo') : null;
+    const authFlowReturnTo = typeof window !== 'undefined' ? sessionStorage.getItem('authFlow_returnTo') : null;
+    const result = returnFromUrl || returnFromSession || authFlowReturnTo || '/';
+    
+    // Store returnTo in both locations for persistence
+    if (returnFromUrl && returnFromUrl !== '/') {
+      sessionStorage.setItem('returnTo', returnFromUrl);
+      sessionStorage.setItem('authFlow_returnTo', returnFromUrl);
+    }
+    
+    return result;
   };
 
   return (
@@ -498,10 +527,13 @@ export default function ChatbotPanel() {
 
       {/* Auth Overlay */}
       {showAuthOverlay && (
-        <AuthOverlay onClose={() => {
-          setShowAuthOverlay(false);
-          clearPendingQuestion(); // Clear pending question when user closes overlay
-        }} />
+        <AuthOverlay 
+          onClose={() => {
+            setShowAuthOverlay(false);
+            clearPendingQuestion(); // Clear pending question when user closes overlay
+          }}
+          returnTo={getReturnTo()}
+        />
       )}
     </aside>
   );
