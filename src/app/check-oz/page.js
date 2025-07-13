@@ -80,7 +80,7 @@ export default function CheckOZPage() {
         {/* Header */}
         <div className="text-center mb-12 animate-fadeIn">
           <h1 className="text-5xl font-semibold text-black dark:text-white tracking-tight mb-4">
-            Check if Your Development is in an Opportunity Zone
+            Check if Your Development is in an OZ
           </h1>
           <p className="text-xl text-black/60 dark:text-white/60 font-light">
             Enter your development address or coordinates to see if it qualifies for Opportunity Zone benefits
