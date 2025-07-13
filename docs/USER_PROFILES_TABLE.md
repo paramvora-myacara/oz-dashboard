@@ -293,6 +293,79 @@ WHERE up.user_id = 'some-uuid';
 SELECT * FROM user_profiles_with_email WHERE user_id = 'some-uuid';
 ```
 
+# Schema Migration v3
+
+This section contains the migration statements to remove constraints that prevent flexible capital gains data collection.
+
+## Migration Overview v3
+
+The v3 schema removes restrictive constraints to allow:
+- Capturing capital gains data regardless of the initial yes/no answer
+- More flexible data collection during the investor qualification flow
+- Partial form completion tracking
+
+## Migration SQL Statements v3
+
+```sql
+-- Remove restrictive constraints that prevent flexible data collection
+ALTER TABLE user_profiles 
+DROP CONSTRAINT IF EXISTS check_cap_gain_size;
+
+ALTER TABLE user_profiles 
+DROP CONSTRAINT IF EXISTS check_cap_gain_time;
+
+-- Keep the role-based constraint to ensure cap gain fields only apply to Investors
+-- (This constraint remains unchanged from v2)
+```
+
+# Schema Migration v4
+
+This section contains the migration statements to update RLS policies for proper API endpoint functionality.
+
+## Migration Overview v4
+
+The v4 schema updates RLS policies to allow:
+- Server-side API endpoints to create and update user profiles
+- Proper authentication context for the investor eligibility flow
+- Maintains security while enabling backend operations
+
+## Migration SQL Statements v4
+
+```sql
+-- Drop existing restrictive policies
+DROP POLICY IF EXISTS "Users can insert own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON user_profiles;
+
+-- Create new policies that work with both client and server-side authentication
+CREATE POLICY "Enable insert for authenticated users" ON user_profiles
+    FOR INSERT 
+    WITH CHECK (
+        auth.uid() = user_id OR 
+        auth.role() = 'authenticated'
+    );
+
+CREATE POLICY "Enable update for authenticated users" ON user_profiles
+    FOR UPDATE 
+    USING (
+        auth.uid() = user_id OR 
+        auth.role() = 'authenticated'
+    )
+    WITH CHECK (
+        auth.uid() = user_id OR 
+        auth.role() = 'authenticated'
+    );
+
+CREATE POLICY "Enable select for own profile" ON user_profiles
+    FOR SELECT 
+    USING (
+        auth.uid() = user_id OR 
+        auth.role() = 'service_role'
+    );
+
+-- Service role policy remains unchanged for backend operations
+-- (This policy already exists from v2)
+```
+
 ## Migration Notes
 
 ⚠️ **Important:** This migration will **lose all existing data** in the removed columns. If you need to preserve any existing data, create a backup first.
