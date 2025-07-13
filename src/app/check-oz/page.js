@@ -75,7 +75,7 @@ export default function CheckOZPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black px-8 py-8">
+    <div className="min-h-screen bg-white dark:bg-black px-8 pt-32 pb-8">
       <div className="max-w-6xl mx-auto w-full">
         {/* Header */}
         <div className="text-center mb-12 animate-fadeIn">
