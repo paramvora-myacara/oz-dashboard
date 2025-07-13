@@ -1,6 +1,7 @@
 // src/app/layout.js
 
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 import './globals.css';
 import ThemeLogo from '@/components/ThemeLogo';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -40,7 +41,18 @@ export default function RootLayout({ children }) {
             
             {/* Fixed Chatbot */}
             <div className="fixed right-0 top-0 h-screen w-80 lg:w-96 z-40">
-              <ChatbotPanel />
+              <Suspense fallback={
+                <div className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10">
+                  <div className="flex-1 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
+                      <p className="text-white/60 text-sm">Loading chat...</p>
+                    </div>
+                  </div>
+                </div>
+              }>
+                <ChatbotPanel />
+              </Suspense>
             </div>
           </div>
         </AuthProvider>
