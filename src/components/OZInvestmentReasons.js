@@ -18,7 +18,8 @@ export default function OZInvestmentReasons() {
       ],
       gradient: 'from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20',
       textColor: 'text-indigo-900 dark:text-indigo-300',
-      accentColor: 'text-indigo-700 dark:text-indigo-400'
+      accentColor: 'text-indigo-800 dark:text-indigo-400',
+      bulletColor: 'text-indigo-700 dark:text-indigo-500'
     },
     {
       id: 'tax-benefits',
@@ -33,7 +34,8 @@ export default function OZInvestmentReasons() {
       ],
       gradient: 'from-emerald-50 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20',
       textColor: 'text-emerald-900 dark:text-emerald-300',
-      accentColor: 'text-emerald-700 dark:text-emerald-400'
+      accentColor: 'text-emerald-800 dark:text-emerald-400',
+      bulletColor: 'text-emerald-700 dark:text-emerald-500'
     },
     {
       id: 'economic-development',
@@ -48,7 +50,8 @@ export default function OZInvestmentReasons() {
       ],
       gradient: 'from-orange-50 to-red-100 dark:from-orange-900/20 dark:to-red-900/20',
       textColor: 'text-orange-900 dark:text-orange-300',
-      accentColor: 'text-orange-700 dark:text-orange-400'
+      accentColor: 'text-orange-800 dark:text-orange-400',
+      bulletColor: 'text-orange-700 dark:text-orange-500'
     },
     {
       id: 'portfolio-diversification',
@@ -63,21 +66,22 @@ export default function OZInvestmentReasons() {
       ],
       gradient: 'from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20',
       textColor: 'text-purple-900 dark:text-purple-300',
-      accentColor: 'text-purple-700 dark:text-purple-400'
+      accentColor: 'text-purple-800 dark:text-purple-400',
+      bulletColor: 'text-purple-700 dark:text-purple-500'
     }
   ];
 
   return (
     <div className="h-full bg-white dark:bg-black px-4 sm:px-6 lg:px-8 flex flex-col">
-      {/* H1 Heading - 15% */}
-      <div className="h-[15%] flex items-center justify-center">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-semibold text-black dark:text-white text-center tracking-tight animate-fadeIn">
+      {/* H1 Heading - 14% */}
+      <div className="h-[14%] flex items-center justify-center">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white text-center tracking-tight animate-fadeIn mt-4">
           Why OZs?
         </h1>
       </div>
 
-      {/* Investment Reasons Cards - 55% (increased from 50%) */}
-      <div className="h-[55%] max-w-7xl mx-auto w-full">
+      {/* Investment Reasons Cards - 63% (adjusted for heading) */}
+      <div className="h-[63%] max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-4 xl:gap-6 h-full">
           {investmentReasons.map((reason, index) => {
             const IconComponent = reason.icon;
@@ -89,10 +93,10 @@ export default function OZInvestmentReasons() {
               >
                 {/* Card Header */}
                 <div className="mb-4 sm:mb-6 flex-shrink-0">
-                  <div className="mb-3 sm:mb-4">
-                    <IconComponent className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-8 lg:h-8 xl:w-10 xl:h-10 ${reason.textColor}`} />
+                  <div className="mb-2 sm:mb-3">
+                    <IconComponent className={`w-6 h-6 sm:w-8 sm:h-8 lg:w-6 lg:h-6 xl:w-8 xl:h-8 ${reason.textColor}`} />
                   </div>
-                  <div className="h-16 sm:h-20 lg:h-16 xl:h-20 mb-3 sm:mb-4 flex items-start">
+                  <div className="h-16 sm:h-20 lg:h-16 xl:h-20 mb-1 sm:mb-2 flex items-start">
                     <h3 className={`text-xl sm:text-2xl lg:text-xl xl:text-2xl font-semibold ${reason.textColor} leading-tight`}>
                       {reason.title}
                     </h3>
@@ -108,10 +112,10 @@ export default function OZInvestmentReasons() {
                 <div className="space-y-4 sm:space-y-5 lg:space-y-4 xl:space-y-5 flex-1">
                   {reason.highlights.map((highlight, idx) => (
                     <div key={idx} className="flex items-start gap-3 sm:gap-4 min-h-[3rem] sm:min-h-[3.5rem] lg:min-h-[3rem] xl:min-h-[3.5rem]">
-                      <div className={`w-2 h-2 sm:w-2.5 sm:h-2.5 bg-black dark:bg-white rounded-full mt-2 sm:mt-2.5 flex-shrink-0`} />
-                      <div className={`${reason.accentColor} text-sm sm:text-base lg:text-sm xl:text-base font-light leading-relaxed flex-1`}>
-                        {highlight}
-                      </div>
+                      <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black dark:bg-white rounded-full mt-2 sm:mt-2.5 flex-shrink-0`} />
+                                              <div className={`${reason.bulletColor} text-sm sm:text-base lg:text-sm xl:text-base font-light leading-relaxed flex-1`}>
+                          {highlight}
+                        </div>
                     </div>
                   ))}
                 </div>
@@ -121,8 +125,8 @@ export default function OZInvestmentReasons() {
         </div>
       </div>
 
-      {/* Gap - 7% */}
-      <div className="h-[7%]"></div>
+      {/* Gap - 4% */}
+      <div className="h-[4%]"></div>
 
       {/* Action Buttons - 15% */}
       <div className="h-[15%] flex items-center justify-center">
@@ -131,8 +135,8 @@ export default function OZInvestmentReasons() {
         </div>
       </div>
 
-      {/* Bottom spacer - 8% (increased from 5%) */}
-      <div className="h-[8%]"></div>
+      {/* Bottom spacer - 4% */}
+      <div className="h-[4%]"></div>
     </div>
   );
 } 
