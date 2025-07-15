@@ -287,6 +287,9 @@ RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.users (id, email)
   VALUES (NEW.id, NEW.email);
+  -- Also create an entry in user_interests for the new user
+  INSERT INTO public.user_interests (user_id)
+  VALUES (NEW.id);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
