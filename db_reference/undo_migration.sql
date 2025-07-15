@@ -25,6 +25,7 @@ DROP FUNCTION IF EXISTS public.update_completion_score();
 DROP FUNCTION IF EXISTS public.ensure_profile_exists();
 DROP FUNCTION IF EXISTS public.update_user_role();
 DROP FUNCTION IF EXISTS public.update_profiles_from_event();
+DROP FUNCTION IF EXISTS public.ensure_all_profiles_exist(UUID);
 DROP FUNCTION IF EXISTS public.handle_updated_at();
 
 COMMIT; 

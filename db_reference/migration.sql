@@ -151,6 +151,15 @@ BEGIN
         WHERE user_id = NEW.user_id;
     END IF;
 
+    -- Update dashboard access flag
+    IF NEW.event_type = 'dashboard_accessed' THEN
+        UPDATE public.user_interests
+        SET
+            dashboard_accessed = true,
+            updated_at = now()
+        WHERE user_id = NEW.user_id;
+    END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

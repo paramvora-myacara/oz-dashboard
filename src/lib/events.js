@@ -6,14 +6,19 @@ import { createClient } from '@/lib/supabase/client';
  * @param {string} event_type - The type of event to track (e.g., 'tax_calculator_used').
  * @param {string} endpoint - The API endpoint or page URL where the event occurred.
  * @param {object} [metadata={}] - Optional metadata to include with the event.
+ * @param {object} [user_obj=null] - Optional user object. If not provided, it will be fetched.
  * @returns {Promise<{success: boolean, error?: Error}>} - The result of the operation.
  */
-export async function trackUserEvent(event_type, endpoint, metadata = {}) {
+export async function trackUserEvent(event_type, endpoint, metadata = {}, user_obj = null) {
   try {
     const supabase = createClient();
     
-    // Get the current user
-    const { data: { user } } = await supabase.auth.getUser();
+    let user = user_obj;
+
+    if (!user) {
+      const { data } = await supabase.auth.getUser();
+      user = data.user;
+    }
 
     if (!user) {
       // If no user is logged in, we can't track the event.

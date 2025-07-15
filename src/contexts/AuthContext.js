@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { trackUserEvent } from '@/lib/events';
 
 const AuthContext = createContext({})
 
@@ -29,14 +30,24 @@ export function AuthProvider({ children }) {
     getInitialSession()
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user ?? null)
-        setLoading(false)
-      }
-    )
+        const currentUser = session?.user ?? null;
+        setUser(currentUser);
+        
+        if (event === 'SIGNED_IN' && currentUser) {
+          console.log('AuthContext: SIGNED_IN event detected. Firing dashboard_accessed event for user:', currentUser.id);
+          // Track dashboard access event, which also ensures user profiles/interests tables are created
+          await trackUserEvent('dashboard_accessed', '/', {}, currentUser);
+        }
 
-    return () => subscription.unsubscribe()
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      authListener.unsubscribe();
+    }
   }, [])
 
   const signInWithGoogle = async (returnTo = '/') => {
