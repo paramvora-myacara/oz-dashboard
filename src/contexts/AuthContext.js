@@ -37,8 +37,11 @@ export function AuthProvider({ children }) {
         
         if (event === 'SIGNED_IN' && currentUser) {
           console.log('AuthContext: SIGNED_IN event detected. Firing dashboard_accessed event for user:', currentUser.id);
-          // Track dashboard access event, which also ensures user profiles/interests tables are created
-          await trackUserEvent('dashboard_accessed', '/', {}, currentUser);
+          // Introduce a small delay to mitigate potential race conditions on initial sign-in
+          setTimeout(async () => {
+            // Track dashboard access event, which also ensures user profiles/interests tables are created
+            await trackUserEvent('dashboard_accessed', '/', {}, currentUser);
+          }, 100);
         }
 
         setLoading(false);

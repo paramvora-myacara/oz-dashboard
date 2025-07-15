@@ -153,6 +153,11 @@ BEGIN
 
     -- Update dashboard access flag
     IF NEW.event_type = 'dashboard_accessed' THEN
+        -- Ensure a user_interests row exists before updating it, resolving potential race conditions on sign-in.
+        INSERT INTO public.user_interests (user_id)
+        VALUES (NEW.user_id)
+        ON CONFLICT (user_id) DO NOTHING;
+
         UPDATE public.user_interests
         SET
             dashboard_accessed = true,
