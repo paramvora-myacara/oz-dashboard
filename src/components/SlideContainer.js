@@ -71,6 +71,22 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
     const deltaY = event.deltaY;
     const timeSinceLastSlide = now - lastSlideChangeTime.current;
 
+    // Check if the scroll event is happening within a scrollable element
+    const target = event.target;
+    const scrollableParent = target.closest('.overflow-y-auto, .scroll-container, [data-scroll="true"]');
+    
+    // If we're scrolling within a scrollable element, allow normal scrolling
+    if (scrollableParent) {
+      const isAtTop = scrollableParent.scrollTop === 0;
+      const isAtBottom = scrollableParent.scrollTop + scrollableParent.clientHeight >= scrollableParent.scrollHeight - 1;
+      
+      // Only allow slide transitions if we're at the top/bottom of the scrollable area
+      if ((deltaY < 0 && !isAtTop) || (deltaY > 0 && !isAtBottom)) {
+        // Let the normal scroll happen within the container
+        return;
+      }
+    }
+
     // CRITICAL: Ignore scroll events for 600ms after slide change (Mac trackpad momentum period)
     if (timeSinceLastSlide < 600) {
       event.preventDefault();

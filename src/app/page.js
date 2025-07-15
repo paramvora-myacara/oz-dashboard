@@ -74,7 +74,7 @@ export default function HomePage() {
       id: 'overview',
       title: 'Market Overview',
       component: (
-        <div className="h-full w-full bg-white dark:bg-black overflow-y-auto flex flex-col">
+        <div className="h-full w-full bg-white dark:bg-black overflow-y-auto flex flex-col scroll-container">
           {/* Market overview content */}
           <div className="flex-1">
             <ModernKpiDashboard />
