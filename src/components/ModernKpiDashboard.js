@@ -282,50 +282,14 @@ export default function ModernKpiDashboard() {
       <div className="min-h-screen bg-white dark:bg-black px-8 py-8">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-8 animate-fadeIn">
+          <div className="text-center mb-6 animate-fadeIn">
             <h2 className="text-5xl font-semibold text-black dark:text-white tracking-tight mb-2">Market Overview</h2>
             <p className="text-xl text-black/60 dark:text-white/60 font-light">Comprehensive view of the $110+ billion Opportunity Zone marketplace</p>
           </div>
-          
-          {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {kpis.map((kpi, idx) => {
-              const IconComponent = kpi.icon;
-              return (
-                <div
-                  key={idx}
-                  className="glass-card rounded-2xl p-6 hover:scale-[1.02] transition-all duration-300 animate-fadeIn bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10"
-                  style={{ animationDelay: `${idx * 100}ms` }}
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-shrink-0">
-                      <IconComponent className={`w-8 h-8 ${kpi.iconColor}`} />
-                    </div>
-                  <div className={`flex items-center space-x-1 text-sm font-medium ${
-                    kpi.trend === 'up' ? 'text-[#30d158]' : 'text-[#ff375f]'
-                  }`}>
-                    <span>{kpi.change}</span>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      {kpi.trend === 'up' ? (
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7 7 7" />
-                      ) : (
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7-7-7" />
-                      )}
-                    </svg>
-                  </div>
-                </div>
-                
-                <h3 className="text-sm font-medium text-black/60 dark:text-white/60 mb-1">{kpi.title}</h3>
-                <p className="text-3xl font-semibold text-black dark:text-white mb-1">{kpi.value}</p>
-                <p className="text-xs text-black/40 dark:text-white/40">{kpi.description}</p>
-              </div>
-            );
-          })}
-          </div>
 
           {/* Charts Section */}
-          <div className="space-y-6">
-            <div className="flex flex-wrap gap-2 mb-4">
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2 mb-3">
               {tabs.map(tab => {
                 const IconComponent = tab.icon;
                 return (
@@ -350,45 +314,66 @@ export default function ModernKpiDashboard() {
                 <div className="space-y-4">
                   <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">Investment Overview</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl">
-                      <h4 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">Total Investment</h4>
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-indigo-900 dark:text-indigo-300">Total Investment</h4>
+                        <TrendingUp className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                      </div>
                       <p className="text-3xl font-bold text-indigo-900 dark:text-indigo-300">$110B+</p>
                       <p className="text-sm text-indigo-700 dark:text-indigo-400 mt-1">Since 2018</p>
                     </div>
                     <div className="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-2xl">
-                      <h4 className="font-semibold text-purple-900 dark:text-purple-300 mb-2">Active QOFs</h4>
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-purple-900 dark:text-purple-300">Active QOFs</h4>
+                        <Building2 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                      </div>
                       <p className="text-3xl font-bold text-purple-900 dark:text-purple-300">14,000+</p>
                       <p className="text-sm text-purple-700 dark:text-purple-400 mt-1">Nationwide</p>
                     </div>
                     <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-2xl">
-                      <h4 className="font-semibold text-emerald-900 dark:text-emerald-300 mb-2">Investment Growth</h4>
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-emerald-900 dark:text-emerald-300">Investment Growth</h4>
+                        <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                      </div>
                       <p className="text-3xl font-bold text-emerald-900 dark:text-emerald-300">+15%</p>
                       <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-1">YoY Growth</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 p-6 rounded-2xl">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-orange-900 dark:text-orange-300">Zones with Investment</h4>
+                        <MapPin className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                      </div>
+                      <p className="text-3xl font-bold text-orange-900 dark:text-orange-300">68%</p>
+                      <p className="text-sm text-orange-700 dark:text-orange-400 mt-1">Of total OZ areas</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="h-64 md:h-72 lg:h-80">
-                      <h4 className="text-lg font-medium text-black dark:text-white mb-3">Investment Growth Trend</h4>
-                      <Line data={investmentGrowthData} options={chartOptions} />
+                    <div className="h-72 md:h-80 lg:h-[360px] flex flex-col">
+                      <h4 className="text-lg font-medium text-black dark:text-white mb-3 flex-shrink-0">Investment Growth Trend</h4>
+                      <div className="flex-1 min-h-0">
+                        <Line data={investmentGrowthData} options={chartOptions} />
+                      </div>
                     </div>
-                    <div className="h-64 md:h-72 lg:h-80">
-                      <h4 className="text-lg font-medium text-black dark:text-white mb-3">Sector Allocation</h4>
-                      <Doughnut data={sectorAllocationData} options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: { 
-                            position: 'right',
-                            labels: {
-                              color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
-                                ? 'rgb(229, 231, 235)' 
-                                : 'rgb(75, 85, 99)'
+                    <div className="h-72 md:h-80 lg:h-[360px] flex flex-col">
+                      <h4 className="text-lg font-medium text-black dark:text-white mb-3 flex-shrink-0">Sector Allocation</h4>
+                      <div className="flex-1 min-h-0">
+                        <Doughnut data={sectorAllocationData} options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: { 
+                              position: 'right',
+                              labels: {
+                                color: typeof window !== 'undefined' && document.documentElement.classList.contains('dark') 
+                                  ? 'rgb(229, 231, 235)' 
+                                  : 'rgb(75, 85, 99)'
+                              }
                             }
                           }
-                        }
-                      }} />
+                        }} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -416,9 +401,11 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div className="h-64 md:h-72 lg:h-80">
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">QOF Growth & Formation Trends</h4>
-                    <Line data={qofPerformanceData} options={dualAxisOptions} />
+                  <div className="h-72 md:h-80 lg:h-[360px] flex flex-col">
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3 flex-shrink-0">QOF Growth & Formation Trends</h4>
+                    <div className="flex-1 min-h-0">
+                      <Line data={qofPerformanceData} options={dualAxisOptions} />
+                    </div>
                   </div>
                 </div>
               )}
@@ -445,9 +432,11 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div className="h-64 md:h-72 lg:h-80">
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">Top 10 States by Investment Volume</h4>
-                    <Bar data={geographicData} options={chartOptions} />
+                  <div className="h-72 md:h-80 lg:h-[360px] flex flex-col">
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3 flex-shrink-0">Top 10 States by Investment Volume</h4>
+                    <div className="flex-1 min-h-0">
+                      <Bar data={geographicData} options={chartOptions} />
+                    </div>
                   </div>
                 </div>
               )}
@@ -474,9 +463,11 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div className="h-64 md:h-72 lg:h-80">
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">Socioeconomic Comparison</h4>
-                    <Bar data={socialImpactData} options={chartOptions} />
+                  <div className="h-72 md:h-80 lg:h-[360px] flex flex-col">
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3 flex-shrink-0">Socioeconomic Comparison</h4>
+                    <div className="flex-1 min-h-0">
+                      <Bar data={socialImpactData} options={chartOptions} />
+                    </div>
                   </div>
                 </div>
               )}
@@ -503,9 +494,11 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div className="h-64 md:h-72 lg:h-80">
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">Compliance Rate Trends</h4>
-                    <Line data={complianceData} options={chartOptions} />
+                  <div className="h-72 md:h-80 lg:h-[360px] flex flex-col">
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3 flex-shrink-0">Compliance Rate Trends</h4>
+                    <div className="flex-1 min-h-0">
+                      <Line data={complianceData} options={chartOptions} />
+                    </div>
                   </div>
                 </div>
               )}
@@ -532,9 +525,11 @@ export default function ModernKpiDashboard() {
                     </div>
                   </div>
 
-                  <div className="h-64 md:h-72 lg:h-80">
-                    <h4 className="text-lg font-medium text-black dark:text-white mb-3">Property Value Trends</h4>
-                    <Bar data={propertyTrendsData} options={chartOptions} />
+                  <div className="h-72 md:h-80 lg:h-[360px] flex flex-col">
+                    <h4 className="text-lg font-medium text-black dark:text-white mb-3 flex-shrink-0">Property Value Trends</h4>
+                    <div className="flex-1 min-h-0">
+                      <Bar data={propertyTrendsData} options={chartOptions} />
+                    </div>
                   </div>
                 </div>
               )}

@@ -73,15 +73,15 @@ export default function OZInvestmentReasons() {
 
   return (
     <div className="h-full bg-white dark:bg-black px-4 sm:px-6 lg:px-8 flex flex-col">
-      {/* H1 Heading - 14% */}
-      <div className="h-[14%] flex items-center justify-center">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white text-center tracking-tight animate-fadeIn mt-4">
+      {/* H1 Heading - 13% */}
+      <div className="h-[13%] flex items-center justify-center">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white text-center tracking-tight animate-fadeIn mt-2">
           Why OZs?
         </h1>
       </div>
 
-      {/* Investment Reasons Cards - 63% (adjusted for heading) */}
-      <div className="h-[63%] max-w-7xl mx-auto w-full">
+      {/* Investment Reasons Cards - 64% (adjusted for heading) */}
+      <div className="h-[64%] max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-4 xl:gap-6 h-full">
           {investmentReasons.map((reason, index) => {
             const IconComponent = reason.icon;
@@ -125,8 +125,8 @@ export default function OZInvestmentReasons() {
         </div>
       </div>
 
-      {/* Gap - 4% */}
-      <div className="h-[4%]"></div>
+      {/* Gap - 3% */}
+      <div className="h-[3%]"></div>
 
       {/* Action Buttons - 15% */}
       <div className="h-[15%] flex items-center justify-center">
@@ -135,8 +135,8 @@ export default function OZInvestmentReasons() {
         </div>
       </div>
 
-      {/* Bottom spacer - 4% */}
-      <div className="h-[4%]"></div>
+      {/* Bottom spacer - 5% */}
+      <div className="h-[5%]"></div>
     </div>
   );
 } 
