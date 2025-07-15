@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ozChecker, { checkAddress, initializeOZChecker } from '@/lib/ozChecker';
+import { trackUserEvent } from '@/lib/events';
 
 export const useOZChecker = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,12 +41,19 @@ export const useOZChecker = () => {
     setResult(null);
 
     try {
+      trackUserEvent('oz_check_performed', '/check-oz', { type: 'address', address: selectedAddress });
       console.log('Checking address:', selectedAddress);
       
       // Use our new OZ checker utility
       const ozResult = await checkAddress(selectedAddress);
 
       if (ozResult.success) {
+        trackUserEvent('oz_check_completed', '/check-oz', {
+          type: 'address',
+          address: selectedAddress,
+          geoid: ozResult.geoid,
+          isInOZ: ozResult.isOpportunityZone,
+        });
         setResult({
           isInOZ: ozResult.isOpportunityZone,
           geoid: ozResult.geoid,
@@ -58,9 +66,9 @@ export const useOZChecker = () => {
         console.error('OZ check failed:', ozResult.error);
         // Provide specific guidance based on the error
         if (ozResult.error.includes('Building/landmark names may not work')) {
-          setError('Address not found. Building and landmark names don\'t work well. Please try a specific street address with number.\n\nFor example:\n• "4202 E Fowler Ave, Tampa, FL" instead of "Marshall Student Center"\n• "123 Main Street, Tampa, FL" instead of business names');
+          setError('Address not found. Building and landmark names don\'t work well. Please try a specific street address with number.\\n\\nFor example:\\n• "4202 E Fowler Ave, Tampa, FL" instead of "Marshall Student Center"\\n• "123 Main Street, Tampa, FL" instead of business names');
         } else if (ozResult.error.includes('No address match found')) {
-          setError('Address not found. Please try:\n• Including the full street address with number\n• Verifying the address exists\n• Using a different format (e.g., "123 Main St" vs "123 Main Street")\n• Avoiding business names - use street addresses');
+          setError('Address not found. Please try:\\n• Including the full street address with number\\n• Verifying the address exists\\n• Using a different format (e.g., "123 Main St" vs "123 Main Street")\\n• Avoiding business names - use street addresses');
         } else if (ozResult.error.includes('timeout') || ozResult.error.includes('failed')) {
           setError('Service temporarily unavailable. Please try again in a moment.');
         } else {
@@ -99,6 +107,7 @@ export const useOZChecker = () => {
     setResult(null);
 
     try {
+      trackUserEvent('oz_check_performed', '/check-oz', { type: 'coordinates', lat, lng });
       console.log('Checking coordinates:', lat, lng);
       
       // Import and use checkCoordinates function
@@ -106,6 +115,13 @@ export const useOZChecker = () => {
       const ozResult = await checkCoordinates(lat, lng);
 
       if (ozResult.success) {
+        trackUserEvent('oz_check_completed', '/check-oz', {
+          type: 'coordinates',
+          lat,
+          lng,
+          geoid: ozResult.geoid,
+          isInOZ: ozResult.isOpportunityZone,
+        });
         setResult({
           isInOZ: ozResult.isOpportunityZone,
           geoid: ozResult.geoid,
@@ -139,4 +155,4 @@ export const useOZChecker = () => {
     checkCoordinates,
     resetForm
   };
-}; 
+};

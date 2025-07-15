@@ -59,20 +59,23 @@ CREATE TRIGGER update_user_profiles_updated_at
     FOR EACH ROW 
     EXECUTE FUNCTION update_updated_at_column();
 
--- Function to automatically create a profile with null entries when a user signs up
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger AS $$
+-- =================================================================
+-- Function and Trigger to automatically copy new users from auth.users
+-- to public.users on sign-up.
+-- =================================================================
+CREATE OR REPLACE FUNCTION public.copy_auth_user_to_public_users()
+RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO public.user_profiles (user_id)
-    VALUES (new.id);
-    RETURN new;
+  INSERT INTO public.users (id, email)
+  VALUES (NEW.id, NEW.email);
+  RETURN NEW;
 END;
-$$ language plpgsql security definer;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Create trigger to automatically create profile on user signup
-CREATE TRIGGER on_auth_user_created
-    AFTER INSERT ON auth.users
-    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+-- Trigger to execute the function after a new user is created in auth.users
+CREATE TRIGGER on_auth_user_created_copy_to_public_users
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.copy_auth_user_to_public_users();
 
 -- Optional: Add admin/backend access policies
 -- Allow service role to do everything

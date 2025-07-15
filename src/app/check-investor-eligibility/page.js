@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, UserCheck, AlertTriangle, CheckCircle, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { trackUserEvent } from '@/lib/events';
 
 const STEPS = [
   {
@@ -64,34 +65,9 @@ export default function CheckInvestorEligibilityPage() {
     gainTiming: null
   });
   const [showResults, setShowResults] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
   const [hasQualified, setHasQualified] = useState(false);
   const { user, loading } = useAuth();
   const router = useRouter();
-
-  // Define updateUserProfile first
-  const updateUserProfile = useCallback(async (data) => {
-    if (!user) return;
-    
-    setIsUpdating(true);
-    try {
-      const response = await fetch('/api/user-profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-    } catch (error) {
-      console.error('Error updating user profile:', error);
-    } finally {
-      setIsUpdating(false);
-    }
-  }, [user]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -100,28 +76,9 @@ export default function CheckInvestorEligibilityPage() {
     }
   }, [user, loading, router]);
 
-  // Set role to Investor when user starts the flow
-  useEffect(() => {
-    if (user && !loading) {
-      updateUserProfile({ role: 'Investor' });
-    }
-  }, [user, loading, updateUserProfile]);
-
   const handleStepComplete = async (stepId, value) => {
     const newFormData = { ...formData, [stepId]: value };
     setFormData(newFormData);
-
-    // Update database immediately
-    const dbUpdate = {};
-    if (stepId === 'capGainStatus') {
-      dbUpdate.cap_gain_or_not = value;
-    } else if (stepId === 'gainAmount') {
-      dbUpdate.size_of_cap_gain = value;
-    } else if (stepId === 'gainTiming') {
-      dbUpdate.time_of_cap_gain = value;
-    }
-    
-    await updateUserProfile(dbUpdate);
 
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -130,6 +87,14 @@ export default function CheckInvestorEligibilityPage() {
       const qualifies = newFormData.gainAmount >= 750000; // 500K-1M and above qualify
       setHasQualified(qualifies);
       setShowResults(true);
+
+      // Track the event
+      trackUserEvent('investor_qualification_submitted', '/check-investor-eligibility', {
+        capGainStatus: newFormData.capGainStatus,
+        gainAmount: newFormData.gainAmount,
+        gainTiming: newFormData.gainTiming,
+        qualified: qualifies
+      });
     }
   };
 
@@ -235,8 +200,7 @@ export default function CheckInvestorEligibilityPage() {
                   <button
                     key={option.id}
                     onClick={() => handleStepComplete('capGainStatus', option.id)}
-                    disabled={isUpdating}
-                    className="w-full p-6 text-left glass-card rounded-2xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 group disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full p-6 text-left glass-card rounded-2xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 group"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -261,8 +225,7 @@ export default function CheckInvestorEligibilityPage() {
                   <button
                     key={option.id}
                     onClick={() => handleStepComplete('gainAmount', option.value)}
-                    disabled={isUpdating}
-                    className="w-full p-6 text-left glass-card rounded-2xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 group disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full p-6 text-left glass-card rounded-2xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 group"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -287,8 +250,7 @@ export default function CheckInvestorEligibilityPage() {
                   <button
                     key={option.id}
                     onClick={() => handleStepComplete('gainTiming', option.value)}
-                    disabled={isUpdating}
-                    className="w-full p-6 text-left glass-card rounded-2xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 group disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full p-6 text-left glass-card rounded-2xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-300 group"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -318,12 +280,6 @@ export default function CheckInvestorEligibilityPage() {
             Back
           </button>
           
-          {isUpdating && (
-            <div className="text-sm text-black/40 dark:text-white/40 flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-black/20 dark:border-white/20 border-t-black/60 dark:border-t-white/60 rounded-full animate-spin"></div>
-              Saving...
-            </div>
-          )}
         </div>
       </div>
     </div>
