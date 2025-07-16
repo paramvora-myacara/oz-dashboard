@@ -280,10 +280,10 @@ export default function ModernKpiDashboard() {
 
     return (
       <div className="min-h-screen bg-white dark:bg-black px-8 py-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full mx-auto max-w-none">
           {/* Section Header */}
           <div className="text-center mb-6 animate-fadeIn">
-            <h2 className="text-5xl font-semibold text-black dark:text-white tracking-tight mb-2">Market Overview</h2>
+            <h2 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white tracking-tight mb-2">Market Overview</h2>
             <p className="text-xl text-black/60 dark:text-white/60 font-light">Comprehensive view of the $110+ billion Opportunity Zone marketplace</p>
           </div>
 
@@ -296,7 +296,7 @@ export default function ModernKpiDashboard() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-6 py-3 rounded-full text-sm font-medium transition-all flex items-center space-x-2 ${
+                    className={`px-6 py-3.5 rounded-full text-sm font-medium transition-all flex items-center space-x-2.5 ${
                       activeTab === tab.id
                         ? 'bg-black dark:bg-white text-white dark:text-black'
                         : 'glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10'

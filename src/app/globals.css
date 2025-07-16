@@ -199,6 +199,14 @@ html {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Responsive adjustments for small screens */
+@media (max-width: 640px) {
+  .scroll-container,
+  [data-scroll="true"] {
+    padding-bottom: 1rem;
+  }
+}
+
 /* Map Enhancements */
 .oz-zone {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

@@ -271,8 +271,8 @@ export default function OZMapVisualization({ onNavigate }) {
   return (
     <div className="w-full h-full flex flex-col bg-white dark:bg-black">
       {/* Header Section - 20% of height */}
-      <div className="w-full h-1/5 flex flex-col justify-center items-center text-center animate-fadeIn px-12">
-        <h1 className="text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
+      <div className="w-full flex flex-col justify-center items-center text-center animate-fadeIn px-12 py-8">
+        <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
         <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
           {ozData && ozData.metadata ? (
             <>
@@ -302,25 +302,25 @@ export default function OZMapVisualization({ onNavigate }) {
         {/* State Tooltip - Glassmorphism style */}
         {hoveredState && stateData && (
           <div 
-            className="absolute glass-card rounded-2xl p-6 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
+            className="absolute glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-7 xl:p-8 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
             style={{
-              left: `${Math.min(mousePosition.x + 20, dimensions.width - 280)}px`,
-              top: `${Math.min(mousePosition.y + 20, dimensions.height - 180)}px`
+              left: `${Math.min(mousePosition.x + 15, dimensions.width - (dimensions.width < 640 ? 220 : dimensions.width < 1024 ? 280 : 320))}px`,
+              top: `${Math.min(mousePosition.y + 15, dimensions.height - (dimensions.width < 640 ? 140 : dimensions.width < 1024 ? 180 : 200))}px`
             }}
           >
-            <h3 className="text-2xl font-semibold text-black dark:text-white mb-3">{hoveredState}</h3>
-            <div className="space-y-2">
-              <div className="flex justify-between gap-12">
-                <span className="text-black/60 dark:text-white/60">OZ Zones</span>
-                <span className="text-black dark:text-white font-medium">{stateData.zones}</span>
+            <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-black dark:text-white mb-2 sm:mb-3 lg:mb-4">{hoveredState}</h3>
+            <div className="space-y-1 sm:space-y-2 lg:space-y-3">
+              <div className="flex justify-between gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
+                <span className="text-xs sm:text-sm lg:text-base text-black/60 dark:text-white/60">OZ Zones</span>
+                <span className="text-xs sm:text-sm lg:text-base text-black dark:text-white font-medium">{stateData.zones}</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-black/60 dark:text-white/60">Active Projects</span>
-                <span className="text-[#0071e3] font-medium">{stateData.activeProjects}</span>
+              <div className="flex justify-between gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
+                <span className="text-xs sm:text-sm lg:text-base text-black/60 dark:text-white/60">Active Projects</span>
+                <span className="text-xs sm:text-sm lg:text-base text-[#0071e3] font-medium">{stateData.activeProjects}</span>
               </div>
-              <div className="flex justify-between gap-12">
-                <span className="text-black/60 dark:text-white/60">Investment Volume</span>
-                <span className="text-[#30d158] font-medium">${stateData.investmentBillions}B</span>
+              <div className="flex justify-between gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
+                <span className="text-xs sm:text-sm lg:text-base text-black/60 dark:text-white/60">Investment Volume</span>
+                <span className="text-xs sm:text-sm lg:text-base text-[#30d158] font-medium">${stateData.investmentBillions}B</span>
               </div>
             </div>
           </div>

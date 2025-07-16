@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function SlideContainer({ slides, renderSlides, className = '' }) {
+export default function SlideContainer({ slides, renderSlides, className = '', onSlideChange = () => {} }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const containerRef = useRef(null);
@@ -37,6 +37,13 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
         ? slides((idx) => {}) 
         : slides;
 
+    // Notify parent of slide change
+    try {
+      onSlideChange(currentSlide, newSlideIndex);
+    } catch (e) {
+      // noop
+    }
+
     // Update URL hash
     const slideId = currentSlides[newSlideIndex]?.id || `slide-${newSlideIndex}`;
     window.history.replaceState(null, '', `#${slideId}`);
@@ -50,7 +57,7 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
         setIsTransitioning(false);
       }, 200); // Reduced transition time
     }, 100); // Reduced delay for more responsive feel
-  }, [currentSlide, isTransitioning, slides, renderSlides]);
+  }, [currentSlide, isTransitioning, slides, renderSlides, onSlideChange]);
 
   // Get slides - either from the slides prop or by calling renderSlides with changeSlide
   const getSlides = useCallback(() => {
@@ -301,7 +308,7 @@ export default function SlideContainer({ slides, renderSlides, className = '' })
       )}
 
       {/* Slide Indicators */}
-      <div className="fixed right-80 lg:right-96 top-1/2 transform -translate-y-1/2 z-50 space-y-3 pr-8">
+      <div className="fixed right-[35%] lg:right-[25%] top-1/2 transform -translate-y-1/2 z-50 space-y-3 pr-[1.5%]">
         {getSlides().map((slide, index) => (
           <button
             key={slide.id || index}
