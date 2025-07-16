@@ -36,8 +36,8 @@ export default function ThemeLogo() {
       <div 
         className="bg-black/5 dark:bg-white/5 animate-pulse rounded"
         style={{
-          height: 'clamp(16px, 1.5vw, 24px)',
-          width: 'clamp(48px, 5.6vw, 90px)'
+          height: 'clamp(12px, 1.5vw, 24px)',
+          width: 'clamp(36px, 5.6vw, 90px)'
         }}
       />
     );
@@ -54,7 +54,7 @@ export default function ThemeLogo() {
       quality={100}
       unoptimized
       style={{
-        height: 'clamp(16px, 1.5vw, 24px)',
+        height: 'clamp(12px, 1.5vw, 24px)',
         imageRendering: 'crisp-edges',
         imageRendering: '-webkit-optimize-contrast'
       }}

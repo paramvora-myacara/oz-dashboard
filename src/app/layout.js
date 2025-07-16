@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <div className="flex min-h-screen">
             {/* Main Content */}
-            <div className="flex-1 mr-[25%] overflow-y-auto scroll-container">
+            <div className="flex-1 mr-[35%] lg:mr-[25%] overflow-y-auto scroll-container">
               <header className="absolute top-0 left-0 z-50 p-[2%]">
                 <ThemeLogo />
               </header>
@@ -35,12 +35,12 @@ export default function RootLayout({ children }) {
             </div>
             
             {/* Theme Toggle - Positioned to the left of chatbot, aligned with Ozzie icon */}
-            <div className="fixed right-[25%] top-[2%] z-50 pr-[1.5%]">
+            <div className="fixed right-[35%] lg:right-[25%] top-[2%] z-50 pr-[1.5%]">
               <ThemeToggle />
             </div>
             
-            {/* Fixed Chatbot - Always 25% of screen width */}
-            <div className="fixed right-0 top-0 h-screen w-[25%] z-40">
+            {/* Fixed Chatbot - Toggle between 35% and 25% */}
+            <div className="fixed right-0 top-0 h-screen w-[35%] lg:w-[25%] z-40">
               <Suspense fallback={
                 <div className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10">
                   <div className="flex-1 flex items-center justify-center">

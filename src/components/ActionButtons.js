@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function ActionButtons() {
   return (
-    <div className="h-full flex items-center justify-center">
+    <div className="flex items-center justify-center py-4 sm:py-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-4 xl:gap-6 w-full animate-fadeIn">
         <Link href="/check-oz">
           <button

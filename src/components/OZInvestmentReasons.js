@@ -72,17 +72,17 @@ export default function OZInvestmentReasons() {
   ];
 
   return (
-    <div className="h-full bg-white dark:bg-black px-4 sm:px-6 lg:px-8 flex flex-col">
-      {/* H1 Heading - 13% */}
-      <div className="h-[13%] flex items-center justify-center">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white text-center tracking-tight animate-fadeIn mt-2">
+    <div className="min-h-full bg-white dark:bg-black px-4 sm:px-6 lg:px-8 flex flex-col py-8">
+      {/* H1 Heading */}
+      <div className="flex-shrink-0 mb-8 sm:mb-12">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white text-center tracking-tight animate-fadeIn">
           Why OZs?
         </h1>
       </div>
 
-      {/* Investment Reasons Cards - 64% (adjusted for heading) */}
-      <div className="h-[64%] max-w-7xl mx-auto w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-4 xl:gap-6 h-full">
+      {/* Investment Reasons Cards */}
+      <div className="flex-1 max-w-7xl mx-auto w-full mb-8 sm:mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-4 xl:gap-6">
           {investmentReasons.map((reason, index) => {
             const IconComponent = reason.icon;
             return (
@@ -113,9 +113,9 @@ export default function OZInvestmentReasons() {
                   {reason.highlights.map((highlight, idx) => (
                     <div key={idx} className="flex items-start gap-3 sm:gap-4 min-h-[3rem] sm:min-h-[3.5rem] lg:min-h-[3rem] xl:min-h-[3.5rem]">
                       <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black dark:bg-white rounded-full mt-2 sm:mt-2.5 flex-shrink-0`} />
-                                              <div className={`${reason.bulletColor} text-sm sm:text-base lg:text-sm xl:text-base font-light leading-relaxed flex-1`}>
-                          {highlight}
-                        </div>
+                      <div className={`${reason.bulletColor} text-sm sm:text-base lg:text-sm xl:text-base font-light leading-relaxed flex-1`}>
+                        {highlight}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -125,18 +125,12 @@ export default function OZInvestmentReasons() {
         </div>
       </div>
 
-      {/* Gap - 3% */}
-      <div className="h-[3%]"></div>
-
-      {/* Action Buttons - 15% */}
-      <div className="h-[15%] flex items-center justify-center">
-        <div className="max-w-7xl w-full">
+      {/* Action Buttons */}
+      <div className="flex-shrink-0">
+        <div className="max-w-7xl mx-auto w-full">
           <ActionButtons />
         </div>
       </div>
-
-      {/* Bottom spacer - 5% */}
-      <div className="h-[5%]"></div>
     </div>
   );
 } 
