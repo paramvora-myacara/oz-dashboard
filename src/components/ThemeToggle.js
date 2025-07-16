@@ -1,62 +1,35 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Sun, Moon, Monitor } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 
 const THEME_MODES = {
   LIGHT: 'light',
-  DARK: 'dark',
-  SYSTEM: 'system'
+  DARK: 'dark'
 };
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState(THEME_MODES.SYSTEM);
+  const [theme, setTheme] = useState(THEME_MODES.DARK);
   const [mounted, setMounted] = useState(false);
-
-  // Detect system preference
-  const getSystemTheme = () => {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches 
-      ? THEME_MODES.DARK 
-      : THEME_MODES.LIGHT;
-  };
 
   // Apply theme to document
   const applyTheme = (newTheme) => {
     const root = document.documentElement;
-    
-    if (newTheme === THEME_MODES.SYSTEM) {
-      const systemTheme = getSystemTheme();
-      root.classList.toggle('dark', systemTheme === THEME_MODES.DARK);
-    } else {
-      root.classList.toggle('dark', newTheme === THEME_MODES.DARK);
-    }
+    root.classList.toggle('dark', newTheme === THEME_MODES.DARK);
   };
 
   // Initialize theme on mount
   useEffect(() => {
     setMounted(true);
     
-    // Get saved theme or default to system
-    const savedTheme = localStorage.getItem('theme') || THEME_MODES.SYSTEM;
+    // Get saved theme or default to dark
+    const savedTheme = localStorage.getItem('theme') || THEME_MODES.DARK;
     setTheme(savedTheme);
     applyTheme(savedTheme);
+  }, []);
 
-    // Listen for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = () => {
-      if (theme === THEME_MODES.SYSTEM) {
-        applyTheme(THEME_MODES.SYSTEM);
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
-  }, [theme]);
-
-  const cycleTheme = () => {
-    const themes = [THEME_MODES.LIGHT, THEME_MODES.DARK, THEME_MODES.SYSTEM];
-    const currentIndex = themes.indexOf(theme);
-    const nextTheme = themes[(currentIndex + 1) % themes.length];
+  const toggleTheme = () => {
+    const nextTheme = theme === THEME_MODES.LIGHT ? THEME_MODES.DARK : THEME_MODES.LIGHT;
     
     setTheme(nextTheme);
     localStorage.setItem('theme', nextTheme);
@@ -76,10 +49,8 @@ export default function ThemeToggle() {
         return <Sun className="h-5 w-5" />;
       case THEME_MODES.DARK:
         return <Moon className="h-5 w-5" />;
-      case THEME_MODES.SYSTEM:
-        return <Monitor className="h-5 w-5" />;
       default:
-        return <Monitor className="h-5 w-5" />;
+        return <Moon className="h-5 w-5" />;
     }
   };
 
@@ -89,16 +60,14 @@ export default function ThemeToggle() {
         return 'Light mode';
       case THEME_MODES.DARK:
         return 'Dark mode';
-      case THEME_MODES.SYSTEM:
-        return 'System theme';
       default:
-        return 'System theme';
+        return 'Dark mode';
     }
   };
 
   return (
     <button
-      onClick={cycleTheme}
+      onClick={toggleTheme}
       className="p-2.5 glass-card rounded-2xl text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-all active:scale-95 group bg-white/80 dark:bg-black/20 backdrop-blur-2xl border border-black/10 dark:border-white/10"
       title={getTooltip()}
     >

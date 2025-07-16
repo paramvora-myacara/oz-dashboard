@@ -96,12 +96,12 @@ export default function OZInvestmentReasons() {
                   <div className="mb-2 sm:mb-3">
                     <IconComponent className={`w-6 h-6 sm:w-8 sm:h-8 lg:w-6 lg:h-6 xl:w-8 xl:h-8 ${reason.textColor}`} />
                   </div>
-                  <div className="h-16 sm:h-20 lg:h-16 xl:h-20 mb-1 sm:mb-2 flex items-start">
+                  <div className="min-h-[4rem] sm:min-h-[5rem] lg:min-h-[4rem] xl:min-h-[5rem] mb-1 sm:mb-2 flex items-start">
                     <h3 className={`text-xl sm:text-2xl lg:text-xl xl:text-2xl font-semibold ${reason.textColor} leading-tight`}>
                       {reason.title}
                     </h3>
                   </div>
-                  <div className="h-20 sm:h-24 lg:h-20 xl:h-24 mb-2 sm:mb-3 flex items-start">
+                  <div className="min-h-[5rem] sm:min-h-[6rem] lg:min-h-[5rem] xl:min-h-[6rem] mb-2 sm:mb-3 flex items-start">
                     <p className={`${reason.accentColor} text-lg sm:text-xl lg:text-lg xl:text-xl font-light leading-relaxed`}>
                       {reason.description}
                     </p>
