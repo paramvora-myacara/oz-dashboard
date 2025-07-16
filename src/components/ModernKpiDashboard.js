@@ -289,7 +289,7 @@ export default function ModernKpiDashboard() {
 
           {/* Charts Section */}
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-2 mb-3 justify-center">
+            <div className="flex flex-wrap gap-3 mb-5 justify-center">
               {tabs.map(tab => {
                 const IconComponent = tab.icon;
                 return (

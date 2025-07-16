@@ -269,7 +269,7 @@ export default function OZMapVisualization({ onNavigate }) {
   const stateData = hoveredState ? getStateData(hoveredState) : null;
 
   return (
-    <div className="w-full h-full max-w-7xl mx-auto flex flex-col items-center justify-center bg-white dark:bg-black">
+    <div className="w-full h-full max-w-7xl mx-auto flex flex-col items-center justify-center bg-white dark:bg-black relative">
       {/* Header Section - 20% of height */}
       <div className="w-full flex flex-col justify-center items-center text-center animate-fadeIn px-12 py-8">
         <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
@@ -336,8 +336,8 @@ export default function OZMapVisualization({ onNavigate }) {
         )}
       </div>
 
-      {/* Fixed bottom-right scroll button */}
-      <div className="fixed bottom-8 right-8 z-50">
+      {/* Bottom-right scroll button */}
+      <div className="fixed bottom-8 right-[calc(35%+2rem)] lg:right-[calc(30%+2rem)] xl:right-[calc(25%+2rem)] z-50">
         <div 
           className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
           onClick={() => onNavigate && onNavigate(1)}
