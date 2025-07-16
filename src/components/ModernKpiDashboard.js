@@ -296,7 +296,7 @@ export default function ModernKpiDashboard() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-6 py-3 rounded-full text-sm font-medium transition-all flex items-center space-x-2 ${
+                    className={`px-6 py-3.5 rounded-full text-sm font-medium transition-all flex items-center space-x-2.5 ${
                       activeTab === tab.id
                         ? 'bg-black dark:bg-white text-white dark:text-black'
                         : 'glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10'
