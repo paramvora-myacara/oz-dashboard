@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import ozChecker from '@/lib/ozChecker';
 import TabContainer from '@/components/TabContainer';
 import { 
@@ -12,6 +14,7 @@ import {
 import { useAddressPredictions, useOZChecker } from '@/hooks';
 
 export default function CheckOZPage() {
+  const router = useRouter();
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
 
@@ -32,6 +35,10 @@ export default function CheckOZPage() {
     setLatitude('');
     setLongitude('');
     ozCheckerHook.resetForm();
+  };
+
+  const handleBack = () => {
+    router.push('/#investment-reasons');
   };
 
   // Memoize tabs array to prevent unnecessary re-renders
@@ -100,6 +107,17 @@ export default function CheckOZPage() {
 
         {/* Results */}
         <ResultsDisplay result={ozCheckerHook.result} />
+
+        {/* Navigation */}
+        <div className="mt-8">
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-2 px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </button>
+        </div>
       </div>
     </div>
   );

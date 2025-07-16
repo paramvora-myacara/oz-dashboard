@@ -100,12 +100,11 @@ export default function CheckInvestorEligibilityPage() {
 
   const handleBack = () => {
     if (showResults) {
-      setShowResults(false);
-      setCurrentStep(STEPS.length - 1);
+      router.push('/#investment-reasons');
     } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     } else {
-      router.push('/');
+      router.push('/#investment-reasons');
     }
   };
 
@@ -317,7 +316,7 @@ function ResultsScreen({ qualified, onBack, onReset }) {
           </motion.div>
           
           <h1 className="text-4xl md:text-5xl font-semibold text-black dark:text-white tracking-tight mb-4">
-            {qualified ? 'You Qualify!' : "You Don&apos;t Qualify"}
+            {qualified ? 'You Qualify!' : "You Don’t Qualify"}
           </h1>
           <p className="text-xl text-black/60 dark:text-white/60 font-light">
             {qualified 
@@ -342,10 +341,10 @@ function ResultsScreen({ qualified, onBack, onReset }) {
             {qualified ? (
               <div>
                 <h2 className="text-2xl font-semibold text-[#30d158] mb-4">
-                  Congratulations! You&apos;re eligible to invest in Opportunity Zones
+                  Congratulations! You’re eligible to invest in Opportunity Zones
                 </h2>
                 <p className="text-lg text-black/70 dark:text-white/70 mb-6">
-                  We&apos;ll reach out to you via email soon with next steps and investment opportunities.
+                  We’ll reach out to you via email soon with next steps and investment opportunities.
                 </p>
                 <div className="flex items-center justify-center gap-2 text-black/60 dark:text-white/60">
                   <Users className="w-5 h-5" />
@@ -355,7 +354,7 @@ function ResultsScreen({ qualified, onBack, onReset }) {
             ) : (
               <div>
                 <h2 className="text-2xl font-semibold text-[#ff375f] mb-4">
-                  You don&apos;t currently qualify for OZ investments
+                  You don’t currently qualify for OZ investments
                 </h2>
                 <p className="text-lg text-black/70 dark:text-white/70">
                   Based on current qualification requirements, you are not eligible at this time.
@@ -372,7 +371,7 @@ function ResultsScreen({ qualified, onBack, onReset }) {
             className="flex items-center gap-2 px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            Back to Dashboard
           </button>
           
           <button
