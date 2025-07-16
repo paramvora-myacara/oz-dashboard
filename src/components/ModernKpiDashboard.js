@@ -279,8 +279,8 @@ export default function ModernKpiDashboard() {
     ];
 
     return (
-      <div className="min-h-screen bg-white dark:bg-black px-8 py-8">
-        <div className="w-full mx-auto max-w-none">
+      <div className="min-h-screen bg-white dark:bg-black px-8 py-8 flex items-center justify-center">
+        <div className="w-full mx-auto max-w-7xl">
           {/* Section Header */}
           <div className="text-center mb-6 animate-fadeIn">
             <h2 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white tracking-tight mb-2">Market Overview</h2>
@@ -289,7 +289,7 @@ export default function ModernKpiDashboard() {
 
           {/* Charts Section */}
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-2 mb-3 justify-center">
               {tabs.map(tab => {
                 const IconComponent = tab.icon;
                 return (
@@ -309,13 +309,13 @@ export default function ModernKpiDashboard() {
               })}
             </div>
 
-            <div className="glass-card rounded-3xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 min-h-[50vh] lg:min-h-[60vh]">
+            <div className="glass-card rounded-3xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10">
               {activeTab === 'overview' && (
                 <div className="space-y-4">
                   <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">Investment Overview</h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl">
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl w-full">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-indigo-900 dark:text-indigo-300">Total Investment</h4>
                         <TrendingUp className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
@@ -323,7 +323,7 @@ export default function ModernKpiDashboard() {
                       <p className="text-3xl font-bold text-indigo-900 dark:text-indigo-300">$110B+</p>
                       <p className="text-sm text-indigo-700 dark:text-indigo-400 mt-1">Since 2018</p>
                     </div>
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-2xl">
+                    <div className="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-2xl w-full">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-purple-900 dark:text-purple-300">Active QOFs</h4>
                         <Building2 className="w-6 h-6 text-purple-600 dark:text-purple-400" />
@@ -331,7 +331,7 @@ export default function ModernKpiDashboard() {
                       <p className="text-3xl font-bold text-purple-900 dark:text-purple-300">14,000+</p>
                       <p className="text-sm text-purple-700 dark:text-purple-400 mt-1">Nationwide</p>
                     </div>
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-2xl">
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-2xl w-full">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-emerald-900 dark:text-emerald-300">Investment Growth</h4>
                         <TrendingUp className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
@@ -339,7 +339,7 @@ export default function ModernKpiDashboard() {
                       <p className="text-3xl font-bold text-emerald-900 dark:text-emerald-300">+15%</p>
                       <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-1">YoY Growth</p>
                     </div>
-                    <div className="bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 p-6 rounded-2xl">
+                    <div className="bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 p-6 rounded-2xl w-full">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-orange-900 dark:text-orange-300">Zones with Investment</h4>
                         <MapPin className="w-6 h-6 text-orange-600 dark:text-orange-400" />
