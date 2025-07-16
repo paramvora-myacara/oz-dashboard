@@ -72,7 +72,7 @@ export default function OZInvestmentReasons() {
   ];
 
   return (
-    <div className="min-h-full bg-white dark:bg-black px-4 sm:px-6 lg:px-8 flex flex-col py-8">
+    <div className="min-h-full bg-white dark:bg-black px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center py-8">
       {/* H1 Heading */}
       <div className="flex-shrink-0 mb-8 sm:mb-12">
         <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white text-center tracking-tight animate-fadeIn">
@@ -81,7 +81,7 @@ export default function OZInvestmentReasons() {
       </div>
 
       {/* Investment Reasons Cards */}
-      <div className="flex-1 max-w-7xl mx-auto w-full mb-3 sm:mb-4">
+      <div className="max-w-7xl mx-auto w-full mb-3 sm:mb-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-4 xl:gap-6">
           {investmentReasons.map((reason, index) => {
             const IconComponent = reason.icon;

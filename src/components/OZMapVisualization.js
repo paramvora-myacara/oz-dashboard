@@ -269,7 +269,7 @@ export default function OZMapVisualization({ onNavigate }) {
   const stateData = hoveredState ? getStateData(hoveredState) : null;
 
   return (
-    <div className="w-full h-full flex flex-col bg-white dark:bg-black">
+    <div className="w-full h-full max-w-7xl mx-auto flex flex-col items-center justify-center bg-white dark:bg-black">
       {/* Header Section - 20% of height */}
       <div className="w-full flex flex-col justify-center items-center text-center animate-fadeIn px-12 py-8">
         <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
@@ -286,10 +286,10 @@ export default function OZMapVisualization({ onNavigate }) {
         </p>
       </div>
 
-      {/* Map Section - 70% of height */}
+      {/* Map Section */}
       <div 
         ref={containerRef} 
-        className="relative w-full h-[70%] bg-white dark:bg-black"
+        className="relative w-full aspect-[16/9] max-h-[75vh] bg-white dark:bg-black"
         onMouseMove={handleMouseMove}
       >
         <svg
@@ -336,25 +336,22 @@ export default function OZMapVisualization({ onNavigate }) {
         )}
       </div>
 
-      {/* Footer Section - 5% of height */}
-      <div className="w-full h-[5%] relative">
-        {/* Scroll down button positioned in bottom-right corner */}
-        <div className="absolute bottom-2 right-8 z-50">
-          <div 
-            className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
-            onClick={() => onNavigate && onNavigate(1)}
+      {/* Fixed bottom-right scroll button */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <div 
+          className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
+          onClick={() => onNavigate && onNavigate(1)}
+        >
+          <span>Scroll down for investment reasons</span>
+          <svg 
+            className="w-4 h-4 animate-bounce" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            style={{ animationDuration: '1.5s' }}
           >
-            <span>Scroll down for investment reasons</span>
-            <svg 
-              className="w-4 h-4 animate-bounce" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-              style={{ animationDuration: '1.5s' }}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7-7-7" />
-            </svg>
-          </div>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7-7-7" />
+          </svg>
         </div>
       </div>
     </div>
