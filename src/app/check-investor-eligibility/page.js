@@ -100,8 +100,7 @@ export default function CheckInvestorEligibilityPage() {
 
   const handleBack = () => {
     if (showResults) {
-      setShowResults(false);
-      setCurrentStep(STEPS.length - 1);
+      router.push('/');
     } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     } else {
@@ -372,7 +371,7 @@ function ResultsScreen({ qualified, onBack, onReset }) {
             className="flex items-center gap-2 px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            Back to Dashboard
           </button>
           
           <button
