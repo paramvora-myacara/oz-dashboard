@@ -2,8 +2,13 @@ import { NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
 export async function middleware(request) {
-  // Protected routes that require authentication
-  const protectedRoutes = ['/check-oz', '/tax-calculator']
+  // Define protected routes that require authentication
+  const protectedRoutes = [
+    '/check-investor-eligibility',
+    '/tax-calculator',
+    '/check-oz',
+    // Add other routes here that need protection
+  ]
   const { pathname } = request.nextUrl
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Calculator, AlertTriangle, FileText, Phone } from 'lucide-react';
@@ -15,6 +15,7 @@ import {
   getTaxBracketLabel,
   TAX_CALC_CONFIG
 } from '@/lib/taxCalculator';
+import { trackUserEvent } from '@/lib/events';
 
 const STEPS = [
   {
@@ -63,6 +64,14 @@ export default function TaxCalculatorPage() {
       );
       setCalculationResults(results);
       setShowResults(true);
+
+      // Track the event
+      trackUserEvent('tax_calculator_used', '/tax-calculator', {
+        gainAmount: newFormData.gainAmount,
+        taxRate: newFormData.taxRate,
+        hold10Years: newFormData.hold10Years,
+        totalSavings: results.totalSavings
+      });
     }
   };
 
