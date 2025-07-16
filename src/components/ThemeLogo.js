@@ -33,7 +33,13 @@ export default function ThemeLogo() {
   // Don't render until mounted to avoid hydration mismatch
   if (!mounted) {
     return (
-      <div className="h-6 w-[120px] bg-black/5 dark:bg-white/5 animate-pulse rounded" />
+      <div 
+        className="bg-black/5 dark:bg-white/5 animate-pulse rounded"
+        style={{
+          height: 'clamp(16px, 1.5vw, 24px)',
+          width: 'clamp(48px, 5.6vw, 90px)'
+        }}
+      />
     );
   }
 
@@ -43,9 +49,15 @@ export default function ThemeLogo() {
       alt="OZ Listings" 
       width={120} 
       height={40} 
-      className="h-6 w-auto object-contain"
+      className="w-auto object-contain"
       priority
       quality={100}
+      unoptimized
+      style={{
+        height: 'clamp(16px, 1.5vw, 24px)',
+        imageRendering: 'crisp-edges',
+        imageRendering: '-webkit-optimize-contrast'
+      }}
     />
   );
 } 
