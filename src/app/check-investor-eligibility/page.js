@@ -100,11 +100,11 @@ export default function CheckInvestorEligibilityPage() {
 
   const handleBack = () => {
     if (showResults) {
-      router.push('/');
+      router.push('/#investment-reasons');
     } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     } else {
-      router.push('/');
+      router.push('/#investment-reasons');
     }
   };
 
