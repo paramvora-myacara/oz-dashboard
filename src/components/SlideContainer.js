@@ -69,13 +69,19 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
 
   // Handle scroll events with Mac trackpad momentum protection
   const handleScroll = useCallback((event) => {
+    const { deltaX, deltaY } = event;
+
+    // If horizontal scroll is more significant, let the browser handle it (for back/forward navigation)
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      return;
+    }
+    
     if (isTransitioning) {
       event.preventDefault();
       return;
     }
 
     const now = Date.now();
-    const deltaY = event.deltaY;
     const timeSinceLastSlide = now - lastSlideChangeTime.current;
 
     // Check if the scroll event is happening within a scrollable element
