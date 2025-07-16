@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <div className="flex min-h-screen">
             {/* Main Content */}
-            <div className="flex-1 mr-[35%] lg:mr-[25%] overflow-y-auto scroll-container">
+            <div className="flex-1 mr-[35%] lg:mr-[25%] px-2 sm:px-3 lg:px-0 overflow-y-auto scroll-container">
               <header className="absolute top-0 left-0 z-50 p-[2%]">
                 <ThemeLogo />
               </header>

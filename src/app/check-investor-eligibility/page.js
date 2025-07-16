@@ -174,7 +174,7 @@ export default function CheckInvestorEligibilityPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black px-8 pt-32 pb-8">
-      <div className="max-w-2xl mx-auto">
+      <div className="w-full mx-auto max-w-none">
         {/* Header */}
         <div className="text-center mb-8 animate-fadeIn">
           <h1 className="text-4xl md:text-5xl font-semibold text-black dark:text-white tracking-tight mb-4">
@@ -339,7 +339,7 @@ function ResultsScreen({ qualified, onBack, onReset }) {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black px-8 pt-32 pb-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full mx-auto max-w-none">
         {/* Header */}
         <div className="text-center mb-8 animate-fadeIn">
           <motion.div
