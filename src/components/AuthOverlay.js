@@ -43,14 +43,14 @@ export default function AuthOverlay({ onClose, returnTo = '/' }) {
 
     try {
       if (isSignUp) {
-        const { error } = await signUpWithEmail(email, password);
+        const { error } = await signUpWithEmail(email, password, returnTo);
         if (error) {
           setError(error.message);
         } else {
           setMessage('Check your email for the confirmation link!');
         }
       } else {
-        const { error } = await signInWithEmail(email, password);
+        const { error } = await signInWithEmail(email, password, returnTo);
         if (error) {
           setError(error.message);
         }

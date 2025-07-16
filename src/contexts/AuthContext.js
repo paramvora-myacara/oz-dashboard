@@ -36,12 +36,59 @@ export function AuthProvider({ children }) {
         setUser(currentUser);
         
         if (event === 'SIGNED_IN' && currentUser) {
-          console.log('AuthContext: SIGNED_IN event detected. Firing dashboard_accessed event for user:', currentUser.id);
+          console.log('AuthContext: SIGNED_IN event detected. User:', currentUser.id);
           // Introduce a small delay to mitigate potential race conditions on initial sign-in
           setTimeout(async () => {
+            // Check and set first_auth_source if it's not set
+            let { data: userProfile, error: profileError } = await supabase
+              .from('users')
+              .select('first_auth_source')
+              .eq('id', currentUser.id)
+              .maybeSingle();
+
+            if (profileError) {
+              console.error("Error fetching user profile:", profileError);
+            }
+
+            // If user not found, trigger might not have run. Wait and retry.
+            if (!profileError && !userProfile) {
+              await new Promise(r => setTimeout(r, 1000));
+              const { data, error } = await supabase.from('users').select('first_auth_source').eq('id', currentUser.id).maybeSingle();
+              userProfile = data;
+              if (error) console.error("Error fetching user profile on retry:", error);
+            }
+            
+            if (userProfile && userProfile.first_auth_source === null) {
+              let returnTo = sessionStorage.getItem('returnTo') || sessionStorage.getItem('authFlow_returnTo');
+
+              // Fallback to the current path if sessionStorage is not available.
+              // This is crucial for email confirmation links and robust against race conditions clearing sessionStorage.
+              if (!returnTo || returnTo === '/') {
+                const currentPath = window.location.pathname;
+                if (currentPath && currentPath !== '/' && !currentPath.startsWith('/auth/')) {
+                  returnTo = currentPath;
+                }
+              }
+              
+              if (returnTo && returnTo !== '/') {
+                const finalSource = `oz-dashboard${returnTo}`;
+
+                const { error: updateError } = await supabase
+                  .from('users')
+                  .update({ first_auth_source: finalSource })
+                  .eq('id', currentUser.id);
+
+                if (updateError) {
+                  console.error("Error updating first_auth_source:", updateError);
+                } else {
+                  console.log(`Updated first_auth_source for user ${currentUser.id} to ${finalSource}`);
+                }
+              }
+            }
+
             // Track dashboard access event, which also ensures user profiles/interests tables are created
             await trackUserEvent('dashboard_accessed', '/', {}, currentUser);
-          }, 100);
+          }, 500);
         }
 
         setLoading(false);
@@ -84,7 +131,10 @@ export function AuthProvider({ children }) {
     return { data, error }
   }
 
-  const signInWithEmail = async (email, password) => {
+  const signInWithEmail = async (email, password, returnTo = '/') => {
+    if (returnTo && returnTo !== '/') {
+      sessionStorage.setItem('returnTo', returnTo);
+    }
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -92,12 +142,19 @@ export function AuthProvider({ children }) {
     return { data, error }
   }
 
-  const signUpWithEmail = async (email, password) => {
+  const signUpWithEmail = async (email, password, returnTo = '/') => {
+    if (returnTo && returnTo !== '/') {
+      sessionStorage.setItem('returnTo', returnTo);
+    }
+    const redirectUrl = new URL('/auth/callback', window.location.origin);
+    if (returnTo && returnTo !== '/') {
+      redirectUrl.searchParams.set('next', returnTo);
+    }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: redirectUrl.toString(),
       },
     })
     return { data, error }
