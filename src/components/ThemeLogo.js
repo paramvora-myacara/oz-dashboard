@@ -46,7 +46,10 @@ export default function ThemeLogo() {
   }
 
   return (
-    <Link href={homepageUrl}>
+    <Link 
+      href={homepageUrl}
+      className="transition-transform duration-200 ease-out hover:scale-[1.02] active:scale-[0.98] inline-block"
+    >
       <Image 
         src={isDarkMode ? "/OZListings-Dark.png" : "/OZListings-Light.jpeg"} 
         alt="OZ Listings" 
