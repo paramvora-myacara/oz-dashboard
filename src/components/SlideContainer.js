@@ -13,6 +13,7 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
   const scrollDirection = useRef(0);
   const directionConsistency = useRef(0);
   const router = useRouter();
+  const [isDisclaimerVisible, setIsDisclaimerVisible] = useState(false);
 
   // Updated scroll thresholds for more gradual behavior
   const SCROLL_THRESHOLD = 80; // Reduced from 250 to 80 for more responsive scrolling
@@ -279,6 +280,33 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
     };
   }, [handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd]);
 
+  // Observe disclaimer visibility when on overview slide
+  useEffect(() => {
+    const slidesArr = getSlides();
+    const overviewIndex = slidesArr.findIndex(slide => slide.id === 'overview');
+
+    // Only observe when currently on overview slide
+    if (currentSlide !== overviewIndex) {
+      if (isDisclaimerVisible) setIsDisclaimerVisible(false);
+      return;
+    }
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const disclaimerEl = container.querySelector('#oz-disclaimer');
+    if (!disclaimerEl) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      setIsDisclaimerVisible(entry.isIntersecting);
+    }, { root: container, threshold: 0.5 });
+
+    observer.observe(disclaimerEl);
+
+    return () => observer.disconnect();
+  }, [currentSlide, getSlides, isDisclaimerVisible]);
+
   return (
     <div 
       ref={containerRef}
@@ -322,6 +350,15 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
             aria-label={`Go to ${slide.title || `slide ${index + 1}`}`}
           />
         ))}
+
+        {/* Footer disclaimer indicator */}
+        <div className="w-2 h-8 flex items-start justify-center" aria-hidden="true">
+          <div
+            className={`w-3 h-3 rounded-full transition-all duration-300 mb-1 ${
+              isDisclaimerVisible ? 'bg-black dark:bg-white opacity-100' : 'bg-black/30 dark:bg-white/30 opacity-60'
+            }`}
+          />
+        </div>
       </div>
     </div>
   );
