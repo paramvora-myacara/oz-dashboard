@@ -390,23 +390,6 @@ function ResultsScreen({ results, onBack, onReset }) {
           </div>
         </motion.div>
 
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, delay: 1.0 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center"
-        >
-          <button className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-[#ff6b35] to-[#ff8c42] text-white font-medium rounded-2xl hover:shadow-lg transition-all">
-            <FileText className="w-5 h-5" />
-            Download PDF Summary
-          </button>
-          <button className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-[#30d158] to-[#40e168] text-white font-medium rounded-2xl hover:shadow-lg transition-all">
-            <Phone className="w-5 h-5" />
-            Schedule 15-min Call
-          </button>
-        </motion.div>
-
         {/* Navigation */}
         <div className="flex justify-between items-center mt-8">
           <button
