@@ -65,13 +65,13 @@ export default function ResponsiveLayout({ children }) {
             />
             <div className="absolute right-0 top-16 w-64 h-full bg-white dark:bg-black border-l border-black/10 dark:border-white/10 p-6">
               <nav className="space-y-4">
-                <a href="#map" className="block py-2 text-black dark:text-white">OZ Map</a>
-                <a href="#investment-reasons" className="block py-2 text-black dark:text-white">Why Invest</a>
-                <a href="#overview" className="block py-2 text-black dark:text-white">Market Overview</a>
+                <Link href="#map" className="block py-2 text-black dark:text-white">OZ Map</Link>
+                <Link href="#investment-reasons" className="block py-2 text-black dark:text-white">Why Invest</Link>
+                <Link href="#overview" className="block py-2 text-black dark:text-white">Market Overview</Link>
                 <hr className="border-black/10 dark:border-white/10" />
-                <a href="/check-oz" className="block py-2 text-black dark:text-white">Check OZ Status</a>
-                <a href="/check-investor-eligibility" className="block py-2 text-black dark:text-white">Check Eligibility</a>
-                <a href="/tax-calculator" className="block py-2 text-black dark:text-white">Tax Calculator</a>
+                <Link href="/check-oz" className="block py-2 text-black dark:text-white">Check OZ Status</Link>
+                <Link href="/check-investor-eligibility" className="block py-2 text-black dark:text-white">Check Eligibility</Link>
+                <Link href="/tax-calculator" className="block py-2 text-black dark:text-white">Tax Calculator</Link>
               </nav>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function ResponsiveLayout({ children }) {
               </svg>
               Home
             </Link>
-            <a
+            <Link
               href="/check-oz"
               className="flex flex-col items-center py-2 text-xs text-black/60 dark:text-white/60"
             >
@@ -139,8 +139,8 @@ export default function ResponsiveLayout({ children }) {
                 />
               </svg>
               Check OZ
-            </a>
-            <a
+            </Link>
+            <Link
               href="/tax-calculator"
               className="flex flex-col items-center py-2 text-xs text-black/60 dark:text-white/60"
             >
@@ -154,8 +154,8 @@ export default function ResponsiveLayout({ children }) {
                 />
               </svg>
               Calculator
-            </a>
-            <a
+            </Link>
+            <Link
               href="/check-investor-eligibility"
               className="flex flex-col items-center py-2 text-xs text-black/60 dark:text-white/60"
             >
@@ -169,7 +169,7 @@ export default function ResponsiveLayout({ children }) {
                 />
               </svg>
               Qualify
-            </a>
+            </Link>
           </div>
         </nav>
       </div>
