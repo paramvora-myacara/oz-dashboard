@@ -303,7 +303,7 @@ export default function OZMapVisualization({ onNavigate }) {
       </div>
 
       {/* Map Section */}
-      <div className="flex flex-col items-center justify-start w-full mt-20 md:mt-6">
+      <div className="flex flex-col items-center justify-start w-full mt-20 md:mt-2">
         <div 
           ref={containerRef} 
           className="relative w-full aspect-[16/9] max-h-[75vh] bg-white dark:bg-black"
