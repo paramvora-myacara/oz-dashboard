@@ -107,7 +107,7 @@ export default function HomePage() {
           {/* Navigation hints positioned in bottom right of overview */}
           <div className="fixed bottom-20 md:bottom-8 right-8 md:right-[calc(35%+2rem)] lg:right-[calc(30%+2rem)] xl:right-[calc(25%+2rem)] z-50 text-center flex gap-4">
             <div 
-              className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
+              className="bg-black/5 md:bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/10 md:hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
               onClick={openSourcesModal}
             >
               <svg 
@@ -121,7 +121,7 @@ export default function HomePage() {
               <span>Sources</span>
             </div>
             <div 
-              className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
+              className="bg-black/5 md:bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/10 md:hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
               onClick={() => navigateToSlide(1)}
             >
               <span>Back to investment reasons</span>

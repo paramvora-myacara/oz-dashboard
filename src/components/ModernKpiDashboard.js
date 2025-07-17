@@ -279,8 +279,8 @@ export default function ModernKpiDashboard() {
     ];
 
     return (
-      <div className="min-h-screen bg-white dark:bg-black px-3 py-8 pb-32 md:pb-8 flex items-center justify-center">
-        <div className="w-full mx-auto">
+      <div className="min-h-screen bg-white dark:bg-black px-3 md:px-8 py-8 pb-32 md:pb-8 flex items-center justify-center">
+        <div className="w-full max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-6 animate-fadeIn">
             <h2 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white tracking-tight mb-2">Market Overview</h2>
@@ -302,7 +302,7 @@ export default function ModernKpiDashboard() {
                     className={`px-3 md:px-6 py-3.5 rounded-full text-sm font-medium transition-all flex items-center space-x-2.5 ${
                       activeTab === tab.id
                         ? 'bg-black dark:bg-white text-white dark:text-black'
-                        : 'md:glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10'
+                        : 'glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10'
                     }`}
                   >
                     <IconComponent className={`w-4 h-4 ${activeTab === tab.id ? 'text-white dark:text-black' : tab.iconColor}`} />
