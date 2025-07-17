@@ -51,8 +51,12 @@ export default function ResponsiveLayout({ children }) {
           </div>
         </header>
 
-        {/* Main content with top padding for fixed header and bottom padding for nav */}
-        <main className="flex-1 pt-16 pb-20 overflow-y-auto scroll-container">
+        {/* Main content with top padding for fixed header and dynamic bottom padding for nav & device safe-area */}
+        <main
+          className="flex-1 pt-16 pb-20 overflow-y-auto scroll-container"
+          /* Reserve extra space for devices with a larger bottom safe-area (e.g. iPhone with home indicator) */
+          style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}
+        >
           {children}
         </main>
 
@@ -102,7 +106,11 @@ export default function ResponsiveLayout({ children }) {
         </div>
 
         {/* Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-t border-black/10 dark:border-white/10 z-40">
+        <nav
+          className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-t border-black/10 dark:border-white/10 z-40"
+          /* Keep nav buttons above device safe-area */
+          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        >
           <div className="grid grid-cols-4 gap-1 p-2">
             <Link
               href="/"

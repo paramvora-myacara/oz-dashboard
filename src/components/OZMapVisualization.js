@@ -48,7 +48,8 @@ export default function OZMapVisualization({ onNavigate }) {
   // Load data once
   useEffect(() => {
     Promise.all([
-      fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(r => r.json()),
+      // Use local copy to avoid external CDN failures (mobile offline etc.)
+      fetch('/maps/us-states-10m.json').then(r => r.json()),
       fetch('/data/opportunity-zones-compressed.geojson').then(r => r.json()),
       fetch('/data/us-opportunity-zones-data.json').then(r => r.json())
     ]).then(([topoData, ozData, ozJsonData]) => {
@@ -303,7 +304,7 @@ export default function OZMapVisualization({ onNavigate }) {
       </div>
 
       {/* Map Section */}
-      <div className="flex flex-col items-center justify-start w-full mt-20 md:mt-2">
+      <div className="flex flex-col items-center justify-start w-full mt-12 md:mt-2">
         <div 
           ref={containerRef} 
           className="relative w-full aspect-[16/9] max-h-[75vh] bg-white dark:bg-black"

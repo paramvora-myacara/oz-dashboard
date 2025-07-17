@@ -318,7 +318,7 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
   return (
     <div 
       ref={containerRef}
-      className={`relative w-full h-screen overflow-hidden ${className}`}
+      className={`relative w-full h-full md:h-screen overflow-hidden ${className}`}
       style={{ touchAction: 'none' }}
     >
       {/* Slides Container */}
