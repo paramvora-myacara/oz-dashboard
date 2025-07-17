@@ -256,10 +256,30 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
   }, []);
 
   const handleTouchMove = useCallback((event) => {
+    const currentX = event.touches[0].clientX;
+    const currentY = event.touches[0].clientY;
+
     touchEnd.current = {
-      x: event.touches[0].clientX,
-      y: event.touches[0].clientY
+      x: currentX,
+      y: currentY
     };
+
+    // If the swipe started in a scrollable element, only prevent default
+    // when that element cannot scroll further in the swipe direction.
+    if (touchScrollable.current) {
+      const scrollable = touchScrollable.current;
+      const deltaY = touchStart.current.y - currentY; // positive = swipe up
+      const canScrollDown = scrollable.scrollTop + scrollable.clientHeight < scrollable.scrollHeight;
+      const canScrollUp = scrollable.scrollTop > 0;
+
+      // Allow inner scrolling when possible
+      if ((deltaY > 0 && canScrollDown) || (deltaY < 0 && canScrollUp)) {
+        return; // Do NOT prevent default → let the inner element scroll
+      }
+    }
+
+    // Otherwise, block browser's default (page) scrolling to avoid rubber-band
+    event.preventDefault();
   }, []);
 
   const handleTouchEnd = useCallback(() => {
@@ -304,7 +324,8 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
 
     container.addEventListener('wheel', handleScroll, { passive: false });
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchmove', handleTouchMove, { passive: true });
+    // IMPORTANT: passive must be false because we call event.preventDefault() above
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
     container.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
@@ -318,7 +339,7 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
   return (
     <div 
       ref={containerRef}
-      className={`relative w-full h-full md:h-screen overflow-hidden ${className}`}
+      className={`relative w-full h-screen overflow-hidden overscroll-contain ${className}`}
       style={{ touchAction: 'none' }}
     >
       {/* Slides Container */}
