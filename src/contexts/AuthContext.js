@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { trackUserEvent } from '@/lib/events';
 
@@ -18,6 +18,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
+  const popupWindow = useRef(null)
 
   useEffect(() => {
     // Get initial session
@@ -35,7 +36,11 @@ export function AuthProvider({ children }) {
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         
-        if (event === 'SIGNED_IN' && currentUser) {
+        if (event === 'SIGNED_IN') {
+          if (popupWindow.current && !popupWindow.current.closed) {
+            popupWindow.current.close();
+            popupWindow.current = null;
+          }
           console.log('AuthContext: SIGNED_IN event detected. User:', currentUser.id);
           // Introduce a small delay to mitigate potential race conditions on initial sign-in
           setTimeout(async () => {
@@ -95,13 +100,21 @@ export function AuthProvider({ children }) {
       }
     );
 
+    const interval = setInterval(() => {
+      if (popupWindow.current && popupWindow.current.closed) {
+        popupWindow.current = null;
+      }
+    }, 500);
+
     return () => {
       authListener.unsubscribe();
+      clearInterval(interval);
     }
   }, [])
 
-  const signInWithGoogle = async (returnTo = '/') => {
-    // Clear any previous redirect flags to allow new OAuth flow
+  const doGoogleSignIn = async (returnTo = '/') => {
+    // This function now contains the actual Supabase call that triggers the redirect.
+    // It will be called from the main app on mobile, or from the popup helper on desktop.
     sessionStorage.removeItem('authFlow_redirectProcessed');
     
     const redirectUrl = new URL('/auth/callback', window.location.origin);
@@ -109,15 +122,6 @@ export function AuthProvider({ children }) {
       redirectUrl.searchParams.set('next', returnTo);
     }
     
-    // Store in sessionStorage for debugging and retrieval
-    sessionStorage.setItem('authFlow_debug', JSON.stringify({
-      returnTo,
-      redirectUrl: redirectUrl.toString(),
-      timestamp: new Date().toISOString(),
-      currentUrl: window.location.href
-    }));
-    
-    // Also store returnTo directly for easy access
     if (returnTo && returnTo !== '/') {
       sessionStorage.setItem('returnTo', returnTo);
     }
@@ -127,8 +131,43 @@ export function AuthProvider({ children }) {
       options: {
         redirectTo: redirectUrl.toString(),
       },
-    })
-    return { data, error }
+    });
+
+    if (error) {
+      console.error('Google Sign-In Error:', error);
+      // Handle error display to the user if necessary
+    }
+    
+    return { data, error };
+  };
+
+  const signInWithGoogle = async (returnTo = '/') => {
+    // This function is the new gatekeeper. It decides whether to use a popup or redirect.
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      return await doGoogleSignIn(returnTo);
+    } else {
+      // Desktop: use popup
+      const width = 600, height = 800;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+      
+      const helperUrl = new URL('/auth/google-signin', window.location.origin);
+      if (returnTo && returnTo !== '/') {
+        helperUrl.searchParams.set('returnTo', returnTo);
+      }
+
+      popupWindow.current = window.open(
+        helperUrl.toString(),
+        'supabase-oauth',
+        `width=${width},height=${height},top=${top},left=${left}`
+      );
+      
+      // We don't return a promise result here because the flow is now async
+      // and handled by the onAuthStateChange listener.
+      return { data: null, error: null };
+    }
   }
 
   const signInWithEmail = async (email, password, returnTo = '/') => {
@@ -181,6 +220,7 @@ export function AuthProvider({ children }) {
     user,
     loading,
     signInWithGoogle,
+    doGoogleSignIn, // <-- Expose the new function
     signInWithEmail,
     signUpWithEmail,
     resetPassword,
