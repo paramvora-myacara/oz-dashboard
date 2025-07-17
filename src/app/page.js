@@ -38,12 +38,12 @@ export default function HomePage() {
     }, [cameFrom]);
 
     return (
-      <div ref={containerRef} className="h-full w-full bg-white dark:bg-black overflow-y-auto flex flex-col">
+      <div ref={containerRef} data-scroll="true" className="h-full w-full bg-white dark:bg-black overflow-y-auto flex flex-col">
         <div className="flex-1">
           <OZInvestmentReasons />
         </div>
         {/* Navigation hints positioned in bottom right */}
-        <div className="absolute bottom-16 md:bottom-8 right-8 z-50 text-center flex gap-4">
+        <div className="fixed bottom-20 md:bottom-8 right-8 md:right-[calc(35%+2rem)] lg:right-[calc(30%+2rem)] xl:right-[calc(25%+2rem)] z-50 text-center flex gap-4">
           <div
             className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center justify-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
             onClick={() => navigateToSlide(0)}
@@ -99,13 +99,13 @@ export default function HomePage() {
       id: 'overview',
       title: 'Market Overview',
       component: (
-        <div className="h-full w-full bg-white dark:bg-black overflow-y-auto flex flex-col">
+        <div className="h-full w-full bg-white dark:bg-black overflow-y-auto flex flex-col" data-scroll="true">
           {/* Market overview content */}
           <div className="flex-1">
             <ModernKpiDashboard />
           </div>
           {/* Navigation hints positioned in bottom right of overview */}
-          <div className="absolute bottom-16 md:bottom-8 right-8 z-50 text-center flex gap-4">
+          <div className="fixed bottom-20 md:bottom-8 right-8 md:right-[calc(35%+2rem)] lg:right-[calc(30%+2rem)] xl:right-[calc(25%+2rem)] z-50 text-center flex gap-4">
             <div 
               className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
               onClick={openSourcesModal}

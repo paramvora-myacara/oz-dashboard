@@ -279,24 +279,27 @@ export default function ModernKpiDashboard() {
     ];
 
     return (
-      <div className="min-h-screen bg-white dark:bg-black px-8 py-8 flex items-center justify-center">
-        <div className="w-full mx-auto max-w-7xl">
+      <div className="min-h-screen bg-white dark:bg-black px-3 py-8 pb-32 md:pb-8 flex items-center justify-center">
+        <div className="w-full mx-auto">
           {/* Section Header */}
           <div className="text-center mb-6 animate-fadeIn">
             <h2 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white tracking-tight mb-2">Market Overview</h2>
-            <p className="text-xl text-black/60 dark:text-white/60 font-light">Comprehensive view of the $110+ billion Opportunity Zone marketplace</p>
+            <p className="text-xl text-black/60 dark:text-white/60 font-light">
+              <span className="hidden md:inline">Comprehensive view of the $110+ billion Opportunity Zone marketplace</span>
+              <span className="md:hidden">Comprehensive view of the $110B+ OZ marketplace</span>
+            </p>
           </div>
 
           {/* Charts Section */}
           <div className="space-y-4">
-            <div className="flex flex-wrap gap-3 mb-5 justify-center">
+            <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-3 max-w-md md:max-w-none mx-auto mb-5 justify-center overflow-x-auto md:overflow-visible">
               {tabs.map(tab => {
                 const IconComponent = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-6 py-3.5 rounded-full text-sm font-medium transition-all flex items-center space-x-2.5 ${
+                    className={`px-3 md:px-6 py-3.5 rounded-full text-sm font-medium transition-all flex items-center space-x-2.5 ${
                       activeTab === tab.id
                         ? 'bg-black dark:bg-white text-white dark:text-black'
                         : 'glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10'
