@@ -337,7 +337,7 @@ export default function OZMapVisualization({ onNavigate }) {
       </div>
 
       {/* Bottom-right scroll button */}
-      <div className="fixed bottom-8 right-[calc(35%+2rem)] lg:right-[calc(30%+2rem)] xl:right-[calc(25%+2rem)] z-50">
+      <div className="fixed bottom-20 md:bottom-8 right-[calc(35%+2rem)] lg:right-[calc(30%+2rem)] xl:right-[calc(25%+2rem)] z-50">
         <div 
           className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
           onClick={() => onNavigate && onNavigate(1)}

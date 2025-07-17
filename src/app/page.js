@@ -43,9 +43,9 @@ export default function HomePage() {
           <OZInvestmentReasons />
         </div>
         {/* Navigation hints positioned in bottom right */}
-        <div className="absolute bottom-8 right-8 z-50 text-center flex gap-4">
+        <div className="absolute bottom-16 md:bottom-8 right-8 z-50 text-center flex gap-4">
           <div
-            className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center justify-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
+            className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center justify-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
             onClick={() => navigateToSlide(0)}
           >
             <svg
@@ -60,7 +60,7 @@ export default function HomePage() {
             <span className="leading-none">Back to map</span>
           </div>
           <div
-            className="bg-black/10 dark:bg:white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg:white/20 transition-all duration-300"
+            className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
             onClick={() => navigateToSlide(2)}
           >
             <span>Market overview</span>
@@ -105,9 +105,9 @@ export default function HomePage() {
             <ModernKpiDashboard />
           </div>
           {/* Navigation hints positioned in bottom right of overview */}
-          <div className="absolute bottom-8 right-8 z-50 text-center flex gap-4">
+          <div className="absolute bottom-16 md:bottom-8 right-8 z-50 text-center flex gap-4">
             <div 
-              className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
+              className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
               onClick={openSourcesModal}
             >
               <svg 
@@ -121,7 +121,7 @@ export default function HomePage() {
               <span>Sources</span>
             </div>
             <div 
-              className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
+              className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-3 py-1.5 text-xs md:px-4 md:py-2 md:text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
               onClick={() => navigateToSlide(1)}
             >
               <span>Back to investment reasons</span>

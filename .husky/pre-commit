@@ -1,1 +1,4 @@
+# Ensure we're using the correct node version
+export PATH="$PATH:/usr/bin:/usr/local/bin:$HOME/.nvm/versions/node/v18.20.8/bin"
+
 npm run lint

@@ -314,7 +314,7 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
       )}
 
       {/* Slide Indicators */}
-      <div className="fixed right-[35%] lg:right-[25%] top-1/2 transform -translate-y-1/2 z-50 space-y-3 pr-[1.5%]">
+      <div className="fixed right-3 md:right-[35%] lg:right-[25%] top-1/2 transform -translate-y-1/2 z-50 space-y-3 pr-[1.5%]">
         {getSlides().map((slide, index) => (
           <button
             key={slide.id || index}
