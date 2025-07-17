@@ -111,7 +111,7 @@ export default function TaxCalculatorPage() {
             OZ Tax Savings Calculator
           </h1>
           <p className="text-xl text-black/60 dark:text-white/60 font-light">
-            Calculate your potential capital gains tax savings
+            Calculate your potential federal capital gains tax savings
           </p>
         </div>
 
@@ -310,7 +310,7 @@ function ResultsScreen({ results, onBack, onReset }) {
               {formatCurrency(results.totalSavings)}
             </p>
             <p className="text-lg text-black/60 dark:text-white/60">
-              in capital gains tax
+              in federal capital gains tax
             </p>
           </div>
         </motion.div>
@@ -325,7 +325,7 @@ function ResultsScreen({ results, onBack, onReset }) {
             className="glass-card rounded-2xl p-6 bg-gradient-to-br from-[#ff6b35]/5 to-[#ff8c42]/5 border border-[#ff6b35]/20"
           >
             <h3 className="text-xl font-semibold text-black dark:text-white mb-3">
-              Immediate Deferral
+              Immediate Federal Deferral
             </h3>
             <p className="text-3xl font-bold text-[#ff6b35] mb-3">
               {formatCurrency(results.immediateDeferral)}
@@ -343,7 +343,7 @@ function ResultsScreen({ results, onBack, onReset }) {
             className="glass-card rounded-2xl p-6 bg-gradient-to-br from-[#6b8dd6]/5 to-[#8fa7db]/5 border border-[#6b8dd6]/20"
           >
             <h3 className="text-xl font-semibold text-black dark:text-white mb-3">
-              10-Year Exemption
+              10-Year Full Capital Gains Exemption
             </h3>
             <p className="text-3xl font-bold text-[#6b8dd6] mb-3">
               {formatCurrency(results.tenYearExemption)}
@@ -369,11 +369,11 @@ function ResultsScreen({ results, onBack, onReset }) {
           </h3>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <span className="text-black/60 dark:text-white/60">Capital Gain Amount:</span>
+              <span className="text-black/60 dark:text-white/60">Federal Capital Gain Amount:</span>
               <span className="text-black dark:text-white font-medium">{getGainAmountLabel(results.gainAmount)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-black/60 dark:text-white/60">Tax Rate:</span>
+              <span className="text-black/60 dark:text-white/60">Federal Tax Rate:</span>
               <span className="text-black dark:text-white font-medium">{getTaxBracketLabel(results.taxRate)}</span>
             </div>
             <div className="flex justify-between">
@@ -383,7 +383,7 @@ function ResultsScreen({ results, onBack, onReset }) {
               </span>
             </div>
             <div className="flex justify-between border-t border-black/10 dark:border-white/10 pt-3">
-              <span className="text-black/60 dark:text-white/60">Tax Due Now (without OZ):</span>
+              <span className="text-black/60 dark:text-white/60">Federal Tax Due Now (without OZ):</span>
               <span className="text-black dark:text-white font-medium">{formatCurrency(results.taxDueNow)}</span>
             </div>
           </div>

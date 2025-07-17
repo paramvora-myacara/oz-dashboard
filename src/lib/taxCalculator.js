@@ -10,7 +10,7 @@ export const TAX_CALC_CONFIG = {
   ASSUMED_RETURN_MULT: 1.8,
   
   // Deferral deadline
-  DEFERRAL_DEADLINE: '12/31/2026',
+  DEFERRAL_DEADLINE: 'TY.2026',
   
   // Last updated date for compliance
   LAST_UPDATED: 'January 2025',
