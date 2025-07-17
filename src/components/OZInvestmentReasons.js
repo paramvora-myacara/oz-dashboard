@@ -72,7 +72,7 @@ export default function OZInvestmentReasons() {
   ];
 
   return (
-    <div className="min-h-full bg-white dark:bg-black px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center py-8">
+    <div className="min-h-full bg-white dark:bg-black px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center py-8 pb-32 md:pb-8">
       {/* H1 Heading */}
       <div className="flex-shrink-0 mb-6 sm:mb-8">
         <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white text-center tracking-tight animate-fadeIn">
@@ -92,28 +92,28 @@ export default function OZInvestmentReasons() {
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 {/* Card Header */}
-                <div className="mb-4 sm:mb-6 flex-shrink-0">
+                <div className="mb-3 sm:mb-5 flex-shrink-0">
                   <div className="mb-2 sm:mb-3">
                     <IconComponent className={`w-6 h-6 sm:w-8 sm:h-8 lg:w-6 lg:h-6 xl:w-8 xl:h-8 ${reason.textColor}`} />
                   </div>
-                  <div className="min-h-[4rem] sm:min-h-[5rem] lg:min-h-[4rem] xl:min-h-[5rem] mb-1 sm:mb-2 flex items-start">
-                    <h3 className={`text-xl sm:text-2xl lg:text-xl xl:text-2xl font-semibold ${reason.textColor} leading-tight`}>
+                  <div className="min-h-[3rem] sm:min-h-[5rem] lg:min-h-[4rem] xl:min-h-[5rem] mb-0.5 sm:mb-1 flex items-start">
+                    <h3 className={`text-2xl sm:text-2xl lg:text-xl xl:text-2xl font-semibold ${reason.textColor} leading-tight`}>
                       {reason.title}
                     </h3>
                   </div>
-                  <div className="min-h-[5rem] sm:min-h-[6rem] lg:min-h-[5rem] xl:min-h-[6rem] mb-2 sm:mb-3 flex items-start">
-                    <p className={`${reason.accentColor} text-lg sm:text-xl lg:text-lg xl:text-xl font-light leading-relaxed`}>
+                  <div className="min-h-[3rem] sm:min-h-[6rem] lg:min-h-[5rem] xl:min-h-[6rem] mb-1 sm:mb-2 flex items-start">
+                    <p className={`${reason.accentColor} text-xl sm:text-2xl lg:text-lg xl:text-xl font-light leading-relaxed`}>
                       {reason.description}
                     </p>
                   </div>
                 </div>
 
                 {/* Key Highlights */}
-                <div className="space-y-3 sm:space-y-4 lg:space-y-3 xl:space-y-4 flex-1">
+                <div className="space-y-1 sm:space-y-2 lg:space-y-3 xl:space-y-4 flex-1 pb-2 sm:pb-3">
                   {reason.highlights.map((highlight, idx) => (
-                    <div key={idx} className="flex items-start gap-3 sm:gap-4 min-h-[2.75rem] sm:min-h-[3.25rem] lg:min-h-[2.75rem] xl:min-h-[3.25rem]">
-                      <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black dark:bg-white rounded-full mt-2 sm:mt-2.5 flex-shrink-0`} />
-                      <div className={`${reason.bulletColor} text-sm sm:text-base lg:text-sm xl:text-base font-light leading-relaxed flex-1`}>
+                    <div key={idx} className="flex items-start gap-1 sm:gap-2">
+                      <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 bg-black dark:bg-white rounded-full mt-2 sm:mt-2 flex-shrink-0`} />
+                      <div className={`${reason.bulletColor} text-base sm:text-lg lg:text-sm xl:text-base font-light leading-relaxed flex-1`}>
                         {highlight}
                       </div>
                     </div>

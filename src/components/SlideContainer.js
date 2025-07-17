@@ -100,6 +100,18 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
       }
     }
 
+    // Ignore scroll if event originated inside a scrollable container that can handle the scroll itself
+    const scrollableAncestor = event.target.closest('[data-scroll="true"]');
+    if (scrollableAncestor) {
+      const deltaY = event.deltaY;
+      const canScrollDown = scrollableAncestor.scrollTop + scrollableAncestor.clientHeight < scrollableAncestor.scrollHeight;
+      const canScrollUp = scrollableAncestor.scrollTop > 0;
+      if ((deltaY > 0 && canScrollDown) || (deltaY < 0 && canScrollUp)) {
+        // Allow the inner container to scroll
+        return;
+      }
+    }
+
     // CRITICAL: Ignore scroll events for 600ms after slide change (Mac trackpad momentum period)
     if (timeSinceLastSlide < 600) {
       event.preventDefault();
@@ -232,12 +244,15 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
   // Touch/swipe handling for mobile
   const touchStart = useRef({ x: 0, y: 0 });
   const touchEnd = useRef({ x: 0, y: 0 });
+  const touchScrollable = useRef(null);
 
   const handleTouchStart = useCallback((event) => {
     touchStart.current = {
       x: event.touches[0].clientX,
       y: event.touches[0].clientY
     };
+    // Track if touch originated inside a scrollable container
+    touchScrollable.current = event.target.closest('[data-scroll="true"]');
   }, []);
 
   const handleTouchMove = useCallback((event) => {
@@ -249,6 +264,19 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
 
   const handleTouchEnd = useCallback(() => {
     if (isTransitioning) return;
+
+    // If touch started inside a scrollable container, determine if that container can still scroll in the swipe direction
+    if (touchScrollable.current) {
+      const scrollable = touchScrollable.current;
+      const deltaY = touchStart.current.y - touchEnd.current.y; // positive = swipe up
+      const canScrollDown = scrollable.scrollTop + scrollable.clientHeight < scrollable.scrollHeight;
+      const canScrollUp = scrollable.scrollTop > 0;
+      if ((deltaY > 0 && canScrollDown) || (deltaY < 0 && canScrollUp)) {
+        // Allow inner scroll; don't change slide
+        touchScrollable.current = null;
+        return;
+      }
+    }
 
     const deltaX = touchStart.current.x - touchEnd.current.x;
     const deltaY = touchStart.current.y - touchEnd.current.y;
@@ -265,6 +293,8 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
         changeSlide(currentSlide - 1);
       }
     }
+
+    touchScrollable.current = null;
   }, [currentSlide, isTransitioning, getSlides, changeSlide]);
 
   // Attach scroll listener
@@ -314,7 +344,7 @@ export default function SlideContainer({ slides, renderSlides, className = '', o
       )}
 
       {/* Slide Indicators */}
-      <div className="fixed right-[35%] lg:right-[25%] top-1/2 transform -translate-y-1/2 z-50 space-y-3 pr-[1.5%]">
+      <div className="fixed right-3 md:right-[35%] lg:right-[25%] top-1/2 transform -translate-y-1/2 z-50 space-y-3 pr-[1.5%]">
         {getSlides().map((slide, index) => (
           <button
             key={slide.id || index}

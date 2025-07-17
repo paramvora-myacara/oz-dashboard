@@ -269,75 +269,98 @@ export default function OZMapVisualization({ onNavigate }) {
   const stateData = hoveredState ? getStateData(hoveredState) : null;
 
   return (
-    <div className="w-full h-full max-w-7xl mx-auto flex flex-col items-center justify-center bg-white dark:bg-black relative">
+    <div className="w-full h-full max-w-7xl mx-auto flex flex-col items-center justify-start md:justify-center pt-4 md:pt-0 bg-white dark:bg-black relative">
       {/* Header Section - 20% of height */}
-      <div className="w-full flex flex-col justify-center items-center text-center animate-fadeIn px-12 py-8">
+      <div className="w-full flex flex-col justify-center items-center text-center animate-fadeIn px-12 sm:py-8 mt-6 md:mt-0">
         <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold text-black dark:text-white tracking-tight">State of the OZ</h1>
         <p className="text-xl text-black/70 dark:text-white/70 mt-3 font-light">
           {ozData && ozData.metadata ? (
             <>
-              {ozData.metadata.total_oz_spaces.toLocaleString()} zones • 
-              ${(ozData.metadata.total_investment_volume_estimate / 1000000000).toFixed(0)}B+ invested • 
-              {ozData.metadata.total_active_projects_estimate.toLocaleString()} active projects
+              {/* Desktop inline summary */}
+              <span className="hidden md:inline">
+                {ozData.metadata.total_oz_spaces.toLocaleString()} zones • ${ (ozData.metadata.total_investment_volume_estimate / 1000000000).toFixed(0) }B+ invested • {ozData.metadata.total_active_projects_estimate.toLocaleString()} active projects
+              </span>
+              {/* Mobile stacked summary */}
+              <span className="md:hidden">
+                • {ozData.metadata.total_active_projects_estimate.toLocaleString()} active projects<br />
+                • {ozData.metadata.total_oz_spaces.toLocaleString()} zones<br />
+                • ${ (ozData.metadata.total_investment_volume_estimate / 1000000000).toFixed(0) }B+ invested
+              </span>
             </>
           ) : (
-            '8,765 zones • $100B+ invested • 6,284 active projects'
+            <>
+              {/* Desktop inline fallback */}
+              <span className="hidden md:inline">8,765 zones • $100B+ invested • 6,284 active projects</span>
+              {/* Mobile stacked fallback */}
+              <span className="md:hidden">
+                • 6,284 active projects<br />
+                • 8,765 zones<br />
+                • $100B+ invested
+              </span>
+            </>
           )}
         </p>
       </div>
 
       {/* Map Section */}
-      <div 
-        ref={containerRef} 
-        className="relative w-full aspect-[16/9] max-h-[75vh] bg-white dark:bg-black"
-        onMouseMove={handleMouseMove}
-      >
-        <svg
-          ref={svgRef}
-          width={dimensions.width}
-          height={dimensions.height}
-          className="absolute inset-0"
-        />
+      <div className="flex flex-col items-center justify-start w-full mt-20 md:mt-2">
+        <div 
+          ref={containerRef} 
+          className="relative w-full aspect-[16/9] max-h-[75vh] bg-white dark:bg-black"
+          onMouseMove={handleMouseMove}
+        >
+          <svg
+            ref={svgRef}
+            width={dimensions.width}
+            height={dimensions.height}
+            className="absolute inset-0"
+          />
 
-        {/* State Tooltip - Glassmorphism style */}
-        {hoveredState && stateData && (
-          <div 
-            className="absolute glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-7 xl:p-8 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
-            style={{
-              left: `${Math.min(mousePosition.x + 15, dimensions.width - (dimensions.width < 640 ? 220 : dimensions.width < 1024 ? 280 : 320))}px`,
-              top: `${Math.min(mousePosition.y + 15, dimensions.height - (dimensions.width < 640 ? 140 : dimensions.width < 1024 ? 180 : 200))}px`
-            }}
-          >
-            <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-black dark:text-white mb-2 sm:mb-3 lg:mb-4">{hoveredState}</h3>
-            <div className="space-y-1 sm:space-y-2 lg:space-y-3">
-              <div className="flex justify-between gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
-                <span className="text-xs sm:text-sm lg:text-base text-black/60 dark:text-white/60">OZ Zones</span>
-                <span className="text-xs sm:text-sm lg:text-base text-black dark:text-white font-medium">{stateData.zones}</span>
-              </div>
-              <div className="flex justify-between gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
-                <span className="text-xs sm:text-sm lg:text-base text-black/60 dark:text-white/60">Active Projects</span>
-                <span className="text-xs sm:text-sm lg:text-base text-[#0071e3] font-medium">{stateData.activeProjects}</span>
-              </div>
-              <div className="flex justify-between gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
-                <span className="text-xs sm:text-sm lg:text-base text-black/60 dark:text-white/60">Investment Volume</span>
-                <span className="text-xs sm:text-sm lg:text-base text-[#30d158] font-medium">${stateData.investmentBillions}B</span>
+          {/* State Tooltip - Glassmorphism style */}
+          {hoveredState && stateData && (
+            <div 
+              className="absolute glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-7 xl:p-8 pointer-events-none z-50 animate-fadeIn bg-white/90 dark:bg-black/80 border border-black/10 dark:border-white/10"
+              style={{
+                left: `${Math.min(mousePosition.x + 15, dimensions.width - (dimensions.width < 640 ? 220 : dimensions.width < 1024 ? 280 : 320))}px`,
+                top: `${Math.min(mousePosition.y + 15, dimensions.height - (dimensions.width < 640 ? 140 : dimensions.width < 1024 ? 180 : 200))}px`
+              }}
+            >
+              <h3 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold text-black dark:text-white mb-2 sm:mb-3 lg:mb-4">{hoveredState}</h3>
+              <div className="space-y-1 sm:space-y-2 lg:space-y-3">
+                <div className="flex justify-between gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
+                  <span className="text-xs sm:text-sm lg:text-base text-black/60 dark:text-white/60">OZ Zones</span>
+                  <span className="text-xs sm:text-sm lg:text-base text-black dark:text-white font-medium">{stateData.zones}</span>
+                </div>
+                <div className="flex justify-between gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
+                  <span className="text-xs sm:text-sm lg:text-base text-black/60 dark:text-white/60">Active Projects</span>
+                  <span className="text-xs sm:text-sm lg:text-base text-[#0071e3] font-medium">{stateData.activeProjects}</span>
+                </div>
+                <div className="flex justify-between gap-6 sm:gap-8 lg:gap-12 xl:gap-16">
+                  <span className="text-xs sm:text-sm lg:text-base text-black/60 dark:text-white/60">Investment Volume</span>
+                  <span className="text-xs sm:text-sm lg:text-base text-[#30d158] font-medium">${stateData.investmentBillions}B</span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black">
-            <div className="text-center">
-              <div className="w-12 h-12 border-2 border-black/20 dark:border-white/20 border-t-black/60 dark:border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
-              <p className="text-black/60 dark:text-white/60 font-light">Loading opportunity zones...</p>
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black">
+              <div className="text-center">
+                <div className="w-12 h-12 border-2 border-black/20 dark:border-white/20 border-t-black/60 dark:border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>
+                <p className="text-black/60 dark:text-white/60 font-light">Loading opportunity zones...</p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      </div>
+
+      {/* Instruction Box Below Map */}
+      <div className="my-3 px-4 py-2 rounded-xl bg-black/5 dark:bg-white/10 text-black/70 dark:text-white/80 text-sm font-medium inline-block shadow-sm md:hidden">
+        Tap a state to see its details
       </div>
 
       {/* Bottom-right scroll button */}
-      <div className="fixed bottom-8 right-[calc(35%+2rem)] lg:right-[calc(30%+2rem)] xl:right-[calc(25%+2rem)] z-50">
+      <div className="fixed bottom-20 md:bottom-8 right-8 md:right-[calc(35%+2rem)] lg:right-[calc(30%+2rem)] xl:right-[calc(25%+2rem)] z-50">
         <div 
           className="bg-black/10 dark:bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm text-black/60 dark:text-white/60 flex items-center gap-2 cursor-pointer hover:bg-black/20 dark:hover:bg-white/20 transition-all duration-300"
           onClick={() => onNavigate && onNavigate(1)}
