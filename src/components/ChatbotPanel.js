@@ -12,7 +12,7 @@ import { useChatStore } from '@/stores/chatStore';
 import AuthOverlay from './AuthOverlay';
 import ReactMarkdown from 'react-markdown';
 
-export default function ChatbotPanel() {
+export default function ChatbotPanel({ isMobile = false }) {
   const { user, loading, signOut, getCurrentUser } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -233,22 +233,20 @@ export default function ChatbotPanel() {
     // Get the current user directly from Supabase to ensure we have the correct ID
     const { user: currentUser } = await getCurrentUser();
     const userId = currentUser?.id || user?.id || 'guest';
-    const backendUrl = process.env.NEXT_PUBLIC_OZ_BACKEND_URL || 'http://localhost:8001';
     
     try {
-      const res = await fetch(`${backendUrl}/chat`, {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, message: messageText })
       });
       
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Backend error response:', errorText);
-        throw new Error(`HTTP error! status: ${res.status} - ${errorText}`);
-      }
-      
       const data = await res.json();
+      
+      if (!res.ok || !data.success) {
+        console.error('API error response:', data);
+        throw new Error(data.error || `HTTP error! status: ${res.status}`);
+      }
       
       // Remove the loading message and add the actual response
       // We need to remove the loading message first, then add the real response
@@ -274,15 +272,26 @@ export default function ChatbotPanel() {
       }));
       
     } catch (err) {
-      console.error('Ozzie backend error:', err);
+      console.error('Ozzie chat error:', err);
       
       // Remove loading message and add error message
       const currentConversation = getCurrentConversation();
       const messagesWithoutLoading = currentConversation.messages.filter(msg => !msg.isLoading);
       
+      // Determine error message based on error type
+      let errorText = 'Sorry, Ozzie is having trouble responding right now. Please try again later.';
+      
+      // Handle network errors on mobile
+      if (err.name === 'TypeError' && err.message.includes('fetch')) {
+        errorText = 'Network connection issue. Please check your internet connection and try again.';
+      } else if (err.message && typeof err.message === 'string') {
+        // Use the custom error message from our API
+        errorText = err.message;
+      }
+      
       // Create the error message with a proper ID
       const errorMessage = {
-        text: 'Sorry, Ozzie is having trouble responding right now. Please try again later.',
+        text: errorText,
         sender: 'bot',
         id: crypto?.randomUUID ? crypto.randomUUID() : `msg-${Date.now()}-${Math.random()}`
       };
@@ -358,7 +367,9 @@ export default function ChatbotPanel() {
   };
 
   return (
-    <aside className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10 relative">
+    <aside className={`h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl ${
+      isMobile ? 'border-0' : 'border-l border-black/10 dark:border-white/10'
+    } relative`}>
       <style jsx>{`
         @keyframes breathe {
           0%, 100% { 
@@ -399,7 +410,7 @@ export default function ChatbotPanel() {
         }
       `}</style>
       
-      <header className="p-6 border-b border-black/10 dark:border-white/5 relative overflow-hidden">
+      <header className={`${isMobile ? 'p-4' : 'p-6'} border-b border-black/10 dark:border-white/5 relative overflow-hidden`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 floating-avatar">
             <div 
@@ -441,13 +452,13 @@ export default function ChatbotPanel() {
       </header>
       
       {/* Preset Questions */}
-      <div className="p-6 border-b border-black/10 dark:border-white/5">
+      <div className={`${isMobile ? 'p-4' : 'p-6'} border-b border-black/10 dark:border-white/5`}>
         <div className="grid grid-cols-2 gap-2">
           {presetQuestions.map((question, index) => (
             <button
               key={index}
               onClick={() => handlePresetClick(question)}
-              className={`p-3 text-xs text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white glass-card rounded-2xl transition-all text-left font-light hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 ${
+              className={`${isMobile ? 'p-3.5' : 'p-3'} text-xs text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white glass-card rounded-2xl transition-all text-left font-light hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 ${isMobile ? 'min-h-[48px]' : ''} ${
                 highlightedQuestions.has(index) ? 'breathing' : ''
               }`}
             >
@@ -459,7 +470,7 @@ export default function ChatbotPanel() {
       
       <div 
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-6 space-y-4"
+        className={`flex-1 overflow-y-auto ${isMobile ? 'p-4' : 'p-6'} space-y-4`}
       >
         {!isHydrated ? (
           <div className="flex justify-start animate-fadeIn">
@@ -494,11 +505,11 @@ export default function ChatbotPanel() {
       </div>
       
       {/* Input Form */}
-      <div className="p-6 border-t border-black/10 dark:border-white/5">
-        <div className="flex gap-3 items-end">
+      <div className={`${isMobile ? 'p-4' : 'p-6'} border-t border-black/10 dark:border-white/5`}>
+        <div className={`flex ${isMobile ? 'gap-2' : 'gap-3'} items-end`}>
           <textarea
             ref={textareaRef}
-            className="flex-1 px-5 py-3 glass-card rounded-2xl text-black dark:text-white placeholder-black/30 dark:placeholder-white/30 focus:outline-none focus:border-black/20 dark:focus:border-white/20 text-sm font-light transition-all bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 resize-none overflow-hidden min-h-[48px] max-h-[120px]"
+            className={`flex-1 ${isMobile ? 'px-4 py-3' : 'px-5 py-3'} glass-card rounded-2xl text-black dark:text-white placeholder-black/30 dark:placeholder-white/30 focus:outline-none focus:border-black/20 dark:focus:border-white/20 text-sm font-light transition-all bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 resize-none overflow-hidden min-h-[48px] max-h-[120px]`}
             value={input} 
             onChange={e => setInput(e.target.value)} 
             placeholder="Ask Ozzie anything about OZs..."
@@ -518,7 +529,7 @@ export default function ChatbotPanel() {
           <button 
             onClick={(e) => handleSend(e)}
             disabled={!input.trim()} 
-            className="p-3 bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-black/10 dark:disabled:bg-white/10 rounded-full transition-all disabled:cursor-not-allowed hover:scale-105 flex-shrink-0"
+            className={`${isMobile ? 'p-3.5' : 'p-3'} bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-black/10 dark:disabled:bg-white/10 rounded-full transition-all disabled:cursor-not-allowed hover:scale-105 flex-shrink-0 ${isMobile ? 'min-w-[48px] min-h-[48px]' : ''}`}
           >
             <PaperAirplaneIcon className="h-5 w-5 text-white"/>
           </button>
