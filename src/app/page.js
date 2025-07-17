@@ -85,7 +85,10 @@ export default function HomePage() {
       id: 'map',
       title: 'Opportunity Zone Map',
       component: (
-        <div className="h-full w-full">
+        <div
+          className="h-full w-full overflow-y-auto scroll-container md:overflow-hidden"
+          data-scroll="true"
+        >
           <ClientOZMapLoader onNavigate={navigateToSlide} />
         </div>
       )
