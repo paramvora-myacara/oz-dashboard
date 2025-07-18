@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useRef, useLayoutEffect } from 'react';
 import ChatbotPanel from '@/components/ChatbotPanel';
 import ThemeLogo from '@/components/ThemeLogo';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -13,6 +13,25 @@ export default function ResponsiveLayout({ children }) {
   // Show / hide mobile specific panels
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  // --------------------------
+  // Dynamic bottom padding
+  // --------------------------
+  const navRef = useRef(null);
+  const [navHeight, setNavHeight] = useState(0);
+
+  // Measure nav height (incl. safe-area) on mount & resize
+  useLayoutEffect(() => {
+    const updateNavHeight = () => {
+      if (navRef.current) {
+        setNavHeight(navRef.current.offsetHeight);
+      }
+    };
+
+    updateNavHeight();
+    window.addEventListener('resize', updateNavHeight);
+    return () => window.removeEventListener('resize', updateNavHeight);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,9 +72,9 @@ export default function ResponsiveLayout({ children }) {
 
         {/* Main content with top padding for fixed header and dynamic bottom padding for nav & device safe-area */}
         <main
-          className="flex-1 pt-16 pb-20 overflow-y-auto scroll-container"
-          /* Reserve extra space for devices with a larger bottom safe-area (e.g. iPhone with home indicator) */
-          style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}
+          className="flex-1 pt-16 overflow-y-auto scroll-container"
+          /* Reserve exactly the height of the bottom navigation (incl. safe-area) */
+          style={{ paddingBottom: navHeight }}
         >
           {children}
         </main>
@@ -107,6 +126,7 @@ export default function ResponsiveLayout({ children }) {
 
         {/* Bottom Navigation */}
         <nav
+          ref={navRef}
           className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-t border-black/10 dark:border-white/10 z-40"
           /* Keep nav buttons above device safe-area */
           style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}

@@ -1,7 +1,7 @@
 // src/components/ModernKpiDashboard.js
 
 'use client';
-import { useState } from 'react';
+import { useState, useLayoutEffect, useRef } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, Filler, ArcElement } from 'chart.js';
 import { Bar, Line, Doughnut } from 'react-chartjs-2';
 import { TrendingUp, Building2, MapPin, Home, BarChart3, CheckCircle, Target, Users } from 'lucide-react';
@@ -278,6 +278,24 @@ export default function ModernKpiDashboard() {
       { id: 'market-intelligence', label: 'Market Intelligence', icon: Target, iconColor: 'text-pink-500' }
     ];
 
+    // Detect when the button row overflows (desktop only) and switch to a grid layout
+    const btnContainerRef = useRef(null);
+    const [useGridLayout, setUseGridLayout] = useState(false);
+
+    useLayoutEffect(() => {
+      const updateLayout = () => {
+        if (!btnContainerRef.current) return;
+        const { scrollWidth, clientWidth } = btnContainerRef.current;
+        // Activate grid when we are on desktop (≥768px) and the buttons overflow horizontally
+        const shouldUseGrid = window.innerWidth >= 768 && scrollWidth > clientWidth;
+        setUseGridLayout(shouldUseGrid);
+      };
+
+      updateLayout();
+      window.addEventListener('resize', updateLayout);
+      return () => window.removeEventListener('resize', updateLayout);
+    }, []);
+
     return (
       <div className="min-h-screen bg-white dark:bg-black px-3 md:px-8 py-8 pb-32 md:pb-8 flex items-center justify-center">
         <div className="w-full max-w-7xl mx-auto">
@@ -292,7 +310,10 @@ export default function ModernKpiDashboard() {
 
           {/* Charts Section */}
           <div className="space-y-4">
-            <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-3 max-w-md md:max-w-none mx-auto mb-5 justify-center overflow-x-auto md:overflow-visible">
+            <div
+              ref={btnContainerRef}
+              className={`${useGridLayout ? 'columns-2 lg:columns-3 w-max mx-auto' : 'flex flex-wrap'} gap-2 md:gap-3 mb-5 justify-center ${useGridLayout ? 'overflow-visible' : 'overflow-x-auto'} md:overflow-visible`}
+            >
               {tabs.map(tab => {
                 const IconComponent = tab.icon;
                 return (
