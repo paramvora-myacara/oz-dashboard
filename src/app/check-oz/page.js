@@ -12,6 +12,7 @@ import {
   ErrorDisplay 
 } from '@/components/CheckOZ';
 import { useAddressPredictions, useOZChecker } from '@/hooks';
+import ScheduleCallCTA from '@/components/ScheduleCallCTA';
 
 export default function CheckOZPage() {
   const router = useRouter();
@@ -107,6 +108,9 @@ export default function CheckOZPage() {
 
         {/* Results */}
         <ResultsDisplay result={ozCheckerHook.result} />
+
+        {/* Schedule Call CTA */}
+        <ScheduleCallCTA />
 
         {/* Navigation */}
         <div className="mt-8">
