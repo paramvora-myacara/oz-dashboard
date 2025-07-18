@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
+import { Switch } from '@headlessui/react';
 
 const THEME_MODES = {
   LIGHT: 'light',
@@ -11,6 +12,7 @@ const THEME_MODES = {
 export default function ThemeToggle() {
   const [theme, setTheme] = useState(THEME_MODES.DARK);
   const [mounted, setMounted] = useState(false);
+  const [enabled, setEnabled] = useState(false)
 
   // Apply theme to document
   const applyTheme = (newTheme) => {
@@ -25,6 +27,7 @@ export default function ThemeToggle() {
     // Get saved theme or default to dark
     const savedTheme = localStorage.getItem('theme') || THEME_MODES.DARK;
     setTheme(savedTheme);
+    setEnabled(savedTheme === THEME_MODES.DARK)
     applyTheme(savedTheme);
   }, []);
 
@@ -32,6 +35,7 @@ export default function ThemeToggle() {
     const nextTheme = theme === THEME_MODES.LIGHT ? THEME_MODES.DARK : THEME_MODES.LIGHT;
     
     setTheme(nextTheme);
+    setEnabled(!enabled)
     localStorage.setItem('theme', nextTheme);
     applyTheme(nextTheme);
   };
@@ -43,35 +47,21 @@ export default function ThemeToggle() {
     );
   }
 
-  const getIcon = () => {
-    switch (theme) {
-      case THEME_MODES.LIGHT:
-        return <Sun className="h-5 w-5" />;
-      case THEME_MODES.DARK:
-        return <Moon className="h-5 w-5" />;
-      default:
-        return <Moon className="h-5 w-5" />;
-    }
-  };
-
-  const getTooltip = () => {
-    switch (theme) {
-      case THEME_MODES.LIGHT:
-        return 'Light mode';
-      case THEME_MODES.DARK:
-        return 'Dark mode';
-      default:
-        return 'Dark mode';
-    }
-  };
-
   return (
-    <button
-      onClick={toggleTheme}
-      className="p-2.5 glass-card rounded-2xl text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-all active:scale-95 group bg-white/80 dark:bg-black/20 backdrop-blur-2xl border border-black/10 dark:border-white/10"
-      title={getTooltip()}
+    <Switch
+      checked={enabled}
+      onChange={toggleTheme}
+      className={`${
+        enabled ? 'bg-gray-700' : 'bg-gray-200'
+      } relative inline-flex h-8 w-14 items-center rounded-full transition-colors`}
     >
-      {getIcon()}
-    </button>
+      <span
+        className={`${
+          enabled ? 'translate-x-7' : 'translate-x-1'
+        } inline-flex h-6 w-6 transform items-center justify-center rounded-full bg-white transition-transform`}
+      >
+        {enabled ? <Moon className="h-4 w-4 text-gray-700" /> : <Sun className="h-4 w-4 text-gray-700" />}
+      </span>
+    </Switch>
   );
 } 

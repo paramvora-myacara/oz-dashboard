@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, UserCheck, AlertTriangle, CheckCircle, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { trackUserEvent } from '@/lib/events';
+import ScheduleCallCTA from '@/components/ScheduleCallCTA';
 
 const STEPS = [
   {
@@ -364,21 +365,29 @@ function ResultsScreen({ qualified, onBack, onReset }) {
           </div>
         </motion.div>
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center mt-8">
+        <p className="text-xl text-black/60 dark:text-white/60 mb-8 max-w-2xl mx-auto">
+          {qualified
+            ? "Congratulations! Based on your responses, you are eligible to invest in Opportunity Zones and defer your capital gains."
+            : "Based on your responses, you may not be eligible at this time. To qualify, you typically need a substantial capital gain to reinvest. You can explore our other resources to learn more."}
+        </p>
+        
+        {qualified && <ScheduleCallCTA />}
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button
+            onClick={onReset}
+            className="px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+          >
+            Start Over
+          </button>
+          
           <button
             onClick={onBack}
             className="flex items-center gap-2 px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
-          </button>
-          
-          <button
-            onClick={onReset}
-            className="px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
-          >
-            Start Over
           </button>
         </div>
       </div>

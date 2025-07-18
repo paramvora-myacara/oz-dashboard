@@ -16,6 +16,7 @@ import {
   TAX_CALC_CONFIG
 } from '@/lib/taxCalculator';
 import { trackUserEvent } from '@/lib/events';
+import ScheduleCallCTA from '@/components/ScheduleCallCTA';
 
 const STEPS = [
   {
@@ -273,7 +274,7 @@ function ResultsScreen({ results, onBack, onReset }) {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black px-8 pt-32 pb-8">
+    <div className="min-h-screen bg-white dark:bg-black px-8 pt-32 pb-16">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 animate-fadeIn">
@@ -362,7 +363,7 @@ function ResultsScreen({ results, onBack, onReset }) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="glass-card rounded-2xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 mb-8"
+          className="glass-card rounded-2xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10 mb-6"
         >
           <h3 className="text-lg font-semibold text-black dark:text-white mb-4">
             Calculation Summary
@@ -389,22 +390,24 @@ function ResultsScreen({ results, onBack, onReset }) {
           </div>
         </motion.div>
 
-        {/* Navigation */}
-        <div className="flex justify-between items-center mt-8">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </button>
-          
-          <button
-            onClick={onReset}
-            className="px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
-          >
-            Start Over
-          </button>
+        <div className="flex flex-col items-center w-full">
+            <ScheduleCallCTA />
+            {/* Navigation */}
+            <div className="flex justify-between items-center mt-8 w-full">
+                <button
+                    onClick={onBack}
+                    className="flex items-center gap-2 px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4" />
+                    Back to Dashboard
+                </button>
+                <button
+                    onClick={onReset}
+                    className="px-6 py-3 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors"
+                >
+                    Start Over
+                </button>
+            </div>
         </div>
 
         {/* Disclaimers */}
@@ -418,18 +421,7 @@ function ResultsScreen({ results, onBack, onReset }) {
             Last updated: {TAX_CALC_CONFIG.LAST_UPDATED} • {TAX_CALC_CONFIG.BILL_VERSION}
           </p>
           <p>
-            This calculation is illustrative only and does not constitute tax advice. 
-            <br />
-            <a href="https://www.irs.gov/credits-deductions/opportunity-zones-frequently-asked-questions" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               className="text-[#0071e3] hover:underline">
-              View IRS FAQ
-            </a>
-            {' • '}
-            <a href="#" className="text-[#0071e3] hover:underline">
-              Legislative Text PDF
-            </a>
+            This calculation is illustrative only and does not constitute tax advice.
           </p>
         </motion.div>
       </div>
