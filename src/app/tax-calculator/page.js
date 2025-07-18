@@ -421,18 +421,7 @@ function ResultsScreen({ results, onBack, onReset }) {
             Last updated: {TAX_CALC_CONFIG.LAST_UPDATED} • {TAX_CALC_CONFIG.BILL_VERSION}
           </p>
           <p>
-            This calculation is illustrative only and does not constitute tax advice. 
-            <br />
-            <a href="https://www.irs.gov/credits-deductions/opportunity-zones-frequently-asked-questions" 
-               target="_blank" 
-               rel="noopener noreferrer"
-               className="text-[#0071e3] hover:underline">
-              View IRS FAQ
-            </a>
-            {' • '}
-            <a href="#" className="text-[#0071e3] hover:underline">
-              Legislative Text PDF
-            </a>
+            This calculation is illustrative only and does not constitute tax advice.
           </p>
         </motion.div>
       </div>
