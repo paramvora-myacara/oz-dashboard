@@ -367,8 +367,8 @@ export default function ChatbotPanel({ isMobile = false }) {
   };
 
   return (
-    <aside className={`h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl ${
-      isMobile ? 'border-0' : 'border-l border-black/10 dark:border-white/10'
+    <aside className={`h-full glass-card flex flex-col bg-white dark:bg-gradient-to-br dark:from-blue-950/60 dark:via-blue-950/35 dark:to-black/90 backdrop-blur-2xl ${
+      isMobile ? 'border-0' : 'border-l border-black/10 dark:border-white/20'
     } relative`}>
       <style jsx>{`
         @keyframes breathe {
@@ -410,7 +410,7 @@ export default function ChatbotPanel({ isMobile = false }) {
         }
       `}</style>
       
-      <header className={`${isMobile ? 'p-4' : 'p-6'} border-b border-black/10 dark:border-white/5 relative overflow-hidden`}>
+      <header className={`${isMobile ? 'p-4' : 'p-6'} border-b border-black/10 dark:border-white/20 relative overflow-hidden`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 floating-avatar">
             <div 
@@ -428,7 +428,7 @@ export default function ChatbotPanel({ isMobile = false }) {
                   'Ozzie'
                 )}
               </h3>
-              <p className="text-xs text-black/50 dark:text-white/50 font-light">Your OZ Investment Expert</p>
+              <p className="text-xs text-black/50 dark:text-white/70 font-light">Your OZ Investment Expert</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -438,10 +438,10 @@ export default function ChatbotPanel({ isMobile = false }) {
                   await signOut();
                   window.location.reload();
                 }}
-                className="p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-all relative group"
+                className="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-xl transition-all relative group"
                 title="Log out"
               >
-                <ArrowRightOnRectangleIcon className="h-5 w-5 text-black/40 dark:text-white/40 hover:text-black/60 dark:hover:text-white/60"/>
+                <ArrowRightOnRectangleIcon className="h-5 w-5 text-black/40 dark:text-white/60 hover:text-black/60 dark:hover:text-white/80"/>
                 <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black dark:bg-white text-white dark:text-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                   Log out
                 </span>
@@ -452,13 +452,13 @@ export default function ChatbotPanel({ isMobile = false }) {
       </header>
       
       {/* Preset Questions */}
-      <div className={`${isMobile ? 'p-4' : 'p-6'} border-b border-black/10 dark:border-white/5`}>
+      <div className={`${isMobile ? 'p-4' : 'p-6'} border-b border-black/10 dark:border-white/20`}>
         <div className="grid grid-cols-2 gap-2">
           {presetQuestions.map((question, index) => (
             <button
               key={index}
               onClick={() => handlePresetClick(question)}
-              className={`${isMobile ? 'p-3.5' : 'p-3'} text-xs text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white glass-card rounded-2xl transition-all text-left font-light hover:bg-black/5 dark:hover:bg-white/5 border border-black/10 dark:border-white/10 ${isMobile ? 'min-h-[48px]' : ''} ${
+              className={`${isMobile ? 'p-3.5' : 'p-3'} text-xs text-black/60 dark:text-white/80 hover:text-black dark:hover:text-white rounded-2xl transition-all text-left font-light bg-white/80 dark:bg-black/80 hover:bg-black/5 dark:hover:bg-black/60 border border-black/10 dark:border-white/20 ${isMobile ? 'min-h-[48px]' : ''} ${
                 highlightedQuestions.has(index) ? 'breathing' : ''
               }`}
             >
@@ -474,7 +474,7 @@ export default function ChatbotPanel({ isMobile = false }) {
       >
         {!isHydrated ? (
           <div className="flex justify-start animate-fadeIn">
-            <div className="max-w-[85%] glass-card text-black/90 dark:text-white/90 rounded-3xl rounded-tl-lg px-5 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+            <div className="max-w-[85%] glass-card text-black/90 dark:text-white/95 rounded-3xl rounded-tl-lg px-5 py-3 bg-black/5 dark:bg-black/80 border border-black/10 dark:border-white/20">
               <p className="text-sm leading-relaxed font-light">Loading conversation...</p>
             </div>
           </div>
@@ -484,7 +484,7 @@ export default function ChatbotPanel({ isMobile = false }) {
               <div className={`max-w-[85%] ${
                 m.sender === 'user'
                   ? 'bg-[#0071e3] text-white rounded-3xl rounded-tr-lg px-5 py-3'
-                  : 'glass-card text-black/90 dark:text-white/90 rounded-3xl rounded-tl-lg px-5 py-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10'
+                  : 'glass-card text-black/90 dark:text-white/95 rounded-3xl rounded-tl-lg px-5 py-3 bg-black/5 dark:bg-black/80 border border-black/10 dark:border-white/20'
               }`}>
                 <div className="text-sm leading-relaxed font-light">
                   <ReactMarkdown
@@ -505,11 +505,11 @@ export default function ChatbotPanel({ isMobile = false }) {
       </div>
       
       {/* Input Form */}
-      <div className={`${isMobile ? 'p-4' : 'p-6'} border-t border-black/10 dark:border-white/5`}>
+      <div className={`${isMobile ? 'p-4' : 'p-6'} border-t border-black/10 dark:border-white/20`}>
         <div className={`flex ${isMobile ? 'gap-2' : 'gap-3'} items-end`}>
           <textarea
             ref={textareaRef}
-            className={`flex-1 ${isMobile ? 'px-4 py-3' : 'px-5 py-3'} glass-card rounded-2xl text-black dark:text-white placeholder-black/30 dark:placeholder-white/30 focus:outline-none focus:border-black/20 dark:focus:border-white/20 text-sm font-light transition-all bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 resize-none overflow-hidden min-h-[48px] max-h-[120px]`}
+            className={`flex-1 ${isMobile ? 'px-4 py-3' : 'px-5 py-3'} rounded-2xl text-black dark:text-white placeholder-black/30 dark:placeholder-white/50 focus:outline-none focus:border-black/20 dark:focus:border-white/30 text-sm font-light transition-all bg-black/5 dark:bg-black/80 border border-black/10 dark:border-white/20 resize-none overflow-hidden min-h-[48px] max-h-[120px]`}
             value={input} 
             onChange={e => setInput(e.target.value)} 
             placeholder="Ask Ozzie anything about OZs..."
@@ -529,7 +529,7 @@ export default function ChatbotPanel({ isMobile = false }) {
           <button 
             onClick={(e) => handleSend(e)}
             disabled={!input.trim()} 
-            className={`${isMobile ? 'p-3.5' : 'p-3'} bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-black/10 dark:disabled:bg-white/10 rounded-full transition-all disabled:cursor-not-allowed hover:scale-105 flex-shrink-0 ${isMobile ? 'min-w-[48px] min-h-[48px]' : ''}`}
+            className={`${isMobile ? 'p-3.5' : 'p-3'} bg-[#0071e3] hover:bg-[#0077ed] disabled:bg-black/10 dark:disabled:bg-white/20 rounded-full transition-all disabled:cursor-not-allowed hover:scale-105 flex-shrink-0 ${isMobile ? 'min-w-[48px] min-h-[48px]' : ''}`}
           >
             <PaperAirplaneIcon className="h-5 w-5 text-white"/>
           </button>

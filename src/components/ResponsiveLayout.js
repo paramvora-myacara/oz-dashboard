@@ -106,7 +106,7 @@ export default function ResponsiveLayout({ children }) {
             showMobileChat ? 'translate-y-0' : 'translate-y-full'
           }`}
         >
-          <div className="h-[80vh] bg-white dark:bg-black border-t border-black/10 dark:border-white/10 rounded-t-3xl shadow-2xl">
+          <div className="h-[80vh] bg-white dark:bg-gradient-to-br dark:from-blue-950/60 dark:via-blue-950/35 dark:to-black/90 border-t border-black/10 dark:border-white/10 rounded-t-3xl shadow-2xl">
             <div className="flex items-center justify-between p-4 border-b border-black/10 dark:border-white/10">
               <h3 className="font-semibold text-black dark:text-white">Chat with Ozzie</h3>
               <button
@@ -226,7 +226,7 @@ export default function ResponsiveLayout({ children }) {
       <div className="fixed right-0 top-0 h-screen w-[35%] lg:w-[25%] z-40">
         <Suspense
           fallback={
-            <div className="h-full glass-card flex flex-col bg-black/80 dark:bg-black/80 backdrop-blur-2xl border-l border-black/10 dark:border-white/10">
+            <div className="h-full glass-card flex flex-col bg-white dark:bg-gradient-to-br dark:from-blue-950/60 dark:via-blue-950/35 dark:to-black/90 backdrop-blur-2xl border-l border-black/10 dark:border-white/10">
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center">
                   <div className="w-8 h-8 border-2 border-white/20 border-t-white/60 rounded-full animate-spin mb-4 mx-auto"></div>

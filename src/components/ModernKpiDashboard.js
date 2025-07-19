@@ -323,7 +323,7 @@ export default function ModernKpiDashboard() {
                     className={`px-3 md:px-6 py-3.5 rounded-full text-sm font-medium transition-all flex items-center space-x-2.5 ${
                       activeTab === tab.id
                         ? 'bg-black dark:bg-white text-white dark:text-black'
-                        : 'glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10'
+                        : 'glass-card text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/20'
                     }`}
                   >
                     <IconComponent className={`w-4 h-4 ${activeTab === tab.id ? 'text-white dark:text-black' : tab.iconColor}`} />
@@ -333,7 +333,7 @@ export default function ModernKpiDashboard() {
               })}
             </div>
 
-            <div className="glass-card rounded-3xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/10">
+            <div className="glass-card rounded-3xl p-6 bg-white/80 dark:bg-black/20 border border-black/10 dark:border-white/20">
               {activeTab === 'overview' && (
                 <div className="space-y-4">
                   <h3 className="text-2xl font-semibold text-black dark:text-white mb-4">Investment Overview</h3>

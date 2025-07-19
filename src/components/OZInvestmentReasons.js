@@ -88,7 +88,7 @@ export default function OZInvestmentReasons() {
             return (
               <div 
                 key={reason.id}
-                className={`glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-4 xl:p-6 bg-gradient-to-br ${reason.gradient} border border-black/10 dark:border-white/10 hover:scale-[1.02] transition-all duration-300 animate-fadeIn flex flex-col h-full`}
+                className={`glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-4 xl:p-6 bg-gradient-to-br ${reason.gradient} border border-black/10 dark:border-white/20 hover:scale-[1.02] transition-all duration-300 animate-fadeIn flex flex-col h-full`}
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 {/* Card Header */}
